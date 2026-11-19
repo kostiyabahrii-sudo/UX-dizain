@@ -1,129 +1,56 @@
 <!doctype html>
-<html lang="ru"><head><meta charset="utf-8"><title>Fitkit — Главная панель</title>
+<html lang="ru"><head><meta charset="utf-8"><title>Fitkit — Главная</title>
 <link rel="stylesheet" href="styles.css">
 <style>
-  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 18px 0 16px; }
-  .kpi { padding: 14px 16px; }
-  .kpi .v { font-size: 28px; font-weight: 700; margin-top: 4px; }
-  .kpi .d { font-size: 12px; color: var(--muted); }
-  .kpi.alert { border-color: #f2c2c5; background: #fffafa; }
-  .bar { height: 6px; background: #eceef1; border-radius: 3px; margin-top: 8px; overflow: hidden; }
-  .bar i { display: block; height: 100%; width: 60%; background: var(--accent); }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--faint); font-weight: 600; padding: 0 8px 8px; border-bottom: 1px solid var(--line); }
-  td { padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
-  tr.urgent td:first-child { box-shadow: inset 3px 0 0 var(--st-prob); }
-  .why { font-weight: 600; }
-  .why small { display: block; font-weight: 400; color: var(--muted); }
-  .msg { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
-  .msg:last-child { border-bottom: 0; }
-  .msg .t { font-size: 13px; }
-  .msg .t b { display: flex; justify-content: space-between; }
-  .msg .t b span { font-weight: 400; color: var(--faint); font-size: 12px; }
-  .msg .t p { color: var(--muted); font-size: 12.5px; }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--st-new); margin-top: 6px; flex: none; }
-  .queue .item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
-  .pipe { display: flex; gap: 8px; }
-  .pipe div { flex: 1; border-radius: 8px; padding: 10px 12px; }
-  .pipe div b { display: block; font-size: 20px; }
-  .pipe div span { font-size: 12px; font-weight: 600; }
+  .nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .num { padding: 18px 22px; }
+  .num b { display: block; font-size: 34px; line-height: 1.1; margin-top: 4px; }
+  .num.red b { color: var(--bad); } .num.org b { color: var(--wait); }
+  .task { display: flex; align-items: center; gap: 18px; padding: 16px 20px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+  .task.late { border-left: 5px solid var(--bad); }
+  .task .what { font-size: 16px; font-weight: 600; }
+  .task .when { width: 190px; text-align: right; font-size: 14px; font-weight: 600; color: var(--muted); }
+  .task .when.red { color: var(--bad); }
+  .task .btn { width: 190px; }
+  .list { display: flex; flex-direction: column; gap: 10px; }
 </style></head>
-<body>
-<div class="app">
+<body><div class="app">
   <aside class="side">
-    <div class="logo"><i>F</i><div>Fitkit<small>Рабочее место</small></div></div>
+    <div class="logo"><i>F</i>Fitkit</div>
     <nav class="nav">
-      <a class="on"><span class="ic"></span>Главная</a>
-      <a><span class="ic"></span>Заявки<span class="n">7</span></a>
-      <a><span class="ic"></span>Мои заказы<span class="n hot">5</span></a>
-      <a><span class="ic"></span>Все заказы</a>
-      <a><span class="ic"></span>Сообщения<span class="n hot">3</span></a>
-      <a><span class="ic"></span>Клиенты</a>
-      <a><span class="ic"></span>Отслеживание<span class="n">1</span></a>
-      <a><span class="ic"></span>Магазины</a>
-      <a><span class="ic"></span>Отчёты</a>
-      <div class="sep"></div>
-      <a><span class="ic"></span>Шаблоны ответов</a>
-      <a><span class="ic"></span>Настройки</a>
+      <a class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11 12 4l9 7v9H3z"/></svg>Главная</a>
+      <a class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16l-1.5 13h-13zM9 7a3 3 0 0 1 6 0"/></svg>Заказы</a>
+      <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v11H9l-5 4z"/></svg>Сообщения<span class="n">3</span></a>
+      <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>Клиенты</a>
+      <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>Посылки</a>
     </nav>
-    <div class="me"><div class="ava">АК</div><div>Анна К.<br><small style="font-size:11px">Байер · смена до 18:00</small></div></div>
+    <div class="me"><div class="ava">АК</div><div>Анна К.<small>● На смене</small></div></div>
   </aside>
 
   <main class="main">
-    <div class="top">
-      <div class="search">Поиск: № заказа, клиент, телефон, трек-номер…</div>
-      <div class="toggle">На смене <b></b></div>
-      <div class="bell"><i>4</i></div>
-      <div class="ava">АК</div>
+    <div class="row">
+      <div class="grow"><h1>Добрый день, Анна</h1><div class="sub">Четверг, 19 ноября · смена до 18:00</div></div>
+      <button class="btn pri big">+ Взять новую заявку <span style="opacity:.75;font-weight:500">· 7 в очереди</span></button><span class="mk">1</span>
     </div>
 
-    <div class="content rel">
-      <div class="row" style="align-items:flex-end">
-        <div><h1>Доброе утро, Анна</h1><div class="sub">Четверг, 19 ноября · у вас 14 активных заказов, 5 ждут вашего действия</div></div>
-        <div style="margin-left:auto" class="row"><button class="btn">Мои заказы</button><button class="btn pri">Взять следующую заявку</button></div>
-      </div>
+    <div class="nums">
+      <div class="card num red">Нужно сделать сейчас<b>5</b></div>
+      <div class="card num org">Ждём ответа клиента<b>3</b></div>
+      <div class="card num">Куплено сегодня<b>12</b></div>
+    </div>
 
-      <div class="kpis">
-        <div class="card kpi alert"><h3>Ждут моего действия<b class="mk">1</b></h3><div class="v" style="color:var(--st-prob)">5</div><div class="d">2 просрочены по сроку ответа</div></div>
-        <div class="card kpi"><h3>Новые заявки в очереди</h3><div class="v">7</div><div class="d">Самая старая ждёт 42 мин</div></div>
-        <div class="card kpi"><h3>Ждут ответа клиента</h3><div class="v">3</div><div class="d">1 без ответа больше 24 ч</div></div>
-        <div class="card kpi"><h3>Выкуплено сегодня</h3><div class="v">12 <span style="font-size:15px;color:var(--muted);font-weight:500">/ 20</span></div><div class="bar"><i></i></div></div>
-      </div>
+    <div class="row"><h2>Что сделать сейчас</h2><span class="mk">2</span><span class="sub">самое срочное — сверху</span></div>
+    <div class="list">
+      <div class="task late"><div class="ph" style="width:52px;height:64px"></div><div class="grow"><div class="what">Клиент не отвечает про замену платья</div><div class="sub">Мария Л. · заказ #FK-10482 · Zara</div></div><div class="when red">просрочено на 2 ч</div><button class="btn pri">Напомнить</button></div>
+      <div class="task late"><div class="ph" style="width:52px;height:64px"></div><div class="grow"><div class="what">Цена выросла на 640 ₽ — нужна доплата</div><div class="sub">Игорь С. · заказ #FK-10477 · Lamoda</div></div><div class="when red">просрочено на 35 мин</div><button class="btn pri">Запросить доплату</button></div>
+      <div class="task"><div class="ph" style="width:52px;height:64px"></div><div class="grow"><div class="what">Клиент ответил: «Да, берите синий»</div><div class="sub">Ольга П. · заказ #FK-10495 · Uniqlo</div></div><div class="when">осталось 1 ч</div><button class="btn">Купить</button></div>
+      <div class="task"><div class="ph" style="width:52px;height:64px"></div><div class="grow"><div class="what">Новая заявка: проверить 4 товара</div><div class="sub">Дарья В. · заказ #FK-10501 · ASOS</div></div><div class="when">осталось 2 ч</div><button class="btn">Проверить</button></div>
+      <div class="task"><div class="ph" style="width:52px;height:64px"></div><div class="grow"><div class="what">Магазин 3 дня не присылает трек-номер</div><div class="sub">Павел Т. · заказ #FK-10468 · Nike</div></div><div class="when">сегодня</div><button class="btn">Узнать трек</button></div>
+    </div>
 
-      <div class="row">
-        <div class="card grow">
-          <div class="hdr"><h2>Требует внимания</h2><b class="mk">2</b><span class="tag">сортировка: по сроку</span><span class="more">Все мои заказы →</span></div>
-          <table>
-            <tr><th>Заказ</th><th>Клиент</th><th>Что случилось</th><th>Статус</th><th>Срок<b class="mk">3</b></th><th></th></tr>
-            <tr class="urgent"><td><b>#FK-10482</b><br><span class="sub">3 товара · Zara, H&amp;M</span></td><td>Мария Л.</td><td class="why">Нет размера M<small>Замена предложена, клиент молчит 26 ч</small></td><td><span class="chip s-wait">Ждёт клиента</span></td><td><span class="timer red">просрочено 2 ч</span></td><td><button class="btn sm">Открыть</button></td></tr>
-            <tr class="urgent"><td><b>#FK-10477</b><br><span class="sub">1 товар · Lamoda</span></td><td>Игорь С.</td><td class="why">Цена выросла на 12%<small>Нужна доплата 640 ₽</small></td><td><span class="chip s-prob">Проблема</span></td><td><span class="timer red">просрочено 35 мин</span></td><td><button class="btn sm">Открыть</button></td></tr>
-            <tr><td><b>#FK-10495</b><br><span class="sub">2 товара · Uniqlo</span></td><td>Ольга П.</td><td class="why">Клиент ответил<small>«Да, берите синий вместо чёрного»</small></td><td><span class="chip s-work">В обработке</span></td><td><span class="timer">1 ч 10 мин</span></td><td><button class="btn sm">Открыть</button></td></tr>
-            <tr><td><b>#FK-10501</b><br><span class="sub">4 товара · ASOS</span></td><td>Дарья В.</td><td class="why">Новая заявка назначена вам<small>Проверить ссылки и размеры</small></td><td><span class="chip s-new">Новая</span></td><td><span class="timer">2 ч 30 мин</span></td><td><button class="btn sm">Открыть</button></td></tr>
-            <tr><td><b>#FK-10468</b><br><span class="sub">1 товар · Nike</span></td><td>Павел Т.</td><td class="why">Нет трек-номера 3 дня<small>Проверить заказ в магазине</small></td><td><span class="chip s-done">Выкуплено</span></td><td><span class="timer ok">сегодня</span></td><td><button class="btn sm">Открыть</button></td></tr>
-          </table>
-        </div>
-
-        <div class="col" style="width:380px;flex:none">
-          <div class="card">
-            <div class="hdr"><h2>Новые сообщения</h2><b class="mk">6</b><span class="more">Все →</span></div>
-            <div class="msg"><span class="dot"></span><div class="ava c2">ОП</div><div class="t grow"><b>Ольга П. · #FK-10495<span>2 мин</span></b><p>Да, берите синий вместо чёрного, спасибо!</p></div></div>
-            <div class="msg"><span class="dot"></span><div class="ava c3">ДВ</div><div class="t grow"><b>Дарья В. · #FK-10501<span>14 мин</span></b><p>Добавила ещё одну ссылку, посмотрите</p></div></div>
-            <div class="msg"><span class="dot"></span><div class="ava c4">ИС</div><div class="t grow"><b>Игорь С. · #FK-10477<span>40 мин</span></b><p>А почему выросла цена?</p></div></div>
-          </div>
-          <div class="card queue">
-            <div class="hdr"><h2>Очередь заявок</h2><b class="mk">4</b><span class="tag">7</span><span class="more">Открыть →</span></div>
-            <div class="item"><span><b>#FK-10503</b> · 2 товара · Zara</span><span class="timer red">42 мин</span></div>
-            <div class="item"><span><b>#FK-10504</b> · 5 товаров · Mango</span><span class="timer">25 мин</span></div>
-            <div class="item"><span><b>#FK-10505</b> · 1 товар · COS</span><span class="timer ok">6 мин</span></div>
-            <button class="btn pri" style="width:100%;justify-content:center;margin-top:12px">Взять следующую</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:16px">
-        <div class="hdr"><h2>Мои заказы по статусам</h2><b class="mk">5</b><span class="sub">нажмите на этап, чтобы открыть список</span></div>
-        <div class="pipe">
-          <div class="s-new"><b>2</b><span>Новая</span></div>
-          <div class="s-work"><b>4</b><span>В обработке</span></div>
-          <div class="s-wait"><b>3</b><span>Ждёт клиента</span></div>
-          <div class="s-prob"><b>1</b><span>Проблема</span></div>
-          <div class="s-buy"><b>2</b><span>Выкуп оформляется</span></div>
-          <div class="s-done"><b>6</b><span>Выкуплено</span></div>
-          <div class="s-ship"><b>9</b><span>Отправлено</span></div>
-        </div>
-      </div>
-
-
-
-      <div class="legend" style="margin-top:16px">
-        <span><b class="mk">1</b>Счётчики — только то, что требует действия</span>
-        <span><b class="mk">2</b>Список собирается автоматически, сортировка по сроку</span>
-        <span><b class="mk">3</b>Таймер до нарушения срока (SLA)</span>
-        <span><b class="mk">4</b>Заявки берутся по одной, самая старая первой</span>
-        <span><b class="mk">5</b>Воронка своих заказов, клик → список</span>
-        <span><b class="mk">6</b>Ответы клиентов — сразу на главной</span>
-      </div>
+    <div class="legend" style="margin-top:auto">
+      <span><b class="mk">1</b>Одна главная кнопка: взять следующую заявку из очереди</span>
+      <span><b class="mk">2</b>Список дел: что случилось простыми словами + одна кнопка-действие</span>
     </div>
   </main>
-</div>
-</body></html>
+</div></body></html>
