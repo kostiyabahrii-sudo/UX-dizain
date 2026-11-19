@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Fitkit — Согласование замены</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .stage { width: 1600px; height: 1000px; display: flex; gap: 40px; padding: 30px 40px; background: #dfe2e7; align-items: flex-start; }
+  .label { font-size: 13px; font-weight: 700; color: #4b5563; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .modal { width: 960px; background: #fff; border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,.18); overflow: hidden; }
+  .mh { display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+  .mh h1 { font-size: 18px; }
+  .mh .x { margin-left: auto; font-size: 20px; color: var(--faint); }
+  .mb { padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; }
+  .orig { display: flex; gap: 12px; align-items: center; background: var(--st-prob-bg); border-radius: 10px; padding: 10px; }
+  .orig .sub b { color: var(--st-prob); }
+  .opts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .opt { border: 1px solid var(--line-2); border-radius: 10px; padding: 10px; font-size: 12.5px; display: flex; flex-direction: column; gap: 6px; }
+  .opt.add { border-style: dashed; color: var(--faint); align-items: center; justify-content: center; min-height: 250px; font-weight: 600; }
+  .opt .inp { border: 1px solid var(--line-2); border-radius: 6px; padding: 5px 8px; font-size: 12px; color: var(--text); background: #fff; }
+  .opt .inp span { color: var(--faint); font-size: 10.5px; display: block; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .diff { font-weight: 700; }
+  .diff.plus { color: var(--st-wait); } .diff.zero { color: var(--st-done); }
+  .radio { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+  .radio div { display: flex; gap: 8px; align-items: center; }
+  .radio i { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--line-2); flex: none; }
+  .radio .on i { border: 4px solid var(--accent); }
+  .preview { background: #fafbfc; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 13px; }
+  .mf { display: flex; gap: 8px; justify-content: flex-end; padding: 12px 20px; border-top: 1px solid var(--line); background: #fafbfc; align-items: center; }
+  .phone { width: 360px; height: 740px; background: #111; border-radius: 44px; padding: 12px; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+  .screen { background: #eef1f4; height: 100%; border-radius: 34px; overflow: hidden; display: flex; flex-direction: column; }
+  .ph-top { background: #fff; padding: 34px 16px 12px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--line); }
+  .ph-body { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .bub { background: #fff; border-radius: 14px; border-bottom-left-radius: 4px; padding: 10px 12px; font-size: 13px; }
+  .card-c { background: #fff; border-radius: 14px; padding: 12px; font-size: 13px; display: flex; flex-direction: column; gap: 8px; }
+  .copt { display: flex; gap: 10px; border: 1px solid var(--line); border-radius: 10px; padding: 8px; align-items: center; }
+  .copt .grow { font-size: 12.5px; }
+  .cbtn { height: 38px; border-radius: 10px; display: grid; place-items: center; font-weight: 600; font-size: 13px; border: 1px solid var(--line-2); background: #fff; }
+  .cbtn.pri { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .flow { width: 1520px; }
+</style></head>
+<body>
+<div class="app" style="display:block">
+<div class="stage">
+  <div>
+    <div class="label">Программа сотрудника · окно «Предложить замену» <b class="mk">1</b></div>
+    <div class="modal">
+      <div class="mh"><h1>Предложить замену · заказ #FK-10482</h1><span class="x">✕</span></div>
+      <div class="mb">
+        <div class="orig">
+          <div class="ph" style="width:56px;height:70px"></div>
+          <div class="grow"><b>Платье миди с поясом · Zara · M · чёрный · 5 999 ₽</b><div class="sub">Причина: <b>нет нужного размера</b> ▾ &nbsp;·&nbsp; Пожелание клиента: «если M не будет — можно S, но только чёрное»</div></div>
+          <span class="chip s-prob">Нет размера</span>
+        </div>
+
+        <div>
+          <div class="hdr" style="margin-bottom:8px"><h2>Варианты замены</h2><b class="mk">2</b><span class="sub">до 3 вариантов; фото и цена подтягиваются по ссылке</span></div>
+          <div class="opts">
+            <div class="opt">
+              <b>Вариант 1 · тот же товар</b>
+              <div class="ph" style="height:96px"></div>
+              <div class="inp"><span>Ссылка</span>zara.com/…/plate-midi-s-poyasom-p02731456</div>
+              <div class="two"><div class="inp"><span>Размер</span>S</div><div class="inp"><span>Цвет</span>Чёрный</div></div>
+              <div class="two"><div class="inp"><span>Цена</span>5 999 ₽</div><div class="diff zero" style="align-self:center">Разница: 0 ₽</div></div>
+            </div>
+            <div class="opt">
+              <b>Вариант 2 · похожий товар</b>
+              <div class="ph" style="height:96px"></div>
+              <div class="inp"><span>Ссылка</span>zara.com/…/plate-midi-zapah-p02749910</div>
+              <div class="two"><div class="inp"><span>Размер</span>M</div><div class="inp"><span>Цвет</span>Чёрный</div></div>
+              <div class="two"><div class="inp"><span>Цена</span>6 499 ₽</div><div class="diff plus" style="align-self:center">Доплата: +500 ₽</div></div>
+            </div>
+            <div class="opt add">+ Добавить вариант</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="grow">
+            <div class="hdr" style="margin-bottom:6px"><h2>Если клиент не ответит</h2><b class="mk">3</b></div>
+            <div class="row" style="gap:10px;align-items:center;font-size:13px;margin-bottom:8px">Ждать ответа <span class="inp" style="border:1px solid var(--line-2);border-radius:6px;padding:4px 10px">24 ч ▾</span> напомнить через <span style="border:1px solid var(--line-2);border-radius:6px;padding:4px 10px">12 ч ▾</span></div>
+            <div class="radio">
+              <div class="on"><i></i>Убрать товар из заказа и вернуть деньги</div>
+              <div><i></i>Купить вариант 1 (без доплаты)</div>
+              <div><i></i>Ждать дальше, передать старшему смены</div>
+            </div>
+          </div>
+          <div class="grow">
+            <div class="hdr" style="margin-bottom:6px"><h2>Сообщение клиенту</h2><b class="mk">4</b><span class="more">Шаблон: «Нет размера» ▾</span></div>
+            <div class="preview">Мария, размера M у платья нет. Подобрала два варианта — выберите подходящий. Если ничего не подойдёт, уберём платье и вернём 5 999 ₽.</div>
+          </div>
+        </div>
+      </div>
+      <div class="mf"><span class="sub" style="margin-right:auto">Заказ перейдёт в статус «Ждёт ответа клиента», остальные товары можно выкупать</span><button class="btn">Отмена</button><button class="btn pri">Отправить клиенту</button></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="label">Что видит клиент (бот / приложение) <b class="mk">5</b></div>
+    <div class="phone"><div class="screen">
+      <div class="ph-top"><div class="ava" style="background:var(--accent);color:#fff">F</div><div><b>Fitkit</b><div class="sub" style="font-size:11px">Анна, ваш байер · онлайн</div></div></div>
+      <div class="ph-body">
+        <div class="bub">Мария, размера M у платья нет. Подобрала два варианта — выберите подходящий. Если ничего не подойдёт, уберём платье и вернём 5 999 ₽.</div>
+        <div class="card-c">
+          <b>Замена в заказе #FK-10482</b>
+          <div class="copt"><div class="ph" style="width:48px;height:60px"></div><div class="grow"><b>Вариант 1</b><br>То же платье, S, чёрное<br><b style="color:var(--st-done)">без доплаты</b></div></div>
+          <div class="copt"><div class="ph" style="width:48px;height:60px"></div><div class="grow"><b>Вариант 2</b><br>Платье на запах, M, чёрное<br><b style="color:var(--st-wait)">доплата 500 ₽</b></div></div>
+          <div class="cbtn pri">Беру вариант 1</div>
+          <div class="cbtn">Беру вариант 2</div>
+          <div class="cbtn">Убрать товар, вернуть деньги</div>
+          <div class="cbtn">Написать байеру</div>
+          <div class="sub" style="font-size:11px;text-align:center">Ответьте до 20 нояб, 12:05</div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+</div>
+<div style="position:absolute;top:900px;left:40px;width:1520px">
+  <div class="legend">
+    <span><b class="mk">1</b>Открывается из строки товара кнопкой «Предложить замену»</span>
+    <span><b class="mk">2</b>Разница в цене считается автоматически</span>
+    <span><b class="mk">3</b>Правило на случай молчания — задаётся сразу</span>
+    <span><b class="mk">4</b>Текст из шаблона, можно править</span>
+    <span><b class="mk">5</b>Клиент отвечает одной кнопкой → ответ сразу меняет товар и статус</span>
+  </div>
+</div>
+</div>
+</body></html>

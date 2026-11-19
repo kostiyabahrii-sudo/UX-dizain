@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Fitkit — Карточка заказа</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .content { padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+  .ohead { display: flex; align-items: center; gap: 12px; }
+  .crumbs { font-size: 12px; color: var(--muted); }
+  .ohead h1 { font-size: 21px; }
+  .ohead .acts { margin-left: auto; display: flex; gap: 8px; }
+  .select { display: inline-flex; align-items: center; gap: 6px; }
+  .select:after { content: "▾"; font-size: 10px; color: var(--muted); }
+  .steps { display: flex; background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .steps div { flex: 1; padding: 8px 12px; font-size: 12px; font-weight: 600; color: var(--faint); border-right: 1px solid var(--line); display: flex; gap: 8px; align-items: center; }
+  .steps div:last-child { border-right: 0; }
+  .steps div i { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--line-2); display: grid; place-items: center; font-style: normal; font-size: 10px; }
+  .steps .done { color: var(--st-done); } .steps .done i { background: var(--st-done); border-color: var(--st-done); color: #fff; }
+  .steps .cur { color: var(--st-work); background: var(--st-work-bg); } .steps .cur i { border-color: var(--st-work); color: var(--st-work); }
+  .steps small { display: block; font-weight: 400; font-size: 11px; color: var(--muted); }
+  .cols { display: flex; gap: 12px; flex: 1; min-height: 0; }
+  .items { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+  .it { display: flex; gap: 14px; padding: 12px; }
+  .it.prob { border-color: #f0b7bb; box-shadow: inset 3px 0 0 var(--st-prob); }
+  .it.ok { box-shadow: inset 3px 0 0 var(--st-done); }
+  .it .info { flex: 1; min-width: 0; }
+  .it .t { display: flex; align-items: center; gap: 8px; }
+  .it .t b { font-size: 14px; }
+  .link { display: flex; align-items: center; gap: 6px; margin: 4px 0 8px; font-size: 12.5px; color: var(--st-new); }
+  .link u { text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 330px; }
+  .attrs { display: grid; grid-template-columns: repeat(5, auto); gap: 4px 18px; font-size: 12.5px; justify-content: start; }
+  .attrs span { color: var(--muted); font-size: 11px; display: block; }
+  .attrs .bad { color: var(--st-prob); font-weight: 700; }
+  .checks { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .ck { font-size: 11.5px; padding: 2px 8px; border-radius: 4px; background: var(--st-done-bg); color: var(--st-done); font-weight: 600; }
+  .ck.no { background: var(--st-prob-bg); color: var(--st-prob); }
+  .ck.wait { background: var(--st-wait-bg); color: var(--st-wait); }
+  .it .side-acts { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; flex: none; }
+  .field { border: 1px dashed var(--line-2); border-radius: 6px; padding: 3px 8px; font-size: 12px; color: var(--faint); }
+  .totals { display: flex; gap: 22px; padding: 10px 14px; font-size: 13px; align-items: center; }
+  .totals span { color: var(--muted); font-size: 11px; display: block; }
+  .totals .sum { margin-left: auto; text-align: right; }
+  .totals .sum b { font-size: 18px; }
+  .info-col { width: 300px; flex: none; display: flex; flex-direction: column; gap: 10px; }
+  .info-col .card { padding: 12px 14px; }
+  .kv { font-size: 13px; margin-top: 6px; }
+  .kv span { display: block; color: var(--muted); font-size: 11px; }
+  .copy { float: right; font-size: 11px; color: var(--accent); font-weight: 600; }
+  .wish { background: #fff8e1; border-color: #f1d98a; }
+  .wish p { font-size: 13px; margin-top: 6px; }
+  .chat { width: 380px; flex: none; display: flex; flex-direction: column; padding: 0; }
+  .tabs { display: flex; border-bottom: 1px solid var(--line); font-size: 13px; font-weight: 600; }
+  .tabs div { padding: 10px 14px; color: var(--muted); }
+  .tabs .on { color: var(--text); box-shadow: inset 0 -2px 0 var(--accent); }
+  .msgs { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 10px; background: #fafbfc; overflow: hidden; }
+  .b { max-width: 86%; padding: 8px 11px; border-radius: 12px; font-size: 13px; }
+  .b small { display: block; font-size: 10.5px; color: var(--faint); margin-top: 2px; }
+  .b.cl { background: #fff; border: 1px solid var(--line); align-self: flex-start; border-bottom-left-radius: 3px; }
+  .b.me { background: var(--accent-soft); align-self: flex-end; border-bottom-right-radius: 3px; }
+  .sys { align-self: center; font-size: 11px; color: var(--muted); background: #eef0f3; padding: 2px 10px; border-radius: 10px; }
+  .offer { align-self: flex-end; width: 88%; background: #fff; border: 1.5px solid var(--st-wait); border-radius: 12px; padding: 10px; font-size: 12.5px; }
+  .offer .opts { display: flex; gap: 8px; margin: 8px 0; }
+  .offer .opt { flex: 1; border: 1px solid var(--line); border-radius: 8px; padding: 6px; font-size: 11.5px; }
+  .compose { border-top: 1px solid var(--line); padding: 10px; }
+  .quick { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .quick span { font-size: 11.5px; border: 1px solid var(--line-2); border-radius: 12px; padding: 2px 9px; color: var(--muted); }
+  .input { height: 38px; border: 1px solid var(--line-2); border-radius: 8px; display: flex; align-items: center; padding: 0 10px; color: var(--faint); font-size: 13px; gap: 8px; }
+  .input .send { margin-left: auto; }
+</style></head>
+<body>
+<div class="app">
+  <aside class="side mini">
+    <div class="logo" style="padding:0 0 18px"><i>F</i></div>
+    <nav class="nav">
+      <a><span class="ic"></span></a><a><span class="ic"></span></a><a class="on"><span class="ic"></span></a><a><span class="ic"></span></a><a><span class="ic"></span></a><a><span class="ic"></span></a><a><span class="ic"></span></a>
+    </nav>
+    <div class="me" style="border:0"><div class="ava">АК</div></div>
+  </aside>
+
+  <main class="main">
+    <div class="top">
+      <div class="search">Поиск: № заказа, клиент, телефон, трек-номер…</div>
+      <div class="toggle">На смене <b></b></div>
+      <div class="bell"><i>4</i></div>
+      <div class="ava">АК</div>
+    </div>
+
+    <div class="content">
+      <div class="ohead">
+        <div>
+          <div class="crumbs">Мои заказы / Заказ</div>
+          <div class="row" style="gap:10px;align-items:center"><h1>#FK-10482</h1>
+            <span class="chip s-wait select">Ждёт ответа клиента</span><b class="mk">1</b>
+            <span class="timer red">Ответ клиента просрочен: 26 ч из 24 ч</span>
+          </div>
+        </div>
+        <div class="acts">
+          <button class="btn">Запросить уточнение</button>
+          <button class="btn warn">Сообщить о проблеме</button>
+          <button class="btn">Передать коллеге</button>
+          <button class="btn pri">Перейти к выкупу →</button><b class="mk">2</b>
+        </div>
+      </div>
+
+      <div class="steps">
+        <div class="done"><i>✓</i><span>Заявка<small>18 нояб, 10:02</small></span></div>
+        <div class="done"><i>✓</i><span>Проверка товаров<small>18 нояб, 11:40</small></span></div>
+        <div class="cur"><i>3</i><span>Согласование<small>замена 1 товара</small></span></div>
+        <div><i>4</i><span>Выкуп<small>в магазинах</small></span></div>
+        <div><i>5</i><span>Выкуплено<small>ждём посылки</small></span></div>
+        <div><i>6</i><span>На складе<small>сверка, упаковка</small></span></div>
+        <div><i>7</i><span>Отправлено<small>трек клиенту</small></span></div>
+      </div>
+
+      <div class="cols">
+        <div class="items">
+          <div class="hdr" style="margin:0"><h2>Товары · 3</h2><b class="mk">3</b><span class="sub">проверено 2 из 3 · в 2 магазинах</span><span class="more">+ Добавить товар</span></div>
+
+          <div class="card it ok">
+            <div class="ph" style="width:96px;height:120px"><svg viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.5"><path d="M12 5a2 2 0 1 1 2 2l-2 1.5M12 8.5 3 15h18l-9-6.5"/></svg><span class="cap">фото клиента · 2</span></div>
+            <div class="ph" style="width:96px;height:120px"><svg viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="m4 16 5-5 4 4 3-3 4 4"/></svg><span class="cap">фото с сайта</span></div>
+            <div class="info">
+              <div class="t"><b>Рубашка оверсайз из хлопка</b><span class="chip s-done">Проверен</span></div>
+              <div class="link">↗ <u>zara.com/ru/ru/rubashka-oversaiz-iz-hlopka-p04387123.html</u><span class="tag">Zara</span><span class="copy">копировать</span></div>
+              <div class="attrs">
+                <div><span>Размер</span>L</div><div><span>Цвет</span>Белый</div><div><span>Кол-во</span>1</div><div><span>Цена клиента</span>3 999 ₽</div><div><span>Цена на сайте</span>3 999 ₽</div>
+              </div>
+              <div class="checks"><span class="ck">✓ ссылка открывается</span><span class="ck">✓ размер есть</span><span class="ck">✓ цвет совпадает с фото</span><span class="ck">✓ цена совпадает</span></div>
+            </div>
+            <div class="side-acts"><button class="btn sm">Открыть в магазине ↗</button><span class="field">№ заказа в магазине</span></div>
+          </div>
+
+          <div class="card it prob">
+            <div class="ph" style="width:96px;height:120px"><svg viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.5"><path d="M12 5a2 2 0 1 1 2 2l-2 1.5M12 8.5 3 15h18l-9-6.5"/></svg><span class="cap">фото клиента · 1</span></div>
+            <div class="ph" style="width:96px;height:120px"><svg viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="m4 16 5-5 4 4 3-3 4 4"/></svg><span class="cap">фото с сайта</span></div>
+            <div class="info">
+              <div class="t"><b>Платье миди с поясом</b><span class="chip s-prob">Нет размера</span></div>
+              <div class="link">↗ <u>zara.com/ru/ru/plate-midi-s-poyasom-p02731456.html</u><span class="tag">Zara</span><span class="copy">копировать</span></div>
+              <div class="attrs">
+                <div><span>Размер</span><span class="bad" style="font-size:12.5px">M — нет</span></div><div><span>Цвет</span>Чёрный</div><div><span>Кол-во</span>1</div><div><span>Цена клиента</span>5 999 ₽</div><div><span>Цена на сайте</span>5 999 ₽</div>
+              </div>
+              <div class="checks"><span class="ck">✓ ссылка открывается</span><span class="ck no">✕ размер M закончился</span><span class="ck wait">⧗ замена предложена 18 нояб, 12:05</span></div>
+            </div>
+            <div class="side-acts"><button class="btn sm">Открыть в магазине ↗</button><button class="btn sm">Предложить замену</button></div>
+          </div>
+
+          <div class="card it">
+            <div class="ph" style="width:96px;height:120px"><svg viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.5"><path d="M12 5a2 2 0 1 1 2 2l-2 1.5M12 8.5 3 15h18l-9-6.5"/></svg><span class="cap">фото клиента · 3</span></div>
+            <div class="ph" style="width:96px;height:120px"><svg viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="m4 16 5-5 4 4 3-3 4 4"/></svg><span class="cap">фото с сайта</span></div>
+            <div class="info">
+              <div class="t"><b>Джинсы прямые</b><span class="chip s-work">Проверяется</span></div>
+              <div class="link">↗ <u>hm.com/ru_ru/productpage.1024256001.html</u><span class="tag">H&amp;M</span><span class="copy">копировать</span></div>
+              <div class="attrs">
+                <div><span>Размер</span>W28 L32</div><div><span>Цвет</span>Голубой</div><div><span>Кол-во</span>1</div><div><span>Цена клиента</span>2 999 ₽</div><div><span>Цена на сайте</span><span class="bad" style="font-size:12.5px">3 299 ₽ (+300)</span></div>
+              </div>
+              <div class="checks"><span class="ck">✓ ссылка открывается</span><span class="ck">✓ размер есть</span><span class="ck no">✕ цена выше на 300 ₽</span></div>
+            </div>
+            <div class="side-acts"><button class="btn sm">Открыть в магазине ↗</button><button class="btn sm">Отметить проверенным</button></div>
+          </div>
+
+          <div class="card totals">
+            <div><span>Товары</span>12 997 ₽</div>
+            <div><span>Доставка магазинов</span>0 ₽</div>
+            <div><span>Комиссия Fitkit</span>1 300 ₽</div>
+            <div><span>Оплачено клиентом</span>14 297 ₽</div>
+            <div class="sum"><span>Разница после проверки</span><b style="color:var(--st-prob)">+300 ₽ доплата</b></div>
+          </div>
+        </div>
+
+        <div class="info-col">
+          <div class="card">
+            <div class="hdr" style="margin:0"><div class="ava c2">МЛ</div><div><b>Мария Лебедева</b><div class="sub">7-й заказ · с марта 2026</div></div><b class="mk">4</b></div>
+            <div class="kv"><span>Телефон</span>+7 916 ••• 45 12 <span class="copy">копировать</span></div>
+            <div class="kv"><span>Telegram</span>@maria_l · <b style="color:var(--accent)">предпочитает</b></div>
+            <div class="kv"><span>E-mail</span>maria.l@•••.ru</div>
+          </div>
+          <div class="card">
+            <h3>Адрес доставки</h3>
+            <div class="kv">Москва, ул. Профсоюзная, д. 12, кв. 48, под. 3, эт. 7<span class="copy">копировать</span></div>
+            <div class="kv"><span>Получатель</span>Мария Лебедева, +7 916 ••• 45 12</div>
+            <div class="kv"><span>Способ</span>Курьер · 10:00–18:00</div>
+          </div>
+          <div class="card wish">
+            <h3>Пожелания клиента</h3><b class="mk" style="position:absolute;margin:-18px 0 0 252px">5</b>
+            <p>«Платье нужно до 25 ноября, на праздник. Если M не будет — можно S, но только чёрное. Без пакетов с логотипом».</p>
+          </div>
+          <div class="card">
+            <h3>Заметки сотрудников</h3>
+            <p class="kv">Размеры Zara у клиента обычно маломерят — брать на размер больше (А.К., 02.10)</p>
+            <div class="field" style="margin-top:8px">+ Добавить заметку (клиент не увидит)</div>
+          </div>
+        </div>
+
+        <div class="card chat">
+          <div class="tabs"><div class="on">Чат с клиентом</div><div>История</div><div>Файлы · 6</div><b class="mk" style="margin:10px 10px 0 auto">6</b></div>
+          <div class="msgs">
+            <div class="sys">18 нояб · заявка создана из Telegram-бота</div>
+            <div class="b cl">Здравствуйте! Скинула 3 вещи, фото и ссылки в заявке<small>Мария · 10:02</small></div>
+            <div class="b me">Добрый день, Мария! Я Анна, ваш байер. Проверяю наличие, вернусь в течение часа<small>Анна · 10:15 · прочитано</small></div>
+            <div class="offer">
+              <b>Замена: Платье миди с поясом</b>
+              <div class="sub">Размера M нет. Выберите вариант:</div>
+              <div class="opts"><div class="opt"><div class="ph" style="height:46px;margin-bottom:4px"></div>Размер S, чёрный · 5 999 ₽</div><div class="opt"><div class="ph" style="height:46px;margin-bottom:4px"></div>Похожее платье M · 6 499 ₽ (+500)</div></div>
+              <div class="sub">Если нет ответа 24 ч — товар убираем из заказа</div>
+              <div style="margin-top:6px"><span class="chip s-wait">Ждём ответа · 26 ч</span></div>
+            </div>
+            <div class="sys">Напоминание клиенту отправлено автоматически · 19 нояб, 09:00</div>
+          </div>
+          <div class="compose">
+            <div class="quick"><span>Шаблоны ▾</span><span>Напомнить о замене</span><span>Запросить фото</span><span>Сообщить о доплате</span></div>
+            <div class="input">Сообщение клиенту… <span class="send btn pri sm">Отправить</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <span><b class="mk">1</b>Статус меняется здесь; таймер срока рядом</span>
+        <span><b class="mk">2</b>Главная кнопка = следующий шаг процесса</span>
+        <span><b class="mk">3</b>Каждый товар — отдельная строка со своим статусом и чек-листом</span>
+        <span><b class="mk">4</b>Контакты и адрес — с кнопкой «копировать»</span>
+        <span><b class="mk">5</b>Пожелания выделены цветом</span>
+        <span><b class="mk">6</b>Чат и история всегда рядом с заказом</span>
+      </div>
+    </div>
+  </main>
+</div>
+</body></html>
