@@ -688,3 +688,83 @@ main7 = f'''
   <span><i class="mk">3</i>Клик по строке — путь посылки, трек с копированием и следующее действие</span>
 </div>'''
 open(os.path.join(OUT,'07-tracking.html'),'w').write(shell('Отслеживание','Отслеживание',main7,css7))
+
+# ---------- 08 Текущие заказы ----------
+I['grid'] = '<rect x="3" y="3" width="7" height="18" rx="1.5"/><rect x="14" y="3" width="7" height="11" rx="1.5"/>'
+I['list'] = '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>'
+css8 = css_common + '''
+.seg { display: inline-flex; border: 1px solid var(--line-2); border-radius: 10px; overflow: hidden; }
+.seg a { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; font-size: 13px; color: var(--muted); }
+.seg a svg { width: 15px; height: 15px; }
+.seg a.on { background: var(--clay-veil); color: var(--clay); font-weight: 600; }
+.board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; align-items: start; }
+.col { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+.colh { display: flex; align-items: center; gap: 8px; padding: 4px 6px 2px; font-weight: 600; }
+.colh .dot { width: 8px; height: 8px; border-radius: 50%; }
+.colh b { font-weight: 600; font-size: 12px; background: rgba(238,241,245,.08); border-radius: 9px; padding: 0 7px; color: var(--muted); }
+.oc { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.oc.prob { border-color: rgba(255,122,122,.4); box-shadow: inset 3px 0 0 var(--bad); }
+.oc.drag { transform: rotate(-2deg); box-shadow: 0 14px 30px -12px rgba(0,0,0,.7), 0 0 0 1px rgba(240,174,194,.45); }
+.oc .otop { display: flex; align-items: center; gap: 8px; }
+.oc .thumbs { display: flex; } .oc .thumbs img { width: 30px; height: 38px; border-radius: 6px; border: 2px solid var(--panel); margin-left: -8px; object-fit: cover; } .oc .thumbs img:first-child { margin-left: 0; }
+.oc .t { margin-left: auto; white-space: nowrap; font-size: 12px; font-weight: 600; color: var(--muted); }
+.oc .t.red { color: var(--bad); } .oc .t.org { color: var(--wait); }
+.flag { font-size: 12px; border-radius: 8px; padding: 5px 8px; display: flex; gap: 6px; align-items: center; }
+.flag svg { width: 13px; height: 13px; flex: none; }
+.flag.bad { background: var(--bad-bg); color: var(--bad); } .flag.wait { background: var(--wait-bg); color: var(--wait); }
+.oc .bot { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 8px; }
+.oc .bot svg { width: 14px; height: 14px; }
+.unread { background: var(--clay); color: #1c1013; font-weight: 700; font-size: 11px; border-radius: 8px; padding: 0 6px; }
+.addz { border: 1px dashed var(--line-2); border-radius: 12px; padding: 14px; text-align: center; color: var(--faint); font-size: 12.5px; }
+'''
+def oc(num, ph, client, c, info, time='', tcls='', flag=None, unread=0, resp=('АК','c2'), extra=''):
+    imgs=''.join(f'<img src="assets/photos/{p}.jpg">' for p in ph)
+    ini=''.join(w[0] for w in client.split())
+    fl=''
+    if flag:
+        kind,text=flag; fl=f'<div class="flag {kind}">{ic("alert" if kind=="bad" else "clock")}{text}</div>'
+    un=f'<span class="unread">{unread}</span>' if unread else ''
+    return f'''<div class="oc {extra}"><div class="otop"><div class="thumbs">{imgs}</div><span class="num" style="font-size:16px">{num}</span><span class="t {tcls}">{time}</span></div>
+<div class="who" style="gap:8px;font-size:13px"><div class="ava {c}" style="width:24px;height:24px;font-size:10px">{ini}</div><div class="grow">{client}<div class="sub" style="font-size:12px">{info}</div></div></div>{fl}
+<div class="bot">{ic('msg')}{un or '—'}<span class="grow"></span><div class="ava {resp[1]}" style="width:22px;height:22px;font-size:9.5px">{resp[0]}</div></div></div>'''
+def col(name, dotc, cnt, cards, add=False):
+    a = '<div class="addz">перетащите карточку, чтобы сменить статус</div>' if add else ''
+    return f'<div class="col"><div class="colh"><span class="dot" style="background:{dotc}"></span>{name}<b>{cnt}</b></div>{cards}{a}</div>'
+c_work = (oc('#001',['stripe','jacket-black','jeans-black'],'Мария Лебедева','c2','3 товара · 14 298 ₽','1 ч 20 мин','',('bad','Нет размера M — спросила в чате'),1)
+ + oc('#008',['jacket-black'],'Елена Смирнова','c5','1 товар · 8 999 ₽','2 ч')
+ + oc('#0993',['hoodie','sweatpants'],'Артём Белов','c3','2 товара · 11 980 ₽','2 ч 40 мин')
+ + oc('#0990',['scarf'],'Ксения Орлова','c4','1 товар · 3 590 ₽','3 ч')
+ + oc('#0987',['sweater-grey','jeans','loafers'],'Ольга Петрова','c3','3 товара · 27 470 ₽','3 ч 30 мин','',None,0,('АК','c2'),'drag'))
+c_wait = (oc('#0995',['top' if False else 'sneakers'],'Игорь Соколов','c4','1 товар · 12 990 ₽','ждём 6 ч','org',('wait','Спросили про доплату 640 ₽'),1)
+ + oc('#0981',['stripe','sweatpants2'],'Павел Тихонов','c2','2 товара · 9 980 ₽','ждём 26 ч','red',('bad','Клиент молчит больше суток'))
+ + oc('#0976',['jeans-black'],'Дарья Волкова','c5','1 товар · цена ?','ждём 2 ч','org',('wait','Уточнили размер W29 или W30')))
+c_bought = (oc('#0968',['loafers'],'Елена Смирнова','c5','На складе · СДЭК','сегодня','',None,0)
+ + oc('#0951',['sneakers'],'Павел Тихонов','c2','Ждём трек · Nike','3 дня','red',('bad','Нет трека 3 дня'))
+ + oc('#0947',['sweater-grey','scarf'],'Ксения Орлова','c4','В пути · Почта России','5 дней','red',('bad','Нет движения 5 дней'))
+ + oc('#0939',['hoodie'],'Артём Белов','c3','В пути · Boxberry','вчера'))
+c_sent = (oc('#0932',['jeans','stripe'],'Ольга Петрова','c3','СДЭК · будет 23 ноя','вчера')
+ + oc('#0918',['jacket-black'],'Мария Лебедева','c2','Курьер передаст сегодня','сегодня'))
+main8 = f'''
+<div class="row">
+  <div class="hicon">{ic('bag')}</div>
+  <div class="grow"><h1>Текущие заказы <span class="sub" style="font-size:22px;font-weight:500">· 14</span></h1><div class="sub">Заказы, которые уже в работе у сотрудников</div></div>
+  <div class="seg"><a class="on">Мои · 14</a><a>Все · 96</a></div><i class="mk">1</i>
+  <div class="seg"><a class="on">{ic('grid')}Доска</a><a>{ic('list')}Таблица</a></div><i class="mk">2</i>
+</div>
+<div class="filters row" style="gap:8px">
+  <button class="btn sel">Все магазины</button><button class="btn sel">Только с проблемами</button><button class="btn sel">Сортировка: по сроку</button>
+  <span class="grow"></span><span class="sub">Время на карточке — сколько осталось до срока. Красные — есть проблема</span><i class="mk">3</i>
+</div>
+<div class="board">
+  {col('В работе','var(--muted)',5,c_work,True)}
+  {col('Ждём клиента','var(--wait)',3,c_wait)}
+  {col('Куплено','var(--info)',4,c_bought)}
+  {col('Отправлено','var(--ok)',2,c_sent)}
+</div>
+<div class="legend">
+  <span><i class="mk">1</i>«Мои» — заказы сотрудника, «Все» — вся команда (для старшего смены)</span>
+  <span><i class="mk">2</i>Доска по статусам или обычная таблица</span>
+  <span><i class="mk">3</i>Проблемы, срок и непрочитанные сообщения видны прямо на карточке</span>
+  <span>Перетащил карточку в другую колонку — статус заказа сменился</span>
+</div>'''
+open(os.path.join(OUT,'08-current-orders.html'),'w').write(shell('Текущие заказы','Текущие заказы',main8,css8))
