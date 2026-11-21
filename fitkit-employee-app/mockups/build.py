@@ -473,3 +473,218 @@ main5 = f'''
   <span><i class="mk">5</i>Байер видит только свою строку, старший — всю команду</span>
 </div>'''
 open(os.path.join(OUT,'05-analytics.html'),'w').write(shell('Аналитика','Аналитика',main5,css5))
+
+# ---------- общие стили для 06 и 07 ----------
+I['phone'] = '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>'
+I['mail'] = '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/>'
+I['heart'] = '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7z"/>'
+I['box'] = '<path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>'
+I['check'] = '<path d="M20 6 9 17l-5-5"/>'
+css_common = '''
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-size: 12px; font-weight: 500; color: var(--muted); padding: 10px 12px; border-bottom: 1px solid var(--line); background: var(--paper); white-space: nowrap; }
+td { padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: middle; }
+tr:last-child td { border-bottom: 0; }
+.num { font-family: "Fraunces Variable", Georgia, serif; font-variation-settings: "opsz" 48, "SOFT" 20, "WONK" 1; font-weight: 600; letter-spacing: -.01em; }
+.who { display: flex; gap: 10px; align-items: center; }
+.lbl { font-size: 11.5px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.lbl .btn.link { margin-left: auto; text-transform: none; letter-spacing: 0; font-size: 12.5px; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); }
+.tabs a { padding: 10px 14px; font-weight: 500; color: var(--muted); display: flex; gap: 7px; align-items: center; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs a.on { color: var(--text); font-weight: 600; border-bottom-color: var(--clay-ink); }
+.tabs a b { font-weight: 600; font-size: 12px; background: rgba(238,241,245,.08); border-radius: 9px; padding: 0 7px; }
+.tabs a.red b { background: var(--bad); color: #fff; }
+.sel:after { content: "▾"; font-size: 10px; color: var(--muted); margin-left: 4px; }
+.badc { color: var(--bad); font-weight: 600; }
+.th { width: 36px; height: 44px; border-radius: 7px; }
+'''
+
+# ---------- 06 Клиенты ----------
+css6 = css_common + '''
+.cols { display: flex; gap: 18px; align-items: flex-start; }
+.clist { width: 430px; flex: none; }
+.clist .search2 { margin: 14px 16px 6px; height: 34px; border: 1px solid var(--line-2); border-radius: 999px; display: flex; align-items: center; padding: 0 12px; color: var(--faint); font-size: 13px; background: var(--bg); }
+.clist tr.on td { background: var(--clay-veil); }
+.clist tr.on td:first-child { box-shadow: inset 3px 0 0 var(--clay); }
+.prof { flex: 1; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); }
+.stats div { padding: 14px 18px; border-right: 1px solid var(--line); }
+.stats div:last-child { border-right: 0; }
+.stats b { display: block; font-family: "Fraunces Variable", Georgia, serif; font-variation-settings: "opsz" 48, "SOFT" 20, "WONK" 1; font-size: 24px; font-weight: 600; letter-spacing: -.02em; }
+.stats span { font-size: 12px; color: var(--muted); }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.kv { display: flex; gap: 10px; align-items: center; padding: 6px 0; font-size: 13.5px; }
+.kv svg { width: 15px; height: 15px; color: var(--clay); flex: none; }
+.addr { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; font-size: 13px; background: var(--bg); }
+.pref { display: grid; grid-template-columns: 110px 1fr; gap: 8px 12px; font-size: 13.5px; align-items: center; }
+.pref span { color: var(--muted); font-size: 12.5px; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { height: 24px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--line-2); font-size: 12px; display: inline-flex; align-items: center; }
+.chip.no { border-color: rgba(255,122,122,.35); color: var(--bad); }
+.chip.yes { border-color: rgba(240,174,194,.35); color: var(--clay); }
+.thumbs { display: flex; } .thumbs img { width: 30px; height: 38px; border-radius: 6px; border: 2px solid var(--panel); margin-left: -8px; object-fit: cover; } .thumbs img:first-child { margin-left: 0; }
+.note { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; font-size: 13px; margin-bottom: 8px; }
+.note small { display: block; color: var(--faint); font-size: 11.5px; margin-top: 3px; }
+'''
+clients = [('Мария Лебедева','c2','@maria_l · Telegram',7,'86 400 ₽','сегодня',True),('Игорь Соколов','c4','+7 903 ••• 18 40',3,'21 300 ₽','сегодня',False),('Ольга Петрова','c3','@olga_p · Telegram',12,'142 900 ₽','сегодня',False),('Дарья Волкова','c5','daria.v@•••.ru',1,'—','сегодня',False),('Павел Тихонов','c2','@pavel_t · Telegram',5,'64 100 ₽','19 ноя',False),('Ксения Орлова','c4','+7 926 ••• 77 03',2,'18 700 ₽','15 ноя',False),('Артём Белов','c3','@artem_b · Telegram',4,'39 500 ₽','12 ноя',False),('Елена Смирнова','c5','@elena_s · Telegram',9,'118 200 ₽','8 ноя',False)]
+def crow(c):
+    n,col,contact,cnt,total,last,on=c
+    ini=''.join(w[0] for w in n.split())
+    return f'<tr class="{"on" if on else ""}"><td><div class="who"><div class="ava {col}">{ini}</div><div><b style="font-weight:600">{n}</b><div class="sub" style="font-size:12px">{contact}</div></div></div></td><td style="text-align:right">{cnt}<div class="sub" style="font-size:12px">{total}</div></td><td class="sub" style="font-size:12.5px">{last}</td></tr>'
+hist = [('#001',['stripe','jacket-black','jeans-black'],'Zara, H&amp;M','14 298 ₽','wait','В работе','21 ноя'),('#0874',['sweater-grey'],'COS','7 990 ₽','ok','Доставлено','2 ноя'),('#0812',['loafers','scarf'],'Massimo Dutti','24 400 ₽','ok','Доставлено','18 окт'),('#0755',['hoodie','sweatpants'],'Zara','11 980 ₽','ok','Доставлено','30 сен'),('#0690',['jeans'],'Uniqlo','4 990 ₽','','Отменён','11 сен')]
+def hrow(h):
+    num,ph,shop,sm,st,stt,d=h
+    imgs=''.join(f'<img src="assets/photos/{p}.jpg">' for p in ph)
+    return f'<tr><td><div class="row" style="gap:10px"><div class="thumbs" style="width:78px">{imgs}</div><span class="num" style="font-size:15px">{num}</span></div></td><td class="sub">{shop}</td><td>{sm}</td><td><span class="st {st}">{stt}</span></td><td class="sub">{d}</td></tr>'
+main6 = f'''
+<div class="row">
+  <div class="hicon">{ic('users')}</div>
+  <div class="grow"><h1>Клиенты <span class="sub" style="font-size:22px;font-weight:500">· 2 318</span></h1><div class="sub">Контакты, адреса, предпочтения и история заказов</div></div>
+  <button class="btn sel">Все клиенты</button><button class="btn">{ic('download')}Экспорт</button>
+</div>
+<div class="cols">
+  <div class="card clist" style="overflow:hidden">
+    <div class="search2">Имя, телефон, Telegram или № заказа…</div>
+    <table><tr><th>Клиент <i class="mk" style="width:16px;height:16px;font-size:10px;vertical-align:middle">1</i></th><th style="text-align:right">Заказов</th><th>Последний</th></tr>{''.join(crow(c) for c in clients)}</table>
+  </div>
+  <div class="prof">
+    <div class="card">
+      <div class="bd row" style="gap:16px">
+        <div class="ava c2" style="width:56px;height:56px;font-size:18px">МЛ</div>
+        <div class="grow"><h1 style="font-size:22px">Мария Лебедева</h1><div class="sub">Клиент с марта 2026 · ведёт Анна Ковалёва</div></div>
+        <button class="btn">{ic('msg')}Написать</button><button class="btn pri">{ic('bag')}Открыть текущую заявку</button>
+      </div>
+      <div class="stats"><div><b>7</b><span>заказов</span></div><div><b>86 400 ₽</b><span>всего потрачено</span></div><div><b>12 340 ₽</b><span>средний чек</span></div><div><b>0</b><span>возвратов</span></div></div>
+    </div>
+    <div class="two">
+      <div class="card"><div class="bd">
+        <div class="lbl">Контакты <i class="mk">2</i></div>
+        <div class="kv">{ic('msg')}Telegram @maria_l <span class="tag" style="margin-left:auto">основной</span></div>
+        <div class="kv">{ic('phone')}+7 916 ••• 45 12 <span class="btn link" style="margin-left:auto">Показать</span></div>
+        <div class="kv">{ic('mail')}maria.l@•••.ru</div>
+        <div class="lbl" style="margin-top:14px">Адреса доставки<span class="btn link">+ Добавить</span></div>
+        <div class="addr"><b>Москва, ул. Профсоюзная, 12, кв. 48</b> <span class="tag" style="margin-left:6px">по умолчанию</span><div class="sub">Курьер, 10:00–18:00 · подъезд 3, этаж 7</div></div>
+        <div class="addr"><b>Москва, Пресненская наб., 10, офис 1204</b><div class="sub">Пункт выдачи СДЭК · для заказов в будни</div></div>
+      </div></div>
+      <div class="card"><div class="bd">
+        <div class="lbl">Предпочтения <i class="mk">3</i><span class="btn link">Изменить</span></div>
+        <div class="pref">
+          <span>Верх</span><div>S–M, любит свободную посадку</div>
+          <span>Низ</span><div>W28 L32</div>
+          <span>Обувь</span><div>38</div>
+          <span>Магазины</span><div class="chips"><span class="chip yes">Zara</span><span class="chip yes">COS</span><span class="chip yes">Massimo Dutti</span></div>
+          <span>Цвета</span><div class="chips"><span class="chip">чёрный</span><span class="chip">серый</span><span class="chip">бежевый</span></div>
+          <span>Не любит</span><div class="chips"><span class="chip no">синтетику</span><span class="chip no">яркие принты</span></div>
+        </div>
+        <div class="lbl" style="margin-top:16px">Заметки сотрудников</div>
+        <div class="note">Zara у неё маломерит — брать на размер больше.<small>Анна К. · 2 окт</small></div>
+      </div></div>
+    </div>
+    <div class="card" style="overflow:hidden">
+      <div class="hd">{ic('history')}<h2>История заказов · 7</h2><i class="mk">4</i><span class="grow"></span><span class="btn link">Все заказы →</span></div>
+      <table><tr><th>Заказ</th><th>Магазины</th><th>Сумма</th><th>Статус</th><th>Дата</th></tr>{''.join(hrow(h) for h in hist)}</table>
+    </div>
+  </div>
+</div>
+<div class="legend">
+  <span><i class="mk">1</i>Список с поиском; выбранный клиент открывается справа</span>
+  <span><i class="mk">2</i>Контакты: основной канал отмечен, телефон скрыт до клика</span>
+  <span><i class="mk">3</i>Размеры, любимые магазины, цвета и что не нравится — видно при каждой заявке</span>
+  <span><i class="mk">4</i>Все заказы клиента с фото вещей</span>
+</div>'''
+open(os.path.join(OUT,'06-clients.html'),'w').write(shell('Клиенты','Клиенты',main6,css6))
+
+# ---------- 07 Отслеживание ----------
+css7 = css_common + '''
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.kpi { padding: 14px 18px; display: flex; gap: 14px; align-items: center; }
+.kpi b { font-family: "Fraunces Variable", Georgia, serif; font-variation-settings: "opsz" 48, "SOFT" 20, "WONK" 1; font-size: 30px; font-weight: 600; letter-spacing: -.02em; line-height: 1; }
+.kpi .sub { font-size: 12.5px; }
+.kpi.alert { border-color: rgba(255,122,122,.35); }
+.kpi.alert b { color: var(--bad); }
+.cols { display: flex; gap: 18px; align-items: flex-start; }
+.tbl { flex: 1; min-width: 0; }
+tr.on td { background: var(--clay-veil); }
+tr.on td:first-child { box-shadow: inset 3px 0 0 var(--clay); }
+tr.late td:first-child { box-shadow: inset 3px 0 0 var(--bad); }
+.track { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; }
+.steps { display: flex; align-items: center; gap: 0; }
+.steps i { width: 10px; height: 10px; border-radius: 50%; background: rgba(238,241,245,.14); flex: none; }
+.steps i.d { background: var(--clay); }
+.steps i.c { background: var(--clay); box-shadow: 0 0 0 3px rgba(240,174,194,.25); }
+.steps i.x { background: var(--bad); box-shadow: 0 0 0 3px rgba(255,122,122,.25); }
+.steps s { width: 16px; height: 2px; background: rgba(238,241,245,.14); text-decoration: none; }
+.steps s.d { background: var(--clay); }
+.panel { width: 360px; flex: none; }
+.tl { position: relative; padding-left: 22px; }
+.tl:before { content: ""; position: absolute; left: 5px; top: 6px; bottom: 6px; width: 2px; background: var(--line-2); }
+.ev { position: relative; padding-bottom: 14px; font-size: 13px; }
+.ev:before { content: ""; position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--panel); border: 2px solid var(--faint); }
+.ev.d:before { background: var(--clay); border-color: var(--clay); }
+.ev.c:before { background: var(--clay); border-color: var(--clay); box-shadow: 0 0 0 4px rgba(240,174,194,.25); }
+.ev small { display: block; color: var(--faint); font-size: 11.5px; }
+.ev.f { color: var(--faint); }
+'''
+def steps(n, bad=False):
+    out=''
+    for i in range(5):
+        cls = 'd' if i < n else ('x' if (bad and i==n) else ('c' if i==n else ''))
+        if i: out += f'<s class="{"d" if i<=n else ""}"></s>'
+        out += f'<i class="{cls}"></i>'
+    return f'<div class="steps">{out}</div>'
+ship = [
+ ('#0968',['loafers'],'Massimo Dutti','СДЭК','10225 4471 0093',2,False,'Прибыла на склад Fitkit','сегодня, 10:12','on'),
+ ('#0951',['sneakers'],'Nike','—','нет трека',1,True,'Нет трека 3 дня','18 ноя','late'),
+ ('#0947',['sweater-grey','scarf'],'COS','Почта России','RA6448 1203 0RU',1,True,'Нет движения 5 дней','16 ноя','late'),
+ ('#0939',['hoodie'],'Zara','Boxberry','BX 8830 2215',1,False,'В пути на склад','сегодня, 08:40',''),
+ ('#0932',['jeans','stripe'],'Uniqlo','СДЭК','10224 9982 1167',3,False,'Отправлено клиенту','вчера, 19:05',''),
+ ('#0925',['sweatpants'],'H&amp;M','Яндекс Доставка','YD-55 0193 774',4,False,'Доставлено клиенту','вчера, 14:30',''),
+ ('#0918',['jacket-black'],'Zara','СДЭК','10224 5530 0081',3,False,'Курьер передаст сегодня','сегодня, 09:55',''),
+]
+def srow(s):
+    num,ph,shop,car,tr,n,bad,ev,t,cls = s
+    imgs=''.join(f'<img src="assets/photos/{p}.jpg" class="th" style="margin-left:{-8 if k else 0}px;border:2px solid var(--panel);object-fit:cover">' for k,p in enumerate(ph))
+    trk = f'<span class="badc" style="font-size:12.5px;font-weight:600">{tr}</span>' if tr=='нет трека' else f'<span class="track">{tr}</span>'
+    evc = 'badc' if bad else ''
+    return f'<tr class="{cls}"><td><div class="row" style="gap:10px"><div class="row" style="gap:0;width:62px">{imgs}</div><span class="num" style="font-size:15px">{num}</span></div></td><td>{shop}<div class="sub" style="font-size:12px">{car}</div></td><td>{trk}</td><td>{steps(n,bad)}</td><td><span class="{evc}" style="font-size:13px">{ev}</span><div class="sub" style="font-size:11.5px">{t}</div></td></tr>'
+main7 = f'''
+<div class="row">
+  <div class="hicon">{ic('truck')}</div>
+  <div class="grow"><h1>Отслеживание</h1><div class="sub">Оформленные покупки, трек-номера, доставка и проблемы в пути</div></div>
+  <button class="btn sel">Все магазины</button><button class="btn sel">Все перевозчики</button>
+</div>
+<div class="kpis">
+  <div class="card kpi"><div class="hicon">{ic('truck')}</div><div><b>38</b><div class="sub">едут из магазинов на склад</div></div></div>
+  <div class="card kpi"><div class="hicon">{ic('box')}</div><div><b>12</b><div class="sub">на складе, ждут отправки</div></div></div>
+  <div class="card kpi"><div class="hicon">{ic('send')}</div><div><b>21</b><div class="sub">едут к клиентам</div></div></div>
+  <div class="card kpi alert"><div class="hicon">{ic('alert')}</div><div><b>2</b><div class="sub">проблемы: нет трека или посылка стоит</div></div><i class="mk" style="margin-left:auto">1</i></div>
+</div>
+<div class="tabs"><a class="on">Все <b>71</b></a><a>Магазин → склад <b>38</b></a><a>На складе <b>12</b></a><a>Склад → клиент <b>21</b></a><a class="red">Проблемы <b>2</b></a></div>
+<div class="cols">
+  <div class="card tbl" style="overflow:hidden">
+    <table><tr><th>Заказ</th><th>Магазин · перевозчик</th><th>Трек-номер</th><th>Этап <i class="mk" style="width:16px;height:16px;font-size:10px;vertical-align:middle">2</i></th><th>Последнее событие</th></tr>{''.join(srow(s) for s in ship)}</table>
+  </div>
+  <div class="card panel">
+    <div class="hd">{ic('box')}<h2>Посылка <span class="num">#0968</span></h2><i class="mk">3</i><span class="grow"></span><span class="st wait">На складе</span></div>
+    <div class="bd">
+      <div class="row" style="gap:12px;margin-bottom:14px"><img src="assets/photos/loafers.jpg" class="th" style="width:52px;height:66px;object-fit:cover"><div class="grow"><b>Лоферы кожаные</b><div class="sub">Massimo Dutti · 38 · 12 990 ₽</div><div class="sub">Клиент: Елена Смирнова</div></div></div>
+      <div class="lbl">Трек-номер</div>
+      <div class="row" style="margin-bottom:16px"><span class="track grow">СДЭК 10225 4471 0093</span><span class="btn link">{ic('copy')} Копировать</span></div>
+      <div class="lbl">Путь посылки</div>
+      <div class="tl">
+        <div class="ev d"><b>Покупка оформлена</b><small>Massimo Dutti · 17 ноя, 12:40</small></div>
+        <div class="ev d"><b>Передана в СДЭК</b><small>Москва, склад магазина · 18 ноя, 09:15</small></div>
+        <div class="ev c"><b>Прибыла на склад Fitkit</b><small>сверено, сделано 3 фото · сегодня, 10:12</small></div>
+        <div class="ev f"><b>Отправка клиенту</b><small>ожидается сегодня</small></div>
+        <div class="ev f"><b>Доставлено</b><small>ожидается 23 ноя</small></div>
+      </div>
+      <div class="row" style="gap:8px;margin-top:6px"><button class="btn" style="flex:1">{ic('msg')}Написать клиенту</button><button class="btn pri" style="flex:1">Отправить →</button></div>
+    </div>
+  </div>
+</div>
+<div class="legend">
+  <span><i class="mk">1</i>Проблемы в пути видны сразу и вынесены в отдельную вкладку</span>
+  <span><i class="mk">2</i>Этап: оформлено → в пути → склад → к клиенту → доставлено</span>
+  <span><i class="mk">3</i>Клик по строке — путь посылки, трек с копированием и следующее действие</span>
+</div>'''
+open(os.path.join(OUT,'07-tracking.html'),'w').write(shell('Отслеживание','Отслеживание',main7,css7))
