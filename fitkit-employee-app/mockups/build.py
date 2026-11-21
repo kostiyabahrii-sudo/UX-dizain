@@ -72,7 +72,7 @@ tr.late td:first-child { box-shadow: inset 3px 0 0 var(--bad); }
 .foot { display: flex; align-items: center; padding: 12px 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12.5px; gap: 8px; }
 '''
 rows = [
- ('#001','late','Мария Лебедева','c2',3,['Zara','H&M'],'13 297 ₽','bad','Просрочена','08:40','<span class="timer red">−42 мин</span>','—'),
+ ('#001','late','Мария Лебедева','c2',3,['Zara','H&M'],'14 298 ₽','bad','Просрочена','08:40','<span class="timer red">−42 мин</span>','—'),
  ('#002','late','Игорь Соколов','c4',1,['Lamoda'],'5 490 ₽','bad','Просрочена','09:05','<span class="timer red">−15 мин</span>','—'),
  ('#003','','Ольга Петрова','c3',2,['Uniqlo'],'6 980 ₽','wait','Ожидает обработки','09:31','<span class="timer org">осталось 8 мин</span>','—'),
  ('#004','','Дарья Волкова','c5',4,['ASOS'],'цена не указана','new','Новая','09:52','<span class="timer">осталось 29 мин</span>','—'),
@@ -84,7 +84,8 @@ rows = [
 def tr(r):
     num,cls,name,c,n,shops,sum_,st,stt,date,tm,resp = r
     initials = ''.join(w[0] for w in name.split())
-    th = ''.join('<div class="ph"></div>' for _ in range(min(n,3)))
+    P = {'#001':['stripe','jacket-black','jeans-black'],'#002':['hoodie'],'#003':['sweater-grey','jeans'],'#004':['hoodie','sweatpants','scarf'],'#005':['sneakers'],'#006':['scarf','loafers'],'#007':['stripe','sweatpants2','loafers'],'#008':['jacket-black']}
+    th = ''.join(f'<img class="ph" src="assets/photos/{x}.jpg">' for x in P[num][:3])
     tags = ' '.join(f'<span class="tag">{s}</span>' for s in shops)
     word = 'товар' if n==1 else ('товара' if n<5 else 'товаров')
     sumcell = f'<span class="sub">{sum_}</span>' if 'не' in sum_ else sum_
@@ -157,10 +158,10 @@ css2 = '''
 .copy { color: var(--clay-ink); font-weight: 600; font-size: 12.5px; display: inline-flex; gap: 5px; align-items: center; }
 .copy svg { width: 13px; height: 13px; }
 '''
-def item(name, shop, size, qty, price, comment, status, extra_btn=''):
+def item(photo, name, shop, size, qty, price, comment, status, extra_btn=''):
     pr = f'<b>{price}</b>' if price else '<b class="none">не указана</b>'
     return f'''<div class="it">
-  <div class="ph" style="width:76px;height:96px"><span>фото</span></div>
+  <img class="ph" src="assets/photos/{photo}.jpg" style="width:76px;height:96px">
   <div class="grow">
     <div class="row" style="gap:8px"><div class="name">{name}</div><span class="tag">{shop}</span></div>
     <div class="grid"><div><span>Размер</span><b>{size}</b></div><div><span>Количество</span><b>{qty}</b></div><div><span>Цена</span>{pr}</div></div>
@@ -168,9 +169,9 @@ def item(name, shop, size, qty, price, comment, status, extra_btn=''):
   </div>
   <div class="acts">{status}<button class="btn pri">Открыть в магазине {ic('ext')}</button>{extra_btn}</div>
 </div>'''
-items = (item('Рубашка оверсайз из хлопка','Zara','L','1','3 999 ₽','«Беру на размер больше, люблю свободно»','<span class="st ok">Проверен</span>')
- + item('Платье миди с поясом','Zara','M','1','5 999 ₽','«Нужно до 25 ноября. Если M нет — можно S, но только чёрное»','<span class="st bad">Нет размера</span>','<button class="btn sm">Предложить замену</button>')
- + item('Джинсы прямые','H&amp;M','W28 L32','1','','«Голубые, как на фото. Цену не нашла»','<span class="st wait">Проверяется</span>'))
+items = (item('stripe','Свитер в полоску','Zara','L','1','3 999 ₽','«Беру на размер больше, люблю свободно»','<span class="st ok">Проверен</span>')
+ + item('jacket-black','Чёрный жакет','Zara','M','1','8 999 ₽','«Нужно до 25 ноября. Если M нет — можно S»','<span class="st bad">Нет размера</span>','<button class="btn sm">Написать клиенту</button>')
+ + item('jeans-black','Джинсы широкие','H&amp;M','W28 L32','1','','«Тёмные, как на фото. Цену не нашла»','<span class="st wait">Проверяется</span>'))
 main2 = f'''
 <div class="row">
   <div class="hicon">{ic('back')}</div>
@@ -196,7 +197,7 @@ main2 = f'''
     <div class="card">
       <div class="hd">{ic('history')}<h2>История</h2></div>
       <div class="bd" style="padding-top:8px;padding-bottom:8px">
-        <div class="act"><div class="dot">{ic('alert')}</div><div><b>Найдена проблема</b><div class="sub">Платье: размера M нет в наличии</div></div><span class="d">21 ноя, 09:12</span></div>
+        <div class="act"><div class="dot">{ic('alert')}</div><div><b>Найдена проблема</b><div class="sub">Жакет: размера M нет в наличии</div></div><span class="d">21 ноя, 09:12</span></div>
         <div class="act"><div class="dot">{ic('user')}</div><div><b>Заявку взяла Анна Ковалёва</b><div class="sub">Статус: Новая → В работе</div></div><span class="d">21 ноя, 09:01</span></div>
         <div class="act"><div class="dot">{ic('inbox')}</div><div><b>Заявка поступила</b><div class="sub">3 товара, 6 фото, из Telegram-бота</div></div><span class="d">21 ноя, 08:40</span></div>
       </div>
@@ -209,10 +210,10 @@ main2 = f'''
       <div class="blk"><div class="lbl">Текущий статус</div><div class="row"><span class="st wait">В работе</span><span class="grow"></span><span class="sub">с 09:01 · осталось 1 ч 20 мин</span></div></div>
       <div class="blk"><div class="lbl">Ответственный</div><div class="row"><div class="ava c2">АК</div><div class="grow"><b>Анна Ковалёва</b><div class="sub">Байер</div></div><button class="btn sm">Сменить</button></div></div>
       <div class="blk"><div class="lbl">Общая стоимость</div>
-        <div class="kv"><span>Товары (2 с ценой)</span>9 998 ₽</div>
+        <div class="kv"><span>Товары (2 с ценой)</span>12 998 ₽</div>
         <div class="kv"><span>Джинсы</span><span>цена уточняется</span></div>
         <div class="kv"><span>Комиссия Fitkit</span>1 300 ₽</div>
-        <div class="kv total"><b>Итого</b><b class="num">11 298 ₽</b></div>
+        <div class="kv total"><b>Итого</b><b class="num">14 298 ₽</b></div>
       </div>
       <div class="blk"><div class="lbl">Изменить статус</div>
         <div class="stbtns"><button class="btn">Ждём клиента</button><button class="btn">Проблема</button><button class="btn pri" style="grid-column:1/3">Перевести в «Куплено» →</button><button class="btn danger" style="grid-column:1/3">Отменить заказ</button></div>
@@ -221,14 +222,14 @@ main2 = f'''
     <div class="card">
       <div class="hd">{ic('alert')}<h2>Ошибки и проблемы · 2</h2><i class="mk">3</i></div>
       <div class="bd">
-        <div class="prob bad">{ic('alert')}<div class="grow"><b>Нет размера M</b>Платье миди с поясом · Zara</div><button class="btn sm">Решить</button></div>
-        <div class="prob wait">{ic('clock')}<div class="grow"><b>Цена не указана</b>Джинсы прямые · H&amp;M — проверить на сайте</div></div>
+        <div class="prob bad">{ic('alert')}<div class="grow"><b>Нет размера M</b>Чёрный жакет · Zara</div><button class="btn sm">Спросить клиента</button></div>
+        <div class="prob wait">{ic('clock')}<div class="grow"><b>Цена не указана</b>Джинсы широкие · H&amp;M — проверить на сайте</div></div>
       </div>
     </div>
     <div class="card">
       <div class="hd">{ic('note')}<h2>Комментарии сотрудников</h2><i class="mk">4</i></div>
       <div class="bd">
-        <div class="com"><div class="ava c3">ИР</div><div class="t"><b>Ирина Р.</b><small>старший смены · 09:20</small><div>Если платья S тоже нет — предложи Massimo Dutti, клиентка там уже брала.</div></div></div>
+        <div class="com"><div class="ava c3">ИР</div><div class="t"><b>Ирина Р.</b><small>старший смены · 09:20</small><div>Если жакета S тоже нет — предложи Massimo Dutti, клиентка там уже брала.</div></div></div>
         <div class="com"><div class="ava c2">АК</div><div class="t"><b>Анна К.</b><small>09:25</small><div>Ок, проверю наличие S и напишу клиенту.</div></div></div>
         <div class="input">Комментарий для коллег (клиент не увидит)…</div>
       </div>
@@ -242,3 +243,137 @@ main2 = f'''
   <span><i class="mk">4</i>Внутренние комментарии сотрудников</span>
 </div>'''
 open(os.path.join(OUT,'02-order-card.html'),'w').write(shell('Заявки','Заявка #001',main2,css2))
+
+# ---------- 03 Сообщения (сотрудник) ----------
+I['clip'] = '<path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>'
+I['send'] = '<path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/>'
+I['img'] = '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>'
+css3 = '''
+.main { padding: 0; gap: 0; }
+.chat { display: flex; height: 904px; }
+.list { width: 300px; border-right: 1px solid var(--line); background: var(--paper); display: flex; flex-direction: column; flex: none; }
+.list .hd { padding: 18px 16px 12px; }
+.list .search2 { margin: 0 16px 10px; height: 34px; border: 1px solid var(--line-2); border-radius: 999px; display: flex; align-items: center; padding: 0 12px; color: var(--faint); font-size: 13px; background: var(--bg); }
+.chips { display: flex; gap: 6px; padding: 0 16px 10px; }
+.chip { height: 26px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--line-2); font-size: 12px; display: inline-flex; align-items: center; color: var(--muted); }
+.chip.on { background: var(--clay-veil); color: var(--clay); border-color: rgba(240,174,194,.35); }
+.c { display: flex; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--line); }
+.c.on { background: var(--clay-veil); }
+.c .t { flex: 1; min-width: 0; font-size: 13px; }
+.c .t b { display: flex; justify-content: space-between; font-weight: 600; }
+.c .t b small { color: var(--faint); font-weight: 400; font-size: 11.5px; }
+.c .t p { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.c .badge { background: var(--clay); color: #1c1013; font-size: 11px; font-weight: 700; border-radius: 9px; padding: 0 6px; align-self: center; }
+.conv { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.conv .top2 { display: flex; align-items: center; gap: 12px; padding: 14px 22px; border-bottom: 1px solid var(--line); background: var(--paper); }
+.msgs { flex: 1; padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+.day { align-self: center; font-size: 11.5px; color: var(--faint); }
+.m { max-width: 62%; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.45; }
+.m small { display: block; font-size: 11px; color: var(--faint); margin-top: 4px; }
+.m.cl { background: var(--panel); border: 1px solid var(--line); align-self: flex-start; border-bottom-left-radius: 5px; }
+.m.me { background: rgba(240,174,194,.13); border: 1px solid rgba(240,174,194,.22); align-self: flex-end; border-bottom-right-radius: 5px; }
+.prod { display: flex; gap: 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 8px; margin-top: 8px; font-size: 12.5px; }
+.prod .sub { font-size: 12px; }
+.composer { border-top: 1px solid var(--line); padding: 14px 22px; display: flex; gap: 10px; align-items: center; background: var(--paper); }
+.composer .in { flex: 1; height: 42px; border: 1px solid var(--line-2); border-radius: 12px; display: flex; align-items: center; padding: 0 14px; color: var(--faint); background: var(--bg); }
+.iconbtn { width: 38px; padding: 0; height: 38px; }
+.ctx { width: 300px; border-left: 1px solid var(--line); background: var(--paper); padding: 18px 16px; display: flex; flex-direction: column; gap: 14px; flex: none; }
+.ctx .mini { display: flex; gap: 10px; align-items: center; font-size: 13px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.ctx .mini:last-child { border-bottom: 0; }
+.ctx .note { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; font-size: 12.5px; color: var(--muted); }
+.legendbar { padding: 12px 22px; border-top: 1px solid var(--line); }
+'''
+def chatrow(name,c,num,last,time,badge='',on=False):
+    ini=''.join(w[0] for w in name.split())
+    b=f'<span class="badge">{badge}</span>' if badge else ''
+    return f'<div class="c {"on" if on else ""}"><div class="ava {c}">{ini}</div><div class="t"><b>{name}<small>{time}</small></b><p><span style="color:var(--clay)">{num}</span> · {last}</p></div>{b}</div>'
+main3 = f'''
+<div class="chat">
+  <div class="list">
+    <div class="hd row"><h2 class="grow">Сообщения</h2><i class="mk">1</i></div>
+    <div class="search2">Найти клиента или заявку…</div>
+    <div class="chips"><span class="chip on">Все</span><span class="chip">Без ответа · 3</span><span class="chip">Мои</span></div>
+    {chatrow('Мария Лебедева','c2','#001','Давайте S, спасибо!','09:41','1',True)}
+    {chatrow('Игорь Соколов','c4','#002','А почему цена выросла?','09:20','1')}
+    {chatrow('Ольга Петрова','c3','#003','Скинула ещё одну ссылку','09:12','1')}
+    {chatrow('Дарья Волкова','c5','#004','Вы: Проверяю наличие, вернусь…','08:55')}
+    {chatrow('Павел Тихонов','c2','#005','Вы: Трек будет завтра','вчера')}
+    {chatrow('Елена Смирнова','c4','#008','Спасибо, всё пришло!','вчера')}
+  </div>
+  <div class="conv">
+    <div class="top2"><div class="ava c2">МЛ</div><div class="grow"><b>Мария Лебедева</b><div class="sub">заявка <span class="num" style="font-size:14px">#001</span> · Telegram · была в сети 2 мин назад</div></div><button class="btn">{ic('bag')}Открыть заявку</button></div>
+    <div class="msgs">
+      <div class="day">Сегодня</div>
+      <div class="m cl">Здравствуйте! Скинула 3 вещи, посмотрите, пожалуйста 🙏<small>08:40</small></div>
+      <div class="m me">Добрый день, Мария! Я Анна, ваш байер. Проверяю наличие и размеры, скоро напишу.<small>Анна · 09:05</small></div>
+      <div class="m me">Чёрного жакета в размере M, к сожалению, нет. Есть S — та же цена, ссылка ниже. По меркам он вам подойдёт — берём S?
+        <div class="prod"><img class="ph" src="assets/photos/jacket-black.jpg" style="width:44px;height:56px"><div><b>Чёрный жакет</b><div class="sub">Zara · S · 8 999 ₽</div><div class="sub" style="color:var(--clay)">zara.com ↗</div></div></div>
+        <small>Анна · 09:30</small></div>
+      <div class="m cl">Давайте S, спасибо!<small>09:41</small></div>
+    </div>
+    <div class="composer"><button class="btn iconbtn">{ic('clip')}</button><button class="btn iconbtn">{ic('img')}</button><div class="in">Написать клиенту…</div><button class="btn pri">{ic('send')}Отправить</button><i class="mk">2</i></div>
+  </div>
+  <div class="ctx">
+    <div class="row"><h2 class="grow">Заявка <span class="num">#001</span></h2><span class="st wait">В работе</span></div>
+    <div><div class="lbl" style="font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Товары</div>
+      <div class="mini"><img class="ph" src="assets/photos/stripe.jpg" style="width:32px;height:40px"><div class="grow">Свитер в полоску<div class="sub">L · 3 999 ₽</div></div><span class="st ok">ОК</span></div>
+      <div class="mini"><img class="ph" src="assets/photos/jacket-black.jpg" style="width:32px;height:40px"><div class="grow">Чёрный жакет<div class="sub">M → S · 8 999 ₽</div></div><span class="st wait">Изменить</span></div>
+      <div class="mini"><img class="ph" src="assets/photos/jeans-black.jpg" style="width:32px;height:40px"><div class="grow">Джинсы широкие<div class="sub">W28 L32 · цена ?</div></div><span class="st">Проверка</span></div>
+    </div>
+    <div class="note">Клиент ответил «S». Поменяйте размер в заявке вручную — кнопка «Открыть заявку».<i class="mk" style="margin-left:6px;vertical-align:middle">3</i></div>
+  </div>
+</div>
+<div class="legendbar"><div class="legend">
+  <span><i class="mk">1</i>Все чаты с клиентами; каждый привязан к заявке</span>
+  <span><i class="mk">2</i>Обычный чат: текст, фото, ссылка на товар — без автоматики и кнопок выбора</span>
+  <span><i class="mk">3</i>Ответ клиента сотрудник сам переносит в заявку</span>
+</div></div>'''
+open(os.path.join(OUT,'03-messages.html'),'w').write(shell('Сообщения','Сообщения',main3,css3))
+
+# ---------- 04 Чат у клиента ----------
+page4 = f'''<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Fitkit — чат клиента</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.stage {{ width: 1440px; height: 960px; display: flex; gap: 70px; padding: 50px 90px; background: var(--bg); align-items: center; position: relative; }}
+.phone {{ width: 360px; height: 760px; background: #000; border: 1px solid #2a2f37; border-radius: 46px; padding: 12px; box-shadow: 0 0 60px -20px rgba(240,174,194,.25); flex: none; }}
+.screen {{ background: var(--bg); height: 100%; border-radius: 36px; overflow: hidden; display: flex; flex-direction: column; }}
+.ptop {{ padding: 40px 16px 12px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--line); background: var(--paper); }}
+.ord {{ margin: 10px 14px 0; border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; font-size: 12.5px; color: var(--muted); display: flex; justify-content: space-between; background: var(--panel); }}
+.pm {{ flex: 1; padding: 14px; display: flex; flex-direction: column; gap: 10px; }}
+.b {{ max-width: 82%; padding: 9px 12px; border-radius: 16px; font-size: 13.5px; }}
+.b small {{ display: block; font-size: 10.5px; color: var(--faint); margin-top: 3px; }}
+.b.mgr {{ background: var(--panel); border: 1px solid var(--line); align-self: flex-start; border-bottom-left-radius: 5px; }}
+.b.me {{ background: rgba(240,174,194,.16); border: 1px solid rgba(240,174,194,.25); align-self: flex-end; border-bottom-right-radius: 5px; }}
+.prod {{ display: flex; gap: 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 6px; margin-top: 6px; font-size: 12px; }}
+.pin {{ display: flex; gap: 8px; align-items: center; padding: 10px 12px 26px; border-top: 1px solid var(--line); background: var(--paper); }}
+.pin .in {{ flex: 1; height: 40px; border: 1px solid var(--line-2); border-radius: 999px; display: flex; align-items: center; padding: 0 14px; color: var(--faint); font-size: 13px; background: var(--bg); }}
+.round {{ width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(180deg,#f6c4d3,var(--clay-deep)); box-shadow: 0 0 16px -2px var(--glow); }}
+.round svg {{ width: 17px; height: 17px; color: #1c1013; }}
+.expl {{ max-width: 560px; display: flex; flex-direction: column; gap: 18px; }}
+.expl h1 {{ font-size: 30px; line-height: 1.2; }}
+.pt {{ display: flex; gap: 14px; align-items: flex-start; font-size: 15px; color: var(--muted); }}
+.pt b {{ color: var(--text); display: block; font-size: 15.5px; margin-bottom: 2px; }}
+</style></head>
+<body><div class="app" style="display:block"><div class="stage">
+  <div class="phone"><div class="screen">
+    <div class="ptop"><img src="assets/logo-mark.png" style="width:32px;height:32px;filter:invert(1)"><div class="grow"><b class="serif" style="font-size:18px;font-weight:600">Fitkit</b><div class="sub" style="font-size:12px">Связь с менеджером · Анна онлайн</div></div></div>
+    <div class="ord"><span>Заказ <b style="color:var(--text)">#001</b> · 3 товара</span><span>В работе</span></div>
+    <div class="pm">
+      <div class="b me">Здравствуйте! Скинула 3 вещи, посмотрите, пожалуйста 🙏<small>08:40</small></div>
+      <div class="b mgr">Добрый день, Мария! Я Анна, ваш байер. Проверяю наличие и размеры, скоро напишу.<small>Анна · 09:05</small></div>
+      <div class="b mgr">Чёрного жакета в M нет. Есть S — та же цена, ссылка ниже. Берём S?
+        <div class="prod"><img class="ph" src="assets/photos/jacket-black.jpg" style="width:38px;height:48px"><div><b>Чёрный жакет</b><div class="sub" style="font-size:11.5px">Zara · S · 8 999 ₽</div></div></div><small>Анна · 09:30</small></div>
+      <div class="b me">Давайте S, спасибо!<small>09:41 ✓✓</small></div>
+    </div>
+    <div class="pin"><div class="in">Написать менеджеру…</div><div class="round">{ic('send')}</div></div>
+  </div></div>
+  <div class="expl">
+    <div class="row" style="gap:10px"><span class="tag">Что видит клиент</span><i class="mk">1</i></div>
+    <h1>Обычный чат с менеджером — без кнопок и автоматики</h1>
+    <div class="pt"><div class="hicon">{ic('msg')}</div><div><b>Связь с менеджером</b>Клиент в любой момент пишет своему байеру — как в мессенджере. В шапке видно, кто его ведёт и что он онлайн.</div></div>
+    <div class="pt"><div class="hicon">{ic('img')}</div><div><b>Фото и ссылки</b>Байер присылает фото или ссылку на вариант, клиент может прислать свои фото и ссылки в ответ.</div></div>
+    <div class="pt"><div class="hicon">{ic('bag')}</div><div><b>Заказ сверху</b>Над перепиской — номер заказа и его статус, чтобы клиент понимал, о чём речь.</div></div>
+  </div>
+</div></div></body></html>'''
+open(os.path.join(OUT,'04-client-chat.html'),'w').write(page4)

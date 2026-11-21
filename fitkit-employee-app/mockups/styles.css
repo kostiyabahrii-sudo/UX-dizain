@@ -90,3 +90,4 @@ h2 { font-size: 15px; font-weight: 600; }
 .legend { display: flex; gap: 8px 26px; flex-wrap: wrap; background: rgba(229,199,74,.08); border: 1px dashed rgba(229,199,74,.45); border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #e9d48a; }
 .legend span { display: flex; align-items: center; gap: 8px; }
 .btn.pri:hover { box-shadow: 0 0 0 1px rgba(255,132,178,.35), 0 0 26px 0 var(--glow); }
+img.ph { object-fit: cover; display: block; background: none; }
