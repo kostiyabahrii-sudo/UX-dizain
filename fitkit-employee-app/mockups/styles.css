@@ -1,9 +1,9 @@
-/* Fitkit — рабочая программа сотрудника. Макеты v3: фирменный стиль fitkit.space (тёплая бумага, кот-логотип, розовые кнопки). Wireframe, не финальный UI. */
+/* Fitkit — employee workspace. Mockups v3: fitkit.space brand style (dark theme, cat logo, pink buttons). Wireframe, not final UI. */
 :root {
-  /* Тёмная тема — цвета тёмного режима сайта fitkit.space */
-  --bg: #0d0f12;          /* paper (dark) — фон страницы */
-  --paper: #12151a;       /* меню и верхняя панель */
-  --panel: #171a20;       /* paper-tint (dark) — карточки */
+  /* Dark theme — colours from the fitkit.space dark mode */
+  --bg: #0d0f12;          /* paper (dark) — page background */
+  --paper: #12151a;       /* sidebar and top bar */
+  --panel: #171a20;       /* paper-tint (dark) — cards */
   --line: rgba(238,241,245,.10); --line-2: rgba(238,241,245,.18);
   --text: #eef1f5; --muted: #99a3b0; --faint: #6b7480;
   --clay: #f0aec2; --clay-deep: #e598ae; --clay-ink: #f0aec2; --clay-veil: rgba(240,174,194,.14);
@@ -16,13 +16,15 @@
 }
 @font-face { font-family: "Inter Variable"; font-weight: 100 900; src: url(assets/inter-latin-wght-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2190-21FF, U+2212; }
 @font-face { font-family: "Inter Variable"; font-weight: 100 900; src: url(assets/inter-cyrillic-wght-normal.woff2) format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: "Inter Variable"; font-weight: 100 900; src: url(assets/inter-latin-ext-wght-normal.woff2) format("woff2"); unicode-range: U+0100-02BA, U+20A0-20AB, U+20AD-20C0; }
+@font-face { font-family: "Fraunces Variable"; font-weight: 100 900; src: url(assets/fraunces-latin-ext-full-normal.woff2) format("woff2"); unicode-range: U+0100-02BA, U+20A0-20AB, U+20AD-20C0; }
 @font-face { font-family: "Fraunces Variable"; font-weight: 100 900; src: url(assets/fraunces-latin-full-normal.woff2) format("woff2"); unicode-range: U+0000-00FF; }
 .serif { font-family: "Fraunces Variable", Georgia, serif; font-variation-settings: "opsz" 48, "SOFT" 20, "WONK" 1; letter-spacing: -.02em; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { background: var(--bg); color: var(--text); font: 13.5px/1.45 "Inter Variable", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
 .app { display: flex; width: 1440px; min-height: 960px; background: var(--bg); }
 
-/* Боковое меню */
+/* Sidebar */
 .side { width: 232px; background: var(--paper); border-right: 1px solid var(--line); padding: 18px 14px; display: flex; flex-direction: column; flex: none; }
 .logo { display: flex; align-items: center; gap: 8px; padding: 0 8px 22px; }
 .logo img { width: 30px; height: 30px; filter: invert(1); }
@@ -39,7 +41,7 @@ html, body { background: var(--bg); color: var(--text); font: 13.5px/1.45 "Inter
 .ava { width: 32px; height: 32px; border-radius: 50%; background: #dfe3ea; display: grid; place-items: center; font-weight: 700; font-size: 12px; flex: none; color: #374151; }
 .ava.c2 { background: #f6d3b8; } .ava.c3 { background: #c7e8da; } .ava.c4 { background: #dcd2f7; } .ava.c5 { background: #f5e1a4; }
 
-/* Верхняя панель */
+/* Top bar */
 .body { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 .top { height: 56px; background: var(--paper); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: center; position: relative; flex: none; }
 .search { width: 420px; height: 36px; border: 1px solid var(--line-2); border-radius: 999px; background: var(--bg); display: flex; align-items: center; gap: 8px; padding: 0 10px; color: var(--faint); }
@@ -73,7 +75,7 @@ h2 { font-size: 15px; font-weight: 600; }
 .btn.link { border: 0; background: none; color: var(--clay-ink); padding: 0; height: auto; font-weight: 600; }
 .btn.off { background: rgba(238,241,245,.06); border-color: transparent; color: var(--faint); }
 
-/* Статусы */
+/* Statuses */
 .st { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 9px; border-radius: 6px; font-size: 12px; font-weight: 600; background: rgba(238,241,245,.08); color: var(--muted); white-space: nowrap; }
 .st:before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .st.new { background: var(--info-bg); color: var(--info); }
@@ -85,7 +87,7 @@ h2 { font-size: 15px; font-weight: 600; }
 .ph { background: repeating-linear-gradient(135deg, #1c2027 0 8px, #22272f 8px 16px); border-radius: 8px; flex: none; position: relative; border: 1px solid var(--line); }
 .ph span { position: absolute; left: 4px; bottom: 4px; font-size: 10px; background: rgba(13,15,18,.85); border-radius: 3px; padding: 0 4px; color: var(--muted); }
 
-/* Пояснения для разработчиков */
+/* Developer annotations */
 .mk { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: #e5b800; color: #fff; font-size: 11px; font-weight: 700; flex: none; box-shadow: 0 0 0 3px rgba(229,184,0,.22); font-style: normal; }
 .legend { display: flex; gap: 8px 26px; flex-wrap: wrap; background: rgba(229,199,74,.08); border: 1px dashed rgba(229,199,74,.45); border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #e9d48a; }
 .legend span { display: flex; align-items: center; gap: 8px; }

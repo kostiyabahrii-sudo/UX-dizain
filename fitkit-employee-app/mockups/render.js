@@ -1,4 +1,4 @@
-// Рендер макетов в PNG: node render.js [файлы...]
+// Render mockups to PNG: node render.js [files...]
 const { chromium } = require('playwright');
 const path = require('path');
 const fs = require('fs');
