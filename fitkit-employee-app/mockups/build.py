@@ -377,3 +377,99 @@ page4 = f'''<!doctype html>
   </div>
 </div></div></body></html>'''
 open(os.path.join(OUT,'04-client-chat.html'),'w').write(page4)
+
+# ---------- 05 Аналитика ----------
+I['up'] = '<path d="m18 15-6-6-6 6"/>'
+css5 = '''
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.kpi { padding: 16px 18px; }
+.kpi .l { color: var(--muted); font-size: 12.5px; display: flex; gap: 8px; align-items: center; }
+.kpi .v { font-family: "Fraunces Variable", Georgia, serif; font-variation-settings: "opsz" 48, "SOFT" 20, "WONK" 1; font-weight: 600; font-size: 34px; letter-spacing: -.02em; margin-top: 6px; line-height: 1.1; }
+.kpi .v small { font-family: "Inter Variable", sans-serif; font-size: 15px; font-weight: 500; color: var(--muted); }
+.kpi .d { font-size: 12.5px; margin-top: 4px; color: var(--muted); }
+.good { color: var(--ok); font-weight: 600; } .badc { color: var(--bad); font-weight: 600; }
+.grid2 { display: grid; gap: 16px; }
+.chart text { font-family: "Inter Variable", sans-serif; }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-size: 12px; font-weight: 500; color: var(--muted); padding: 10px 12px; border-bottom: 1px solid var(--line); }
+td { padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; font-size: 13.5px; }
+tr:last-child td { border-bottom: 0; }
+.bar { height: 6px; border-radius: 3px; background: rgba(238,241,245,.08); width: 90px; display: inline-block; vertical-align: middle; margin-left: 8px; }
+.bar i { display: block; height: 100%; border-radius: 3px; background: var(--clay); }
+.who { display: flex; gap: 9px; align-items: center; }
+'''
+days = [('Пн',128),('Вт',142),('Ср',151),('Чт',163),('Пт',170),('Сб',129),('Вс',118)]
+def bars_svg():
+    W,H,l,b,t = 600,230,36,30,14
+    mx = 200; bw = 44; gap = (W-l-10-bw*len(days))/(len(days)-1)
+    g = ''
+    for v in [0,50,100,150,200]:
+        y = H-b-(H-b-t)*v/mx
+        g += f'<line x1="{l}" x2="{W-6}" y1="{y:.1f}" y2="{y:.1f}" stroke="rgba(238,241,245,.08)"/><text x="{l-8}" y="{y+4:.1f}" text-anchor="end" font-size="11" fill="#6b7480">{v}</text>'
+    for i,(d,v) in enumerate(days):
+        x = l+i*(bw+gap); h = (H-b-t)*v/mx; y = H-b-h
+        hl = d=='Пт'
+        g += f'<rect x="{x:.1f}" y="{y:.1f}" width="{bw}" height="{h:.1f}" rx="6" fill="{"#f0aec2" if hl else "rgba(240,174,194,.38)"}"/>'
+        g += f'<text x="{x+bw/2:.1f}" y="{y-6:.1f}" text-anchor="middle" font-size="11.5" font-weight="600" fill="{"#eef1f5" if hl else "#99a3b0"}">{v}</text>'
+        g += f'<text x="{x+bw/2:.1f}" y="{H-10}" text-anchor="middle" font-size="12" fill="#99a3b0">{d}</text>'
+    return f'<svg class="chart" viewBox="0 0 {W} {H}" width="100%">{g}</svg>'
+speed = [('Пн',2.1),('Вт',1.9),('Ср',2.0),('Чт',1.7),('Пт',1.6),('Сб',1.8),('Вс',1.5)]
+def line_svg():
+    W,H,l,b,t = 460,230,40,30,14; mx = 3.0
+    X = lambda i: l+12+i*(W-l-30)/(len(speed)-1); Y = lambda v: H-b-(H-b-t)*v/mx
+    g = ''
+    for v in [0,1,2,3]:
+        g += f'<line x1="{l}" x2="{W-6}" y1="{Y(v):.1f}" y2="{Y(v):.1f}" stroke="rgba(238,241,245,.08)"/><text x="{l-8}" y="{Y(v)+4:.1f}" text-anchor="end" font-size="11" fill="#6b7480">{v} ч</text>'
+    g += f'<line x1="{l}" x2="{W-6}" y1="{Y(2):.1f}" y2="{Y(2):.1f}" stroke="#f0b45c" stroke-dasharray="5 5" stroke-width="1.3"/><text x="{(X(3)+X(4))/2:.1f}" y="{Y(2)+15:.1f}" text-anchor="middle" font-size="11" fill="#f0b45c">цель — 2 ч</text>'
+    pts = ' '.join(f'{X(i):.1f},{Y(v):.1f}' for i,(d,v) in enumerate(speed))
+    area = f'{X(0):.1f},{Y(0):.1f} ' + pts + f' {X(len(speed)-1):.1f},{Y(0):.1f}'
+    g += f'<polygon points="{area}" fill="rgba(240,174,194,.10)"/><polyline points="{pts}" fill="none" stroke="#f0aec2" stroke-width="2.4" stroke-linejoin="round"/>'
+    for i,(d,v) in enumerate(speed):
+        last = i==len(speed)-1
+        g += f'<circle cx="{X(i):.1f}" cy="{Y(v):.1f}" r="{5 if last else 3.5}" fill="{"#f0aec2" if last else "#171a20"}" stroke="#f0aec2" stroke-width="2"/>'
+        g += f'<text x="{X(i):.1f}" y="{H-10}" text-anchor="middle" font-size="12" fill="#99a3b0">{d}</text>'
+    g += f'<text x="{X(len(speed)-1):.1f}" y="{Y(1.5)-12:.1f}" text-anchor="middle" font-size="12" font-weight="600" fill="#eef1f5">1,5 ч</text>'
+    return f'<svg class="chart" viewBox="0 0 {W} {H}" width="100%">{g}</svg>'
+errs = [('Нет размера',18),('Цена выросла',11),('Не проходит оплата',7),('Магазин отменил заказ',5),('Посылка задерживается',5)]
+def hbars():
+    mx = 18; out = ''
+    for n,v in errs:
+        out += f'<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><div style="width:170px;font-size:13px">{n}</div><div style="flex:1;height:10px;background:rgba(238,241,245,.06);border-radius:5px"><div style="width:{v/mx*100:.0f}%;height:100%;border-radius:5px;background:{"#ff7a7a" if v==18 else "rgba(255,122,122,.45)"}"></div></div><div style="width:28px;text-align:right;font-weight:600">{v}</div></div>'
+    return out
+staff = [('Анна Ковалёва','c2','Байер',214,'1 ч 32 мин','1,4 %',6),('Ирина Романова','c3','Старший смены',168,'1 ч 41 мин','2,0 %',5),('Светлана Ким','c5','Байер',183,'1 ч 49 мин','2,7 %',9),('Дмитрий Орлов','c4','Байер',197,'1 ч 55 мин','3,6 %',10),('Максим Белый','c4','Байер',239,'2 ч 10 мин','5,4 %',16)]
+def staffrows():
+    out=''
+    for n,c,r,cnt,t,late,e in staff:
+        ini=''.join(w[0] for w in n.split())
+        latecls = 'badc' if float(late.split()[0].replace(',','.'))>4 else ''
+        out += f'<tr><td><div class="who"><div class="ava {c}" style="width:28px;height:28px;font-size:11px">{ini}</div><div>{n}<div class="sub" style="font-size:11.5px">{r}</div></div></div></td><td>{cnt}<span class="bar"><i style="width:{cnt/239*100:.0f}%"></i></span></td><td>{t}</td><td class="{latecls}">{late}</td><td>{e}</td></tr>'
+    return out
+main5 = f'''
+<div class="row">
+  <div class="hicon">{ic('chart')}</div>
+  <div class="grow"><h1>Аналитика</h1><div class="sub">Количество заявок, скорость обработки, ошибки и эффективность сотрудников</div></div>
+  <button class="btn sel">Последние 7 дней</button><button class="btn">{ic('cal')}15 ноя — 21 ноя 2026</button><button class="btn">{ic('download')}Экспорт</button>
+</div>
+<div class="kpis">
+  <div class="card kpi"><div class="l">Заявок за неделю<i class="mk">1</i></div><div class="v">1 001</div><div class="d"><span class="good">+12 %</span> к прошлой неделе</div></div>
+  <div class="card kpi"><div class="l">Среднее время обработки</div><div class="v">1,8 <small>ч</small></div><div class="d"><span class="good">−9 мин</span> · от заявки до «Куплено»</div></div>
+  <div class="card kpi"><div class="l">Просрочено</div><div class="v">3,1 <small>%</small></div><div class="d">31 заявка не взята вовремя</div></div>
+  <div class="card kpi"><div class="l">Ошибок и проблем</div><div class="v">46</div><div class="d"><span class="badc">4,6 %</span> заказов · чаще всего «нет размера»</div></div>
+</div>
+<div class="grid2" style="grid-template-columns: 1.3fr 1fr">
+  <div class="card"><div class="hd">{ic('inbox')}<h2>Заявки по дням</h2><i class="mk">2</i><span class="grow"></span><span class="sub">пик — пятница, 170</span></div><div class="bd">{bars_svg()}</div></div>
+  <div class="card"><div class="hd">{ic('clock')}<h2>Скорость обработки</h2><i class="mk">3</i><span class="grow"></span><span class="sub">среднее за день</span></div><div class="bd">{line_svg()}</div></div>
+</div>
+<div class="grid2" style="grid-template-columns: 1fr 1.6fr">
+  <div class="card"><div class="hd">{ic('alert')}<h2>Ошибки и проблемы · 46</h2><i class="mk">4</i></div><div class="bd">{hbars()}<div class="sub" style="margin-top:4px">«Нет размера» — 39 % всех проблем: стоит проверять наличие при приёме заявки</div></div></div>
+  <div class="card" style="overflow:hidden"><div class="hd">{ic('users')}<h2>Эффективность сотрудников</h2><i class="mk">5</i><span class="grow"></span><span class="sub">сортировка: по среднему времени</span></div>
+    <table><tr><th>Сотрудник</th><th>Заявок</th><th>Среднее время</th><th>Просрочки</th><th>Ошибки</th></tr>{staffrows()}</table></div>
+</div>
+<div class="legend">
+  <span><i class="mk">1</i>Главные цифры периода и сравнение с прошлым</span>
+  <span><i class="mk">2</i>Сколько заявок пришло по дням</span>
+  <span><i class="mk">3</i>Время от заявки до покупки; пунктир — цель</span>
+  <span><i class="mk">4</i>Какие проблемы случаются чаще</span>
+  <span><i class="mk">5</i>Байер видит только свою строку, старший — всю команду</span>
+</div>'''
+open(os.path.join(OUT,'05-analytics.html'),'w').write(shell('Аналитика','Аналитика',main5,css5))
