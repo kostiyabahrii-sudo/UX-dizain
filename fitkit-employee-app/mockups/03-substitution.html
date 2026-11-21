@@ -2,25 +2,25 @@
 <html lang="ru"><head><meta charset="utf-8"><title>Fitkit — Замена товара</title>
 <link rel="stylesheet" href="styles.css">
 <style>
-  .stage { width: 1440px; height: 960px; display: flex; gap: 48px; padding: 36px 48px; background: #dde1e7; align-items: flex-start; position: relative; }
-  .label { font-size: 13px; font-weight: 700; color: #4b5563; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 12px; display: flex; gap: 8px; align-items: center; }
-  .modal { width: 820px; background: #fff; border-radius: 18px; box-shadow: 0 20px 50px rgba(0,0,0,.16); overflow: hidden; }
+  .stage { width: 1440px; height: 960px; display: flex; gap: 48px; padding: 36px 48px; background: #0d0f12; align-items: flex-start; position: relative; }
+  .label { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 12px; display: flex; gap: 8px; align-items: center; }
+  .modal { width: 820px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 20px 50px rgba(0,0,0,.16); overflow: hidden; }
   .mb { padding: 26px 30px; display: flex; flex-direction: column; gap: 20px; }
   .was { display: flex; gap: 14px; align-items: center; background: var(--bad-bg); border-radius: 12px; padding: 12px 14px; }
   .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .opt { border: 1.5px solid var(--line-2); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-  .field { border: 1px solid var(--line-2); border-radius: 10px; padding: 9px 12px; font-size: 14px; color: var(--muted); }
+  .field { border: 1px solid var(--line-2); border-radius: 10px; padding: 9px 12px; font-size: 14px; color: var(--muted); background: var(--bg); }
   .diff { font-weight: 700; font-size: 15px; }
   .rule { font-size: 14px; color: var(--muted); }
   .mf { display: flex; gap: 10px; padding: 18px 30px; border-top: 1px solid var(--line); align-items: center; }
-  .phone { width: 340px; height: 700px; background: #111; border-radius: 44px; padding: 12px; box-shadow: 0 20px 50px rgba(0,0,0,.22); }
-  .screen { background: #eef1f4; height: 100%; border-radius: 34px; overflow: hidden; }
-  .ptop { background: #fff; padding: 36px 16px 12px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--line); }
+  .phone { width: 340px; height: 700px; background: #000; border: 1px solid #2a2f37; border-radius: 44px; padding: 12px; box-shadow: 0 20px 50px rgba(0,0,0,.22); }
+  .screen { background: var(--bg); height: 100%; border-radius: 34px; overflow: hidden; }
+  .ptop { background: var(--paper); padding: 36px 16px 12px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--line); }
   .pbody { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-  .bub { background: #fff; border-radius: 14px; padding: 12px; font-size: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .bub { background: var(--panel); border-radius: 14px; padding: 12px; font-size: 14px; display: flex; flex-direction: column; gap: 10px; }
   .copt { display: flex; gap: 10px; align-items: center; border: 1px solid var(--line); border-radius: 12px; padding: 8px; font-size: 14px; }
-  .cbtn { height: 42px; border-radius: 12px; display: grid; place-items: center; font-weight: 600; font-size: 14px; border: 1px solid var(--line-2); background: #fff; }
-  .cbtn.pri { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .cbtn { height: 42px; border-radius: 12px; display: grid; place-items: center; font-weight: 600; font-size: 14px; border: 1px solid var(--line-2); background: var(--panel); }
+  .cbtn.pri { background: linear-gradient(180deg, #f6c4d3, var(--clay-deep)); color: #1c1013; border-color: #f3b6c8; box-shadow: 0 0 18px -2px var(--glow); }
 </style></head>
 <body><div class="app" style="display:block">
 <div class="stage">
@@ -46,7 +46,7 @@
   <div>
     <div class="label">Что видит клиент <b class="mk">3</b></div>
     <div class="phone"><div class="screen">
-      <div class="ptop"><div class="ava" style="background:var(--accent);color:#fff">F</div><div><b>Fitkit</b><div class="sub" style="font-size:12px">Анна, ваш байер</div></div></div>
+      <div class="ptop"><img src="assets/logo-mark.png" style="width:32px;height:32px;filter:invert(1)"><div><b class="serif" style="font-size:18px;font-weight:600">Fitkit</b><div class="sub" style="font-size:12px">Анна, ваш байер</div></div></div>
       <div class="pbody">
         <div class="bub">
           <div>Мария, платья в размере M нет. Выберите, что сделать:</div>

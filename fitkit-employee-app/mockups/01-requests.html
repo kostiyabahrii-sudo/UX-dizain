@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Fitkit — Заявки</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); }
+.tabs a { padding: 10px 14px; font-weight: 500; color: var(--muted); display: flex; gap: 7px; align-items: center; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs a.on { color: var(--text); font-weight: 600; border-bottom-color: var(--clay-ink); }
+.tabs a b { font-weight: 600; font-size: 12px; background: rgba(20,17,15,.06); border-radius: 9px; padding: 0 7px; }
+.tabs a.red b { background: var(--bad); color: #fff; }
+.filters { display: flex; gap: 8px; align-items: center; }
+.sel:after { content: "▾"; font-size: 10px; color: var(--muted); margin-left: 4px; }
+.iconbtn { width: 34px; padding: 0; }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-size: 12px; font-weight: 500; color: var(--muted); padding: 11px 10px; border-bottom: 1px solid var(--line); background: var(--paper); }
+td { white-space: nowrap; padding: 11px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+tr:last-child td { border-bottom: 0; }
+tr.hl td { background: rgba(240,174,194,.06); }
+tr.late td:first-child { box-shadow: inset 3px 0 0 var(--bad); }
+.cb { width: 15px; height: 15px; border: 1.5px solid var(--line-2); border-radius: 4px; }
+.num { font-family: "Fraunces Variable", Georgia, serif; font-variation-settings: "opsz" 48, "SOFT" 20, "WONK" 1; font-weight: 600; font-size: 16px; letter-spacing: -.01em; }
+.thumbs { display: flex; width: 82px; }
+.thumbs .ph { width: 34px; height: 42px; border: 2px solid var(--panel); margin-left: -10px; border-radius: 7px; }
+.thumbs .ph:first-child { margin-left: 0; }
+.who { display: flex; gap: 9px; align-items: center; }
+.timer { font-weight: 600; font-size: 12.5px; }
+.timer.red { color: var(--bad); } .timer.org { color: var(--wait); }
+.foot { display: flex; align-items: center; padding: 12px 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12.5px; gap: 8px; }
+</style></head>
+<body><div class="app">
+  <aside class="side">
+    <div class="logo"><img src="assets/logo-mark.png" alt=""><b>Fitkit</b></div>
+    <div class="cap">Основное</div>
+    <nav class="nav"><a class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Заявки<span class="n red">12</span></a><a class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Текущие заказы<span class="n">14</span></a><a class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Клиенты</a><a class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>Отслеживание<span class="n">2</span></a><a class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Сообщения<span class="n red">3</span></a><a class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>Аналитика</a></nav>
+    <div class="me"><div class="ava c2">АК</div><div>Анна Ковалёва<small>Байер · на смене</small></div></div>
+  </aside>
+  <div class="body">
+    <div class="top"><div class="search">Поиск: № заявки, клиент, телефон, трек-номер…<kbd>⌘K</kbd></div><div class="bell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><i></i></div></div>
+    <main class="main">
+<div class="row">
+  <div class="hicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></div>
+  <div class="grow"><h1>Заявки <span class="sub" style="font-size:22px;font-weight:500">· 1 001</span></h1><div class="sub">Все поступившие заявки: новые, ожидающие обработки и просроченные</div></div>
+  <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>Экспорт</button>
+  <button class="btn pri">Взять следующую заявку</button><i class="mk">1</i>
+</div>
+<div class="tabs"><a class="on">Все <b>1 001</b></a><a>Новые <b>12</b></a><a>Ожидают обработки <b>7</b></a><a class="red">Просроченные <b>2</b></a><i class="mk" style="align-self:center;margin-left:6px">2</i></div>
+<div class="filters">
+  <button class="btn sel">Все магазины</button><button class="btn sel">Последние 7 дней</button><button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>15 ноя — 21 ноя 2026</button>
+  <span class="grow"></span><button class="btn iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M7 12h10"/><path d="M10 18h4"/></svg></button><button class="btn iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg></button>
+</div>
+<div class="card" style="overflow:hidden">
+  <table>
+    <tr><th style="width:44px"><div class="cb"></div></th><th>Заявка</th><th>Клиент</th><th>Магазины</th><th>Сумма</th><th>Статус</th><th>Поступила (сегодня)</th><th>Срок <i class="mk" style="width:16px;height:16px;font-size:10px">3</i></th><th>Ответственный</th></tr>
+    <tr class="late"><td><div class="cb"></div></td><td><div class="row" style="gap:12px"><div class="thumbs"><div class="ph"></div><div class="ph"></div><div class="ph"></div></div><div><div class="num">#001</div><div class="sub" style="font-size:12px">3 товара</div></div></div></td><td><div class="who"><div class="ava c2">МЛ</div>Мария Лебедева</div></td><td><span class="tag">Zara</span> <span class="tag">H&M</span></td><td>13 297 ₽</td><td><span class="st bad">Просрочена</span></td><td class="sub">08:40</td><td><span class="timer red">−42 мин</span></td><td>—</td></tr><tr class="late"><td><div class="cb"></div></td><td><div class="row" style="gap:12px"><div class="thumbs"><div class="ph"></div></div><div><div class="num">#002</div><div class="sub" style="font-size:12px">1 товар</div></div></div></td><td><div class="who"><div class="ava c4">ИС</div>Игорь Соколов</div></td><td><span class="tag">Lamoda</span></td><td>5 490 ₽</td><td><span class="st bad">Просрочена</span></td><td class="sub">09:05</td><td><span class="timer red">−15 мин</span></td><td>—</td></tr><tr class=""><td><div class="cb"></div></td><td><div class="row" style="gap:12px"><div class="thumbs"><div class="ph"></div><div class="ph"></div></div><div><div class="num">#003</div><div class="sub" style="font-size:12px">2 товара</div></div></div></td><td><div class="who"><div class="ava c3">ОП</div>Ольга Петрова</div></td><td><span class="tag">Uniqlo</span></td><td>6 980 ₽</td><td><span class="st wait">Ожидает обработки</span></td><td class="sub">09:31</td><td><span class="timer org">осталось 8 мин</span></td><td>—</td></tr><tr class=""><td><div class="cb"></div></td><td><div class="row" style="gap:12px"><div class="thumbs"><div class="ph"></div><div class="ph"></div><div class="ph"></div></div><div><div class="num">#004</div><div class="sub" style="font-size:12px">4 товара</div></div></div></td><td><div class="who"><div class="ava c5">ДВ</div>Дарья Волкова</div></td><td><span class="tag">ASOS</span></td><td><span class="sub">цена не указана</span></td><td><span class="st new">Новая</span></td><td class="sub">09:52</td><td><span class="timer">осталось 29 мин</span></td><td>—</td></tr><tr class=""><td><div class="cb"></div></td><td><div class="row" style="gap:12px"><div class="thumbs"><div class="ph"></div></div><div><div class="num">#005</div><div class="sub" style="font-size:12px">1 товар</div></div></div></td><td><div class="who"><div class="ava c2">ПТ</div>Павел Тихонов</div></td><td><span class="tag">Nike</span></td><td>12 990 ₽</td><td><span class="st new">Новая</span></td><td class="sub">09:58</td><td><span class="timer">осталось 35 мин</span></td><td>—</td></tr><tr class=""><td><div class="cb"></div></td><td><div class="row" style="gap:12px"><div class="thumbs"><div class="ph"></div><div class="ph"></div></div><div><div class="num">#006</div><div class="sub" style="font-size:12px">2 товара</div></div></div></td><td><div class="who"><div class="ava c4">КО</div>Ксения Орлова</div></td><td><span class="tag">Mango</span> <span class="tag">COS</span></td><td>9 400 ₽</td><td><span class="st new">Новая</span></td><td class="sub">10:03</td><td><span class="timer">осталось 40 мин</span></td><td>—</td></tr><tr class=""><td><div class="cb"></div></td><td><div class="row" style="gap:12px"><div class="thumbs"><div class="ph"></div><div class="ph"></div><div class="ph"></div></div><div><div class="num">#007</div><div class="sub" style="font-size:12px">3 товара</div></div></div></td><td><div class="who"><div class="ava c3">АБ</div>Артём Белов</div></td><td><span class="tag">Zara</span></td><td><span class="sub">цена не указана</span></td><td><span class="st new">Новая</span></td><td class="sub">10:11</td><td><span class="timer">осталось 48 мин</span></td><td>—</td></tr><tr class=""><td><div class="cb"></div></td><td><div class="row" style="gap:12px"><div class="thumbs"><div class="ph"></div></div><div><div class="num">#008</div><div class="sub" style="font-size:12px">1 товар</div></div></div></td><td><div class="who"><div class="ava c5">ЕС</div>Елена Смирнова</div></td><td><span class="tag">Massimo Dutti</span></td><td>8 999 ₽</td><td><span class="st ">В работе</span></td><td class="sub">07:20</td><td><span class="timer">—</span></td><td><div class="who"><div class="ava c2" style="width:24px;height:24px;font-size:10px">АК</div>Анна К.</div></td></tr>
+  </table>
+  <div class="foot">Страница 1 из 126<span class="grow"></span><button class="btn sm">← Назад</button><button class="btn sm">Вперёд →</button></div>
+</div>
+<div class="legend">
+  <span><i class="mk">1</i>Система выдаёт самую старую заявку — выбирать не нужно</span>
+  <span><i class="mk">2</i>Вкладки: все, новые, ожидающие обработки, просроченные</span>
+  <span><i class="mk">3</i>Сколько осталось до просрочки; просроченные — сверху, с красной полосой</span>
+  <span>Клик по строке открывает карточку заявки</span>
+</div></main>
+  </div>
+</div></body></html>

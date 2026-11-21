@@ -1,107 +1,148 @@
 <!doctype html>
-<html lang="ru"><head><meta charset="utf-8"><title>Fitkit — Заказ</title>
+<html lang="ru"><head><meta charset="utf-8"><title>Fitkit — Заявка #001</title>
 <link rel="stylesheet" href="styles.css">
 <style>
-  .main { gap: 16px; padding: 24px 32px; }
-  .back { color: var(--muted); font-size: 14px; font-weight: 600; }
-  .steps { display: flex; gap: 8px; font-size: 13px; font-weight: 600; color: var(--faint); align-items: center; }
-  .steps .d { color: var(--ok); } .steps .c { color: var(--wait); }
-  .now { display: flex; align-items: center; gap: 16px; background: var(--wait-bg); border: 1px solid #f3d7a6; border-radius: 14px; padding: 14px 20px; }
-  .now b { font-size: 16px; }
-  .cols { display: flex; gap: 20px; flex: 1; min-height: 0; }
-  .items { flex: 1; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-  .it { display: flex; gap: 18px; align-items: center; padding: 16px; }
-  .it .name { font-weight: 700; font-size: 16px; }
-  .it .attrs { font-size: 15px; margin: 4px 0 6px; }
-  .it .attrs s { color: var(--faint); }
-  .it .right { width: 210px; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; flex: none; }
-  .foot { display: flex; align-items: center; gap: 16px; padding: 16px 20px; }
-  .info { width: 400px; flex: none; display: flex; flex-direction: column; gap: 12px; }
-  .info .card { padding: 16px 18px; }
-  .lbl { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; display: flex; }
-  .lbl .btn.link { margin-left: auto; text-transform: none; letter-spacing: 0; font-size: 13px; }
-  .wish { background: #fffbe8; border-color: #f1df9a; }
-  .msg { padding: 9px 12px; border-radius: 12px; font-size: 14px; max-width: 88%; margin-bottom: 8px; }
-  .msg.cl { background: #f1f3f6; } .msg.me { background: var(--accent-soft); margin-left: auto; }
-  .input { height: 42px; border: 1px solid var(--line-2); border-radius: 10px; display: flex; align-items: center; padding: 0 6px 0 14px; color: var(--faint); font-size: 14px; }
-  .input .btn { margin-left: auto; height: 32px; }
+.cols { display: flex; gap: 18px; align-items: flex-start; }
+.left { flex: 1; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.right { width: 390px; flex: none; display: flex; flex-direction: column; gap: 16px; }
+.num { font-family: "Fraunces Variable", Georgia, serif; font-variation-settings: "opsz" 48, "SOFT" 20, "WONK" 1; font-weight: 600; letter-spacing: -.02em; }
+.it { display: flex; gap: 16px; padding: 16px 18px; border-bottom: 1px solid var(--line); }
+.it:last-child { border-bottom: 0; }
+.it .name { font-size: 15px; font-weight: 600; }
+.grid { display: grid; grid-template-columns: repeat(3, 120px); gap: 2px 16px; margin: 10px 0; }
+.grid span { display: block; font-size: 11.5px; color: var(--muted); }
+.grid b { font-weight: 600; font-size: 14px; }
+.grid .none { color: var(--faint); font-weight: 500; }
+.cmt { background: var(--bg); border-radius: 10px; padding: 8px 12px; font-size: 13px; color: var(--text); }
+.cmt span { color: var(--muted); font-size: 11.5px; display: block; }
+.it .acts { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; flex: none; width: 200px; }
+.kv { display: flex; justify-content: space-between; padding: 7px 0; font-size: 13.5px; }
+.kv span { color: var(--muted); }
+.kv.total { border-top: 1px solid var(--line); margin-top: 4px; padding-top: 12px; }
+.kv.total b { font-size: 20px; }
+.lbl { font-size: 11.5px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 7px; }
+.blk { padding: 14px 18px; border-bottom: 1px solid var(--line); }
+.blk:last-child { border-bottom: 0; }
+.prob { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; font-size: 13px; }
+.prob:last-child { margin-bottom: 0; }
+.prob.bad { background: var(--bad-bg); } .prob.wait { background: var(--wait-bg); }
+.prob svg { width: 16px; height: 16px; flex: none; margin-top: 1px; }
+.prob.bad svg { color: var(--bad); } .prob.wait svg { color: var(--wait); }
+.prob b { display: block; }
+.com { display: flex; gap: 10px; margin-bottom: 12px; font-size: 13px; }
+.com .t small { color: var(--faint); margin-left: 6px; }
+.input { border: 1px solid var(--line-2); border-radius: 10px; padding: 9px 12px; color: var(--faint); background: var(--bg); font-size: 13px; }
+.stbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stbtns .btn { width: 100%; }
+.act { display: flex; gap: 12px; padding: 9px 0; font-size: 13px; }
+.act .dot { width: 26px; height: 26px; border-radius: 50%; background: var(--bg); border: 1px solid var(--line); flex: none; display: grid; place-items: center; }
+.act .dot svg { width: 13px; height: 13px; color: var(--muted); }
+.act .d { margin-left: auto; color: var(--faint); font-size: 11.5px; white-space: nowrap; }
+.copy { color: var(--clay-ink); font-weight: 600; font-size: 12.5px; display: inline-flex; gap: 5px; align-items: center; }
+.copy svg { width: 13px; height: 13px; }
 </style></head>
 <body><div class="app">
   <aside class="side">
-    <div class="logo"><i>F</i>Fitkit</div>
-    <nav class="nav">
-      <a class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11 12 4l9 7v9H3z"/></svg>Главная</a>
-      <a class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16l-1.5 13h-13zM9 7a3 3 0 0 1 6 0"/></svg>Заказы</a>
-      <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v11H9l-5 4z"/></svg>Сообщения<span class="n">3</span></a>
-      <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>Клиенты</a>
-      <a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>Посылки</a>
-    </nav>
-    <div class="me"><div class="ava">АК</div><div>Анна К.<small>● На смене</small></div></div>
+    <div class="logo"><img src="assets/logo-mark.png" alt=""><b>Fitkit</b></div>
+    <div class="cap">Основное</div>
+    <nav class="nav"><a class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Заявки<span class="n red">12</span></a><a class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Текущие заказы<span class="n">14</span></a><a class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Клиенты</a><a class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>Отслеживание<span class="n">2</span></a><a class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Сообщения<span class="n red">3</span></a><a class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>Аналитика</a></nav>
+    <div class="me"><div class="ava c2">АК</div><div>Анна Ковалёва<small>Байер · на смене</small></div></div>
   </aside>
-
-  <main class="main">
-    <div class="back">← Заказы</div>
-    <div class="row" style="margin-top:-8px">
-      <h1 class="grow">Заказ #FK-10482 · Мария Лебедева</h1>
-      <div class="steps"><span class="d">✓ Проверка</span>—<span class="c">● Согласование</span>—<span>Покупка</span>—<span>Отправка</span></div><b class="mk">1</b>
+  <div class="body">
+    <div class="top"><div class="search">Поиск: № заявки, клиент, телефон, трек-номер…<kbd>⌘K</kbd></div><div class="bell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><i></i></div></div>
+    <main class="main">
+<div class="row">
+  <div class="hicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
+  <div class="grow">
+    <div class="row" style="gap:10px"><h1 class="num" style="font-size:26px">#001</h1><span class="st wait">В работе</span></div>
+    <div class="sub">Поступила 21 ноября 2026, 08:40 · из Telegram-бота · Мария Лебедева</div>
+  </div>
+  <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Написать клиенту</button><button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Передать коллеге</button>
+</div>
+<div class="cols">
+  <div class="left">
+    <div class="card">
+      <div class="hd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><h2>Товары · 3</h2><i class="mk">1</i><span class="grow"></span><span class="sub">1 из 3 проверен</span></div>
+      <div class="it">
+  <div class="ph" style="width:76px;height:96px"><span>фото</span></div>
+  <div class="grow">
+    <div class="row" style="gap:8px"><div class="name">Рубашка оверсайз из хлопка</div><span class="tag">Zara</span></div>
+    <div class="grid"><div><span>Размер</span><b>L</b></div><div><span>Количество</span><b>1</b></div><div><span>Цена</span><b>3 999 ₽</b></div></div>
+    <div class="cmt"><span>Комментарий клиента</span>«Беру на размер больше, люблю свободно»</div>
+  </div>
+  <div class="acts"><span class="st ok">Проверен</span><button class="btn pri">Открыть в магазине <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button></div>
+</div><div class="it">
+  <div class="ph" style="width:76px;height:96px"><span>фото</span></div>
+  <div class="grow">
+    <div class="row" style="gap:8px"><div class="name">Платье миди с поясом</div><span class="tag">Zara</span></div>
+    <div class="grid"><div><span>Размер</span><b>M</b></div><div><span>Количество</span><b>1</b></div><div><span>Цена</span><b>5 999 ₽</b></div></div>
+    <div class="cmt"><span>Комментарий клиента</span>«Нужно до 25 ноября. Если M нет — можно S, но только чёрное»</div>
+  </div>
+  <div class="acts"><span class="st bad">Нет размера</span><button class="btn pri">Открыть в магазине <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button><button class="btn sm">Предложить замену</button></div>
+</div><div class="it">
+  <div class="ph" style="width:76px;height:96px"><span>фото</span></div>
+  <div class="grow">
+    <div class="row" style="gap:8px"><div class="name">Джинсы прямые</div><span class="tag">H&amp;M</span></div>
+    <div class="grid"><div><span>Размер</span><b>W28 L32</b></div><div><span>Количество</span><b>1</b></div><div><span>Цена</span><b class="none">не указана</b></div></div>
+    <div class="cmt"><span>Комментарий клиента</span>«Голубые, как на фото. Цену не нашла»</div>
+  </div>
+  <div class="acts"><span class="st wait">Проверяется</span><button class="btn pri">Открыть в магазине <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button></div>
+</div>
     </div>
-
-    <div class="now"><b class="mk">2</b><div class="grow"><b>Сейчас: ждём, какую замену выберет клиент</b><div class="sub">Платья размера M нет. Варианты отправлены 26 ч назад, клиент пока не ответил.</div></div><button class="btn">Позвонить</button><button class="btn pri">Напомнить клиенту</button></div>
-
-    <div class="cols">
-      <div class="items">
-        <div class="row"><h2>Товары</h2><span class="sub">1 из 3 готов к покупке</span><b class="mk">3</b></div>
-        <div class="card it">
-          <div class="ph" style="width:84px;height:104px"><span>фото</span></div>
-          <div class="grow"><div class="name">Рубашка оверсайз</div><div class="attrs">L · белая · 3 999 ₽</div><span class="btn link">zara.com ↗ открыть в магазине</span></div>
-          <div class="right"><span class="st ok">✓ Всё верно</span></div>
-        </div>
-        <div class="card it">
-          <div class="ph" style="width:84px;height:104px"><span>фото</span></div>
-          <div class="grow"><div class="name">Платье миди с поясом</div><div class="attrs"><s>M</s> · чёрное · 5 999 ₽</div><span class="btn link">zara.com ↗ открыть в магазине</span></div>
-          <div class="right"><span class="st wait">Нет размера M — ждём клиента</span></div>
-        </div>
-        <div class="card it">
-          <div class="ph" style="width:84px;height:104px"><span>фото</span></div>
-          <div class="grow"><div class="name">Джинсы прямые</div><div class="attrs">W28 L32 · голубые · <s>2 999 ₽</s> 3 299 ₽</div><span class="btn link">hm.com ↗ открыть в магазине</span></div>
-          <div class="right"><span class="st bad">Цена выше на 300 ₽</span><button class="btn">Запросить доплату</button></div>
-        </div>
-        <div class="card foot" style="margin-top:auto">
-          <div class="grow"><b style="font-size:17px">Итого 13 297 ₽</b><div class="sub">Клиент оплатил 14 297 ₽ · с учётом комиссии</div></div>
-          <span class="sub">Сначала решите 2 товара</span><button class="btn big off">Перейти к покупке →</button><b class="mk">4</b>
-        </div>
-      </div>
-
-      <div class="info">
-        <div class="card">
-          <div class="lbl">Клиент</div>
-          <div class="row" style="gap:12px"><div class="ava">МЛ</div><div class="grow"><b>Мария Лебедева</b><div class="sub">Telegram @maria_l · +7 916 ••• 45 12</div></div></div>
-        </div>
-        <div class="card">
-          <div class="lbl">Адрес доставки<span class="btn link">Копировать</span></div>
-          <div>Москва, ул. Профсоюзная, 12, кв. 48</div><div class="sub">Курьер, 10:00–18:00</div>
-        </div>
-        <div class="card wish">
-          <div class="lbl">Пожелание клиента</div>
-          <div>«Платье нужно до 25 ноября. Если M не будет — можно S, но только чёрное».</div>
-        </div>
-        <div class="card" style="flex:1;display:flex;flex-direction:column">
-          <div class="lbl">Чат с клиентом<b class="mk" style="margin-left:8px">5</b></div>
-          <div style="flex:1">
-            <div class="msg cl">Скинула 3 вещи, посмотрите, пожалуйста</div>
-            <div class="msg me">Здравствуйте! Платья M нет, отправила вам два варианта замены</div>
-          </div>
-          <div class="input">Написать клиенту… <span class="btn pri">Отправить</span></div>
-        </div>
+    <div class="card">
+      <div class="hd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg><h2>Клиент и доставка</h2></div>
+      <div class="bd row" style="align-items:flex-start;gap:28px">
+        <div class="who row" style="gap:10px"><div class="ava c2" style="width:40px;height:40px">МЛ</div><div><b>Мария Лебедева</b><div class="sub">7-й заказ · Telegram @maria_l</div><div class="sub">+7 916 ••• 45 12</div></div></div>
+        <div class="grow"><div class="lbl">Адрес доставки</div>Москва, ул. Профсоюзная, 12, кв. 48<div class="sub">Курьер, 10:00–18:00</div><span class="copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Копировать адрес</span></div>
       </div>
     </div>
-
-    <div class="legend">
-      <span><b class="mk">1</b>4 простых этапа вместо длинной ленты</span>
-      <span><b class="mk">2</b>Плашка «Сейчас»: что происходит и что делать</span>
-      <span><b class="mk">3</b>Каждый товар — одна строка и один понятный статус</span>
-      <span><b class="mk">4</b>Кнопка следующего шага не нажмётся, пока не решены все товары</span>
-      <span><b class="mk">5</b>Клиент, адрес, пожелание и чат — всегда справа</span>
+    <div class="card">
+      <div class="hd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg><h2>История</h2></div>
+      <div class="bd" style="padding-top:8px;padding-bottom:8px">
+        <div class="act"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div><div><b>Найдена проблема</b><div class="sub">Платье: размера M нет в наличии</div></div><span class="d">21 ноя, 09:12</span></div>
+        <div class="act"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg></div><div><b>Заявку взяла Анна Ковалёва</b><div class="sub">Статус: Новая → В работе</div></div><span class="d">21 ноя, 09:01</span></div>
+        <div class="act"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></div><div><b>Заявка поступила</b><div class="sub">3 товара, 6 фото, из Telegram-бота</div></div><span class="d">21 ноя, 08:40</span></div>
+      </div>
     </div>
-  </main>
+  </div>
+
+  <div class="right">
+    <div class="card">
+      <div class="hd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg><h2>Управление заказом</h2><i class="mk">2</i></div>
+      <div class="blk"><div class="lbl">Текущий статус</div><div class="row"><span class="st wait">В работе</span><span class="grow"></span><span class="sub">с 09:01 · осталось 1 ч 20 мин</span></div></div>
+      <div class="blk"><div class="lbl">Ответственный</div><div class="row"><div class="ava c2">АК</div><div class="grow"><b>Анна Ковалёва</b><div class="sub">Байер</div></div><button class="btn sm">Сменить</button></div></div>
+      <div class="blk"><div class="lbl">Общая стоимость</div>
+        <div class="kv"><span>Товары (2 с ценой)</span>9 998 ₽</div>
+        <div class="kv"><span>Джинсы</span><span>цена уточняется</span></div>
+        <div class="kv"><span>Комиссия Fitkit</span>1 300 ₽</div>
+        <div class="kv total"><b>Итого</b><b class="num">11 298 ₽</b></div>
+      </div>
+      <div class="blk"><div class="lbl">Изменить статус</div>
+        <div class="stbtns"><button class="btn">Ждём клиента</button><button class="btn">Проблема</button><button class="btn pri" style="grid-column:1/3">Перевести в «Куплено» →</button><button class="btn danger" style="grid-column:1/3">Отменить заказ</button></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="hd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><h2>Ошибки и проблемы · 2</h2><i class="mk">3</i></div>
+      <div class="bd">
+        <div class="prob bad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><div class="grow"><b>Нет размера M</b>Платье миди с поясом · Zara</div><button class="btn sm">Решить</button></div>
+        <div class="prob wait"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><div class="grow"><b>Цена не указана</b>Джинсы прямые · H&amp;M — проверить на сайте</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="hd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/></svg><h2>Комментарии сотрудников</h2><i class="mk">4</i></div>
+      <div class="bd">
+        <div class="com"><div class="ava c3">ИР</div><div class="t"><b>Ирина Р.</b><small>старший смены · 09:20</small><div>Если платья S тоже нет — предложи Massimo Dutti, клиентка там уже брала.</div></div></div>
+        <div class="com"><div class="ava c2">АК</div><div class="t"><b>Анна К.</b><small>09:25</small><div>Ок, проверю наличие S и напишу клиенту.</div></div></div>
+        <div class="input">Комментарий для коллег (клиент не увидит)…</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="legend">
+  <span><i class="mk">1</i>Слева — товары: размер, количество, цена (если известна), комментарий клиента и кнопка перехода в магазин</span>
+  <span><i class="mk">2</i>Справа — управление: статус, ответственный, стоимость и кнопки смены статуса</span>
+  <span><i class="mk">3</i>Список ошибок и проблем по заявке</span>
+  <span><i class="mk">4</i>Внутренние комментарии сотрудников</span>
+</div></main>
+  </div>
 </div></body></html>
