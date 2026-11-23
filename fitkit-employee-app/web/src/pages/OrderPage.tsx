@@ -8,13 +8,13 @@ import type { Item, ItemStatus, Order } from '../domain/types';
 import { useLookups, useStore } from '../store/AppStore';
 
 const ITEM_PILL: Record<ItemStatus, [string, '' | 'new' | 'wait' | 'bad' | 'ok']> = {
-  pending: ['To check', ''],
-  checked: ['Checked', 'ok'],
-  sold_out: ['Sold out', 'bad'],
-  price_up: ['Price up', 'wait'],
-  awaiting: ['Awaiting client', 'wait'],
-  bought: ['Bought', 'ok'],
-  cancelled: ['Cancelled', ''],
+  pending: ['Перевірити', ''],
+  checked: ['Перевірено', 'ok'],
+  sold_out: ['Немає', 'bad'],
+  price_up: ['Ціна зросла', 'wait'],
+  awaiting: ['Чекаємо клієнта', 'wait'],
+  bought: ['Викуплено', 'ok'],
+  cancelled: ['Скасовано', ''],
 };
 
 export function OrderPage() {
@@ -25,7 +25,7 @@ export function OrderPage() {
   const [modal, setModal] = useState<null | 'problem' | 'handover' | 'cancel' | 'history' | { price: Item }>(null);
 
   const o = getOrder(id);
-  if (!o) return <Empty>Order not found. <Link to="/requests">Back to requests</Link></Empty>;
+  if (!o) return <Empty>Замовлення не знайдено. <Link to="/requests">До заявок</Link></Empty>;
 
   const c = client(o.clientId);
   const owner = employee(o.ownerId);
@@ -40,7 +40,7 @@ export function OrderPage() {
     if (!step) return;
     if (o!.status === 'new') {
       dispatch({ type: 'take', orderId: o!.id });
-      return toast(`${o!.number} is yours`);
+      return toast(`${o!.number} тепер ваша`);
     }
     moveOrder(o!.id, step.to);
   }
@@ -48,7 +48,7 @@ export function OrderPage() {
   return (
     <>
       <div className="row">
-        <button className="btn iconbtn" onClick={() => navigate(-1)} aria-label="Back">
+        <button className="btn iconbtn" onClick={() => navigate(-1)} aria-label="Назад">
           <Icon name="back" />
         </button>
         <div className="grow">
@@ -60,9 +60,9 @@ export function OrderPage() {
             {o.problem && <Pill tone="bad">{o.problem}</Pill>}
           </div>
           <div className="sub">
-            {c.name} · received {shortDate(o.createdAt)}, {clock(o.createdAt)} ·{' '}
+            {c.name} · отримано {shortDate(o.createdAt)}, {clock(o.createdAt)} ·{' '}
             <button className="btn link" onClick={() => setModal('history')}>
-              History
+              Історія
             </button>
           </div>
         </div>
@@ -78,7 +78,7 @@ export function OrderPage() {
           <div className="card">
             <div className="bd row" style={{ gap: 30, alignItems: 'flex-start' }}>
               <div>
-                <div className="lbl">Deliver to</div>
+                <div className="lbl">Доставка</div>
                 {c.address}
                 <div className="sub">
                   {c.name} · {c.phoneMasked} · {c.delivery}
@@ -89,10 +89,10 @@ export function OrderPage() {
                 className="btn link"
                 onClick={() => {
                   navigator.clipboard?.writeText(`${c.name}, ${c.address}`);
-                  toast('Address copied');
+                  toast('Адресу скопійовано');
                 }}
               >
-                <Icon name="copy" size={14} /> Copy
+                <Icon name="copy" size={14} /> Копіювати
               </button>
             </div>
           </div>
@@ -102,61 +102,61 @@ export function OrderPage() {
           <div className="card">
             <div className="bd">
               <div className="kv">
-                <span>Owner</span>
+                <span>Відповідальний</span>
                 {owner?.name ?? '—'}
               </div>
               <div className="kv">
-                <span>Due</span>
+                <span>Термін</span>
                 <span className={`timer ${t.tone || 'org'}`}>{t.text}</span>
               </div>
               <div className="kv">
-                <span>Client sees</span>
+                <span>Клієнт бачить</span>
                 {clientStatus(o.status, o)}
               </div>
               <div className="kv" style={{ marginTop: 8 }}>
-                <span>Client paid</span>
+                <span>Клієнт сплатив</span>
                 {m.priceKnown ? uah(m.paid) : '—'}
               </div>
               {m.refunds > 0 && (
                 <div className="kv">
-                  <span>Refunds</span>−{uah(m.refunds)}
+                  <span>Повернення</span>−{uah(m.refunds)}
                 </div>
               )}
               <div className="kv">
-                <span>Fitkit fee</span>
+                <span>Комісія Fitkit</span>
                 {uah(m.fee)}
               </div>
               {m.covered > 0 && (
                 <div className="kv">
-                  <span>Fitkit covers</span>
+                  <span>Fitkit доплачує</span>
                   {uah(m.covered)}
                 </div>
               )}
               <div className="kv total">
-                <span style={{ color: 'var(--text)' }}>To buy</span>
+                <span style={{ color: 'var(--text)' }}>До викупу</span>
                 <span className="num">{m.toBuy ? uah(m.toBuy) : '—'}</span>
               </div>
 
               {step && (o.status === 'new' || mine) && (
-                <button className="btn pri big" style={{ width: '100%', marginTop: 16 }} onClick={main} disabled={blocked} title={blocked ? 'Resolve every item first' : undefined}>
+                <button className="btn pri big" style={{ width: '100%', marginTop: 16 }} onClick={main} disabled={blocked} title={blocked ? 'Спершу розберіть кожен товар' : undefined}>
                   {step.label}
                 </button>
               )}
-              {blocked && <div className="hint">Resolve every item to continue.</div>}
+              {blocked && <div className="hint">Щоб продовжити, розберіть кожен товар.</div>}
               {o.status !== 'new' && o.status !== 'cancelled' && o.status !== 'delivered' && (
                 <div className="row" style={{ gap: 8, marginTop: 8 }}>
                   <button className={`btn ${o.problem ? 'danger' : ''}`} style={{ flex: 1 }} onClick={() => setModal('problem')}>
-                    {o.problem ? 'Problem ✓' : 'Problem'}
+                    {o.problem ? 'Проблема ✓' : 'Проблема'}
                   </button>
                   <button className="btn" style={{ flex: 1 }} onClick={() => setModal('handover')}>
-                    Hand over
+                    Передати
                   </button>
                 </div>
               )}
               {editable && (
                 <div style={{ textAlign: 'center', marginTop: 12 }}>
                   <button className="btn link quiet" onClick={() => setModal('cancel')}>
-                    Cancel order
+                    Скасувати замовлення
                   </button>
                 </div>
               )}
@@ -168,7 +168,7 @@ export function OrderPage() {
 
       {modal === 'problem' && <ProblemModal order={o} onClose={() => setModal(null)} />}
       {modal === 'handover' && (
-        <Modal title="Hand over to" onClose={() => setModal(null)}>
+        <Modal title="Передати колезі" onClose={() => setModal(null)}>
           <div className="stack">
             {state.employees
               .filter((e) => e.id !== o.ownerId)
@@ -178,38 +178,38 @@ export function OrderPage() {
                   className="btn"
                   onClick={() => {
                     dispatch({ type: 'handOver', orderId: o.id, to: e.id });
-                    toast(`${o.number} handed over to ${e.name}`);
+                    toast(`${o.number} передано: ${e.name}`);
                     setModal(null);
                   }}
                 >
-                  {e.name} · {e.role}
+                  {e.name} · {ROLE[e.role]}
                 </button>
               ))}
           </div>
         </Modal>
       )}
       {modal === 'cancel' && (
-        <Modal title={`Cancel ${o.number}?`} onClose={() => setModal(null)}>
-          <p className="sub">The client gets a full refund of {m.priceKnown ? uah(m.paid) : 'the paid amount'} and a “Cancelled, refunded” notice.</p>
+        <Modal title={`Скасувати ${o.number}?`} onClose={() => setModal(null)}>
+          <p className="sub">Клієнт отримає повне повернення {m.priceKnown ? uah(m.paid) : 'сплаченої суми'} і сповіщення «Скасовано, кошти повернуто».</p>
           <div className="row" style={{ marginTop: 16, justifyContent: 'flex-end' }}>
             <button className="btn" onClick={() => setModal(null)}>
-              Keep order
+              Залишити
             </button>
             <button
               className="btn danger"
               onClick={() => {
                 dispatch({ type: 'cancelOrder', orderId: o.id });
-                toast(`${o.number} cancelled`);
+                toast(`${o.number} скасовано`);
                 setModal(null);
               }}
             >
-              Cancel & refund
+              Скасувати й повернути кошти
             </button>
           </div>
         </Modal>
       )}
       {modal === 'history' && (
-        <Modal title={`${o.number} · history`} onClose={() => setModal(null)}>
+        <Modal title={`${o.number} · історія`} onClose={() => setModal(null)}>
           <div className="stack" style={{ gap: 10 }}>
             {[...o.history].reverse().map((h, i) => (
               <div key={i} className="com">
@@ -237,7 +237,7 @@ function ItemRow({ order, item, editable, onPrice }: { order: Order; item: Item;
   const cancelled = item.status === 'cancelled';
   const priceText =
     item.price == null ? (
-      <span className="faint">{item.storePrice ? uah(item.storePrice) + ' (store)' : 'price unknown'}</span>
+      <span className="faint">{item.storePrice ? uah(item.storePrice) + ' (магазин)' : 'ціна невідома'}</span>
     ) : item.storePrice != null && item.storePrice !== item.price ? (
       <>
         {uah(item.price)} → {uah(item.storePrice)}
@@ -255,10 +255,10 @@ function ItemRow({ order, item, editable, onPrice }: { order: Order; item: Item;
           <span className="tag">{item.store}</span>
         </div>
         <div className="spec">
-          <span>Size</span> {item.size} &nbsp;·&nbsp; <span>Qty</span> {item.qty} &nbsp;·&nbsp; {priceText}
+          <span>Розмір</span> {item.size} &nbsp;·&nbsp; <span>К-сть</span> {item.qty} &nbsp;·&nbsp; {priceText}
         </div>
         {item.comment && <div className="q">{item.comment}</div>}
-        {cancelled && <div className="sub" style={{ marginTop: 6 }}>Cancelled · {uah((item.price ?? 0) * item.qty)} refunded</div>}
+        {cancelled && <div className="sub" style={{ marginTop: 6 }}>Скасовано · {uah((item.price ?? 0) * item.qty)} повернуто</div>}
 
         {rule && !cancelled && (
           <div className={`rule ${rule.kind === 'covered' ? 'ok' : rule.kind === 'confirm' ? 'wt' : ''}`}>
@@ -269,18 +269,18 @@ function ItemRow({ order, item, editable, onPrice }: { order: Order; item: Item;
             <div className="d">{rule.detail}</div>
             {editable && rule.kind === 'sold_out' && (
               <div className="b">
-                <button className="btn sm pri" onClick={() => d('itemCancel', `${item.name} cancelled, refund sent`)}>
-                  Cancel & refund
+                <button className="btn sm pri" onClick={() => d('itemCancel', `${item.name}: скасовано, кошти повернуто`)}>
+                  Скасувати й повернути
                 </button>
-                <a className="btn sm" href={`https://www.google.com/search?q=${encodeURIComponent(item.name + ' ' + item.size + ' buy')}`} target="_blank" rel="noreferrer">
-                  Check other stores
+                <a className="btn sm" href={`https://www.google.com/search?q=${encodeURIComponent(item.name + ' ' + item.size + ' купити')}`} target="_blank" rel="noreferrer">
+                  Шукати в інших магазинах
                 </a>
               </div>
             )}
             {editable && rule.kind === 'confirm' && item.status !== 'awaiting' && (
               <div className="b">
-                <button className="btn sm pri" onClick={() => d('itemSendConfirm', 'Price confirmation sent to the client')}>
-                  Send confirmation
+                <button className="btn sm pri" onClick={() => d('itemSendConfirm', 'Запит на підтвердження ціни надіслано клієнту')}>
+                  Надіслати запит
                 </button>
                 <button className="btn sm" onClick={() => d('itemCancel', `${item.name} cancelled, refund sent`)}>
                   Cancel & refund
@@ -289,8 +289,8 @@ function ItemRow({ order, item, editable, onPrice }: { order: Order; item: Item;
             )}
             {editable && item.status === 'awaiting' && (
               <div className="b">
-                <button className="btn sm" onClick={() => d('itemClientConfirmed', 'Client confirmed — buy at the new price')}>
-                  Client confirmed
+                <button className="btn sm" onClick={() => d('itemClientConfirmed', 'Клієнт підтвердив — купуйте за новою ціною')}>
+                  Клієнт підтвердив
                 </button>
                 <button className="btn sm" onClick={() => d('itemCancel', `${item.name} cancelled, refund sent`)}>
                   Cancel & refund
@@ -303,21 +303,21 @@ function ItemRow({ order, item, editable, onPrice }: { order: Order; item: Item;
       <div className="acts">
         <Pill tone={tone}>{label}</Pill>
         <a className="btn" href={item.url} target="_blank" rel="noreferrer">
-          Open in store <Icon name="ext" size={14} />
+          Відкрити в магазині <Icon name="ext" size={14} />
         </a>
         {editable && item.status === 'pending' && (
           <div className="row" style={{ gap: 6 }}>
-            <button className="btn sm" onClick={() => d('itemCheck', `${item.name}: checked`)}>
-              <Icon name="check" size={13} /> Matches
+            <button className="btn sm" onClick={() => d('itemCheck', `${item.name}: перевірено`)}>
+              <Icon name="check" size={13} /> Збігається
             </button>
-            <button className="btn sm" onClick={() => d('itemSoldOut', `${item.name}: sold out`)}>
-              Sold out
+            <button className="btn sm" onClick={() => d('itemSoldOut', `${item.name}: немає в наявності`)}>
+              Немає
             </button>
           </div>
         )}
         {editable && !cancelled && item.status !== 'sold_out' && (
           <button className="btn link" onClick={onPrice}>
-            {item.storePrice ? 'Edit store price' : 'Set store price'}
+            {item.storePrice ? 'Змінити ціну магазину' : 'Вказати ціну магазину'}
           </button>
         )}
       </div>
@@ -331,7 +331,7 @@ function PriceModal({ order, item, onClose }: { order: Order; item: Item; onClos
   const n = Number(v.replace(/[^\d.]/g, ''));
   const preview = n > 0 ? ruleFor({ ...item, storePrice: n }) : null;
   return (
-    <Modal title={`Store price · ${item.name}`} onClose={onClose}>
+    <Modal title={`Ціна в магазині · ${item.name}`} onClose={onClose}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -342,16 +342,16 @@ function PriceModal({ order, item, onClose }: { order: Order; item: Item; onClos
         }}
       >
         <div className="sub" style={{ marginBottom: 8 }}>
-          Client paid {item.price != null ? uah(item.price) : '—'} per item.
+          Клієнт сплатив {item.price != null ? uah(item.price) : '—'} за одиницю.
         </div>
         <input className="input" autoFocus inputMode="numeric" value={v} onChange={(e) => setV(e.target.value)} placeholder="₴" />
         {preview && <div className={`rule ${preview.kind === 'covered' ? 'ok' : 'wt'}`} style={{ marginTop: 12 }}><div className="h">{preview.title}</div><div className="d">{preview.detail}</div></div>}
         <div className="row" style={{ marginTop: 16, justifyContent: 'flex-end' }}>
           <button type="button" className="btn" onClick={onClose}>
-            Cancel
+            Скасувати
           </button>
           <button className="btn pri" disabled={!(n > 0)}>
-            Save
+            Зберегти
           </button>
         </div>
       </form>
@@ -359,18 +359,20 @@ function PriceModal({ order, item, onClose }: { order: Order; item: Item; onClos
   );
 }
 
-const PROBLEMS = ['Store cancelled the order', 'Payment declined', 'Wrong item received', 'Parcel lost or damaged', 'Client unreachable'];
+const PROBLEMS = ['Магазин скасував замовлення', 'Оплату відхилено', 'Прийшов не той товар', 'Посилку втрачено або пошкоджено', 'Клієнт не на зв’язку'];
+
+const ROLE = { buyer: 'закупник', lead: 'старший зміни', warehouse: 'склад', support: 'підтримка' } as const;
 
 function ProblemModal({ order, onClose }: { order: Order; onClose: () => void }) {
   const { dispatch, toast } = useStore();
   const [text, setText] = useState(order.problem ?? '');
   const save = (p?: string) => {
     dispatch({ type: 'setProblem', orderId: order.id, problem: p });
-    toast(p ? 'Problem flagged — shift lead notified' : 'Problem cleared');
+    toast(p ? 'Проблему позначено — старшого зміни сповіщено' : 'Проблему знято');
     onClose();
   };
   return (
-    <Modal title="Flag a problem" onClose={onClose}>
+    <Modal title="Позначити проблему" onClose={onClose}>
       <div className="chips">
         {PROBLEMS.map((p) => (
           <button key={p} className={`chip ${text === p ? 'on' : ''}`} onClick={() => setText(p)}>
@@ -378,15 +380,15 @@ function ProblemModal({ order, onClose }: { order: Order; onClose: () => void })
           </button>
         ))}
       </div>
-      <input className="input" style={{ marginTop: 12 }} value={text} onChange={(e) => setText(e.target.value)} placeholder="Or describe it…" />
+      <input className="input" style={{ marginTop: 12 }} value={text} onChange={(e) => setText(e.target.value)} placeholder="Або опишіть…" />
       <div className="row" style={{ marginTop: 16, justifyContent: 'flex-end' }}>
         {order.problem && (
           <button className="btn" onClick={() => save(undefined)}>
-            Clear problem
+            Зняти проблему
           </button>
         )}
         <button className="btn pri" disabled={!text.trim()} onClick={() => save(text.trim())}>
-          Flag problem
+          Позначити
         </button>
       </div>
     </Modal>
@@ -399,8 +401,8 @@ function Notes({ order }: { order: Order }) {
   return (
     <div className="card">
       <div className="bd">
-        <div className="lbl">Team notes</div>
-        {order.notes.length === 0 && <div className="sub" style={{ marginBottom: 12 }}>No notes yet.</div>}
+        <div className="lbl">Нотатки команди</div>
+        {order.notes.length === 0 && <div className="sub" style={{ marginBottom: 12 }}>Нотаток поки немає.</div>}
         {order.notes.map((n) => (
           <div key={n.id} className="com">
             <b>{n.author}</b>
@@ -416,7 +418,7 @@ function Notes({ order }: { order: Order }) {
             setText('');
           }}
         >
-          <input className="input" value={text} onChange={(e) => setText(e.target.value)} placeholder="Add a note…" />
+          <input className="input" value={text} onChange={(e) => setText(e.target.value)} placeholder="Додати нотатку…" />
         </form>
       </div>
     </div>

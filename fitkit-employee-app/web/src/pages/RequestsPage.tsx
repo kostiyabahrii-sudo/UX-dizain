@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, Empty, StatusPill, Tabs, Thumbs } from '../components/ui';
-import { timeLeft, uah } from '../domain/format';
+import { itemsCount, timeLeft, uah } from '../domain/format';
 import { useLookups, useStore } from '../store/AppStore';
 
 type Tab = 'all' | 'new' | 'overdue';
@@ -23,9 +23,9 @@ export function RequestsPage() {
 
   function takeNext() {
     const next = [...requests].sort((a, b) => a.createdAt.localeCompare(b.createdAt))[0];
-    if (!next) return toast('No requests in the queue', 'bad');
+    if (!next) return toast('Черга порожня', 'bad');
     dispatch({ type: 'take', orderId: next.id });
-    toast(`${next.number} is yours`);
+    toast(`${next.number} тепер ваша`);
     navigate(`/orders/${next.id}`);
   }
 
@@ -33,34 +33,34 @@ export function RequestsPage() {
     <>
       <div className="row">
         <h1 className="grow">
-          Requests <span className="cnt">{requests.length}</span>
+          Заявки <span className="cnt">{requests.length}</span>
         </h1>
         <button className="btn pri big" onClick={takeNext} disabled={!requests.length}>
-          Take next request
+          Взяти наступну заявку
         </button>
       </div>
       <Tabs
         value={tab}
         onChange={setTab}
         tabs={[
-          { key: 'all', label: 'All', count: requests.length },
-          { key: 'new', label: 'New', count: fresh.length },
-          { key: 'overdue', label: 'Overdue', count: overdue.length, red: overdue.length > 0 },
+          { key: 'all', label: 'Усі', count: requests.length },
+          { key: 'new', label: 'Нові', count: fresh.length },
+          { key: 'overdue', label: 'Прострочені', count: overdue.length, red: overdue.length > 0 },
         ]}
       />
       <div className="card" style={{ overflow: 'hidden' }}>
         {rows.length === 0 ? (
-          <Empty>Nothing here — the queue is clear.</Empty>
+          <Empty>Тут порожньо — черга чиста.</Empty>
         ) : (
           <table>
             <thead>
               <tr>
-                <th>Request</th>
-                <th>Client</th>
-                <th>Stores</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Due</th>
+                <th>Заявка</th>
+                <th>Клієнт</th>
+                <th>Магазини</th>
+                <th>Сума</th>
+                <th>Статус</th>
+                <th>Термін</th>
               </tr>
             </thead>
             <tbody>
@@ -81,7 +81,7 @@ export function RequestsPage() {
                             {o.number}
                           </div>
                           <div className="sub" style={{ fontSize: 12 }}>
-                            {o.items.length} item{o.items.length > 1 ? 's' : ''}
+                            {itemsCount(o.items.length)}
                           </div>
                         </div>
                       </div>
@@ -93,7 +93,7 @@ export function RequestsPage() {
                       </div>
                     </td>
                     <td className="sub">{stores}</td>
-                    <td>{o.paid != null ? uah(o.paid) : <span className="sub">price not set</span>}</td>
+                    <td>{o.paid != null ? uah(o.paid) : <span className="sub">ціна не вказана</span>}</td>
                     <td>
                       <StatusPill status={o.status} overdue={late} />
                     </td>

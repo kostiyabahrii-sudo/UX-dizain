@@ -72,7 +72,7 @@
 .composer .in:focus { border-color: rgba(240, 174, 194, 0.5); }
 .info { width: 310px; border-left: 1px solid var(--line); flex: none; padding: 22px 20px; display: flex; flex-direction: column; gap: 20px; overflow: auto; }
 .kv2 { font-size: 13.5px; padding: 3px 0; }
-.kv2 > span:first-child { color: var(--muted); display: inline-block; width: 70px; }
+.kv2 > span:first-child { color: var(--muted); display: inline-block; width: 84px; }
 .ord { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 6px 0; width: 100%; }
 .ord:hover .num { color: var(--clay); }
 

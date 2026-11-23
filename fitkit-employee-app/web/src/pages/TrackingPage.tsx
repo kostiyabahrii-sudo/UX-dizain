@@ -7,7 +7,7 @@ import type { Shipment } from '../domain/types';
 import { useLookups, useStore } from '../store/AppStore';
 
 type Tab = 'all' | 'in' | 'warehouse' | 'out' | 'problems';
-const SOURCE = { email: 'from store email', manual: 'entered by buyer', api: 'created via Nova Poshta API' } as const;
+const SOURCE = { email: 'з листа магазину', manual: 'введено закупником', api: 'створено через API Нової Пошти' } as const;
 
 export function TrackingPage() {
   const { state, now, moveOrder } = useStore();
@@ -37,31 +37,31 @@ export function TrackingPage() {
   return (
     <>
       <h1>
-        Tracking <span className="cnt">{all.length}</span>
+        Відстеження <span className="cnt">{all.length}</span>
       </h1>
       <Tabs
         value={tab}
         onChange={setTab}
         tabs={[
-          { key: 'all', label: 'All', count: count('all') },
-          { key: 'in', label: 'Store → warehouse', count: count('in') },
-          { key: 'warehouse', label: 'At warehouse', count: count('warehouse') },
-          { key: 'out', label: 'Warehouse → client', count: count('out') },
-          { key: 'problems', label: 'Problems', count: count('problems'), red: count('problems') > 0 },
+          { key: 'all', label: 'Усі', count: count('all') },
+          { key: 'in', label: 'Магазин → склад', count: count('in') },
+          { key: 'warehouse', label: 'На складі', count: count('warehouse') },
+          { key: 'out', label: 'Склад → клієнт', count: count('out') },
+          { key: 'problems', label: 'Проблеми', count: count('problems'), red: count('problems') > 0 },
         ]}
       />
       <div className="cols">
         <div className="card grow" style={{ overflow: 'hidden' }}>
           {rows.length === 0 ? (
-            <Empty>No parcels here.</Empty>
+            <Empty>Посилок немає.</Empty>
           ) : (
             <table>
               <thead>
                 <tr>
-                  <th>Order</th>
-                  <th>Leg</th>
-                  <th>Carrier · tracking</th>
-                  <th>Last event</th>
+                  <th>Замовлення</th>
+                  <th>Етап</th>
+                  <th>Перевізник · ТТН</th>
+                  <th>Остання подія</th>
                 </tr>
               </thead>
               <tbody>
@@ -81,14 +81,14 @@ export function TrackingPage() {
                         </div>
                       </td>
                       <td>
-                        {s.leg === 'in' ? <span className="leg in">Store → warehouse</span> : <span className="leg out">Warehouse → client</span>}
+                        {s.leg === 'in' ? <span className="leg in">Магазин → склад</span> : <span className="leg out">Склад → клієнт</span>}
                         {s.store && <div style={{ marginTop: 4 }}>{s.store}</div>}
                       </td>
                       <td>
-                        <div className="track">{s.tracking ? `${s.carrier} · ${s.tracking}` : '— no tracking yet'}</div>
+                        <div className="track">{s.tracking ? `${s.carrier} · ${s.tracking}` : '— ТТН ще немає'}</div>
                         <div className="src">{s.source ? SOURCE[s.source] : ''}</div>
                       </td>
-                      <td>
+                      <td className="wrap">
                         {s.problem ? <span className="red">{s.problem}</span> : ev?.title}
                         <div className="sub" style={{ fontSize: 12 }}>
                           {ev ? dayLabel(ev.at, now) : ''}
@@ -119,8 +119,8 @@ export function TrackingPage() {
                 </div>
               </div>
 
-              <div className="lbl">1 · Store → warehouse</div>
-              {legIn.length === 0 && <div className="sub" style={{ marginBottom: 12 }}>Nothing bought yet.</div>}
+              <div className="lbl">1 · Магазин → склад</div>
+              {legIn.length === 0 && <div className="sub" style={{ marginBottom: 12 }}>Ще нічого не викуплено.</div>}
               {legIn.map((s) => (
                 <div key={s.id} className="tl">
                   {s.events.map((e, i) => (
@@ -134,11 +134,11 @@ export function TrackingPage() {
                   ))}
                   {!s.atWarehouse && (
                     <div className="ev f">
-                      <b>{s.problem ?? 'Arrives at warehouse'}</b>
+                      <b>{s.problem ?? 'Прибуде на склад'}</b>
                       <small>
-                        {s.tracking ? 'updates from the tracking aggregator' : (
+                        {s.tracking ? 'оновлення від агрегатора трекінгу' : (
                           <button className="btn link" onClick={() => setEdit(s)}>
-                            Add tracking number
+                            Додати ТТН
                           </button>
                         )}
                       </small>
@@ -147,7 +147,7 @@ export function TrackingPage() {
                 </div>
               ))}
 
-              <div className="lbl">2 · Warehouse → client</div>
+              <div className="lbl">2 · Склад → клієнт</div>
               <div className="tl">
                 {legOut ? (
                   legOut.events.map((e, i) => (
@@ -161,20 +161,20 @@ export function TrackingPage() {
                   ))
                 ) : (
                   <div className="ev f">
-                    <b>Not shipped yet</b>
-                    <small>Nova Poshta shipment is created by the app</small>
+                    <b>Ще не відправлено</b>
+                    <small>ТТН Нової Пошти створить програма</small>
                   </div>
                 )}
               </div>
 
-              <div className="lbl">Client sees</div>
+              <div className="lbl">Клієнт бачить</div>
               <div className="seen">
-                “{clientStatus(selOrder.status, selOrder)}”
-                {legOut ? ` · Nova Poshta ${legOut.tracking}` : ` · arrives by ${shortDate(new Date(now + 2 * 86_400_000).toISOString())}`}
+                «{clientStatus(selOrder.status, selOrder)}»
+                {legOut ? ` · Нова Пошта ${legOut.tracking}` : ` · прибуде до ${shortDate(new Date(now + 2 * 86_400_000).toISOString())}`}
               </div>
               {selOrder.status === 'purchased' && (
-                <button className="btn pri big" style={{ width: '100%' }} disabled={!ready} onClick={() => moveOrder(selOrder.id, 'shipped')} title={ready ? undefined : 'All parcels must arrive at the warehouse first'}>
-                  Create shipment & ship →
+                <button className="btn pri big" style={{ width: '100%' }} disabled={!ready} onClick={() => moveOrder(selOrder.id, 'shipped')} title={ready ? undefined : 'Спершу всі посилки мають прибути на склад'}>
+                  Створити ТТН і відправити →
                 </button>
               )}
             </div>
@@ -191,24 +191,24 @@ function TrackingModal({ shipment, onClose }: { shipment: Shipment; onClose: () 
   const [carrier, setCarrier] = useState('');
   const [tracking, setTracking] = useState('');
   return (
-    <Modal title={`Tracking · ${shipment.store ?? ''}`} onClose={onClose}>
+    <Modal title={`ТТН · ${shipment.store ?? ''}`} onClose={onClose}>
       <form
         className="stack"
         onSubmit={(e) => {
           e.preventDefault();
-          dispatch({ type: 'setTracking', shipmentId: shipment.id, carrier: carrier.trim() || 'Auto-detect', tracking: tracking.trim() });
-          toast('Tracking added — the aggregator will follow it');
+          dispatch({ type: 'setTracking', shipmentId: shipment.id, carrier: carrier.trim() || 'Автовизначення', tracking: tracking.trim() });
+          toast('ТТН додано — агрегатор відстежуватиме посилку');
           onClose();
         }}
       >
-        <input className="input" autoFocus value={tracking} onChange={(e) => setTracking(e.target.value)} placeholder="Tracking number" />
-        <input className="input" value={carrier} onChange={(e) => setCarrier(e.target.value)} placeholder="Carrier (optional — detected automatically)" />
+        <input className="input" autoFocus value={tracking} onChange={(e) => setTracking(e.target.value)} placeholder="Номер ТТН" />
+        <input className="input" value={carrier} onChange={(e) => setCarrier(e.target.value)} placeholder="Перевізник (необов’язково — визначиться автоматично)" />
         <div className="row" style={{ justifyContent: 'flex-end' }}>
           <button type="button" className="btn" onClick={onClose}>
-            Cancel
+            Скасувати
           </button>
           <button className="btn pri" disabled={!tracking.trim()}>
-            Save
+            Зберегти
           </button>
         </div>
       </form>

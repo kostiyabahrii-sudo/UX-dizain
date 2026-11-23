@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, Thumbs } from '../components/ui';
-import { timeLeft, uah } from '../domain/format';
+import { itemsCount, timeLeft, uah } from '../domain/format';
 import type { Order, OrderStatus } from '../domain/types';
 import { useLookups, useStore } from '../store/AppStore';
 
 const COLS: { status: OrderStatus; label: string; color: string }[] = [
-  { status: 'in_progress', label: 'In progress', color: 'var(--muted)' },
-  { status: 'awaiting', label: 'Awaiting confirmation', color: 'var(--wait)' },
-  { status: 'purchased', label: 'Purchased', color: 'var(--info)' },
-  { status: 'shipped', label: 'Shipped', color: 'var(--ok)' },
+  { status: 'in_progress', label: 'В роботі', color: 'var(--muted)' },
+  { status: 'awaiting', label: 'Чекає підтвердження', color: 'var(--wait)' },
+  { status: 'purchased', label: 'Викуплено', color: 'var(--info)' },
+  { status: 'shipped', label: 'Відправлено', color: 'var(--ok)' },
 ];
 
 function note(o: Order): { tone: 'red' | 'org'; text: string } | null {
@@ -17,7 +17,7 @@ function note(o: Order): { tone: 'red' | 'org'; text: string } | null {
   const a = o.items.find((i) => i.status === 'awaiting');
   if (a && a.price && a.storePrice) {
     const pct = Math.round(((a.storePrice - a.price) / a.price) * 100);
-    return { tone: 'org', text: `Price +${pct}% — confirmation sent` };
+    return { tone: 'org', text: `Ціна +${pct}% — запит надіслано` };
   }
   return null;
 }
@@ -36,9 +36,9 @@ export function BoardPage() {
     <>
       <div className="row">
         <h1 className="grow">
-          Current orders <span className="cnt">{list.length}</span>
+          Поточні замовлення <span className="cnt">{list.length}</span>
         </h1>
-        <Tabs value={scope} onChange={setScope} tabs={[{ key: 'mine', label: 'Mine' }, { key: 'all', label: 'All' }]} />
+        <Tabs value={scope} onChange={setScope} tabs={[{ key: 'mine', label: 'Мої' }, { key: 'all', label: 'Усі' }]} />
       </div>
       <div className="board">
         {COLS.map((col) => {
@@ -67,7 +67,7 @@ export function BoardPage() {
                 const c = client(o.clientId);
                 const n = note(o);
                 const t = timeLeft(o.dueAt, now);
-                const info = o.status === 'purchased' || o.status === 'shipped' ? o.location ?? '' : `${o.items.length} item${o.items.length > 1 ? 's' : ''} · ${o.paid != null ? uah(o.paid) : 'price not set'}`;
+                const info = o.status === 'purchased' || o.status === 'shipped' ? o.location ?? '' : `${itemsCount(o.items.length)} · ${o.paid != null ? uah(o.paid) : 'ціна не вказана'}`;
                 return (
                   <div
                     key={o.id}
@@ -82,7 +82,7 @@ export function BoardPage() {
                       <span className="num" style={{ fontSize: 16 }}>
                         {o.number}
                       </span>
-                      <span className={`t ${t.tone === 'red' ? 'red' : n?.tone === 'org' ? 'org' : ''}`}>{t.text.replace(' left', '')}</span>
+                      <span className={`t ${t.tone === 'red' ? 'red' : n?.tone === 'org' ? 'org' : ''}`}>{t.short}</span>
                     </div>
                     <div>
                       <div style={{ fontSize: 13.5 }}>{c.name}</div>

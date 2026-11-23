@@ -36,7 +36,7 @@ const TONE: Record<OrderStatus, string> = {
 };
 
 export function StatusPill({ status, overdue }: { status: OrderStatus; overdue?: boolean }) {
-  if (overdue) return <span className="st bad">Overdue</span>;
+  if (overdue) return <span className="st bad">Прострочено</span>;
   return <span className={`st ${TONE[status]}`}>{STATUS_LABEL[status]}</span>;
 }
 
@@ -57,7 +57,7 @@ export function Tabs<K extends string>({ tabs, value, onChange }: { tabs: TabDef
       {tabs.map((t) => (
         <button key={t.key} role="tab" aria-selected={t.key === value} className={`${t.key === value ? 'on' : ''} ${t.red ? 'red' : ''}`} onClick={() => onChange(t.key)}>
           {t.label}
-          {t.count != null && <b>{t.count.toLocaleString('en-US')}</b>}
+          {t.count != null && <b>{t.count.toLocaleString('uk-UA')}</b>}
         </button>
       ))}
     </div>

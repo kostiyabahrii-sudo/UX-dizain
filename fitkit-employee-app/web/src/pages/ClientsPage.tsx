@@ -54,14 +54,14 @@ export function ClientsPage() {
     <div className="wrap">
       <div className="list">
         <div className="hd2">
-          <h1>Clients</h1>
+          <h1>Клієнти</h1>
         </div>
-        <input className="s2" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Find a client…" />
+        <input className="s2" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Знайти клієнта…" />
         <div style={{ padding: '0 14px 10px' }}>
-          <Tabs value={tab} onChange={setTab} tabs={[{ key: 'all', label: 'All' }, { key: 'open', label: 'Open tickets', count: openCount }]} />
+          <Tabs value={tab} onChange={setTab} tabs={[{ key: 'all', label: 'Усі' }, { key: 'open', label: 'Відкриті звернення', count: openCount }]} />
         </div>
         <div className="scroll">
-          {rows.length === 0 && <Empty>No open tickets 🎉</Empty>}
+          {rows.length === 0 && <Empty>Відкритих звернень немає 🎉</Empty>}
           {rows.map(({ c, ticket: t }) => {
             const o = t ? order(t.orderId) : undefined;
             return (
@@ -74,7 +74,7 @@ export function ClientsPage() {
                   </b>
                   <p>
                     {o && <span style={{ color: 'var(--clay)' }}>{o.number}</span>}
-                    {t ? ` · ${t.summary}` : ' · no tickets'}
+                    {t ? ` · ${t.summary}` : ' · звернень немає'}
                   </p>
                 </div>
                 {t?.status === 'open' && t.messages.at(-1)?.from === 'client' && (
@@ -90,23 +90,23 @@ export function ClientsPage() {
 
       <div className="chat">
         {!sel || !ticket ? (
-          <Empty>{sel ? `${sel.name} has no support tickets.` : 'Select a client.'}</Empty>
+          <Empty>{sel ? 'Звернень від цього клієнта немає.' : 'Оберіть клієнта.'}</Empty>
         ) : (
           <>
             <div className="head">
               <div className="grow">
                 <b>
-                  Support ticket · {sel.name} {ticket.status === 'resolved' && <span className="st ok">Resolved</span>}
+                  Звернення · {sel.name} {ticket.status === 'resolved' && <span className="st ok">Вирішено</span>}
                 </b>
                 {tOrder && (
                   <div className="sub">
-                    Order {tOrder.number} · client sees “{clientStatus(tOrder.status, tOrder)}”
+                    Замовлення {tOrder.number} · клієнт бачить «{clientStatus(tOrder.status, tOrder)}»
                   </div>
                 )}
               </div>
               {tOrder && (
                 <button className="btn" onClick={() => navigate(`/orders/${tOrder.id}`)}>
-                  Open order
+                  Відкрити замовлення
                 </button>
               )}
               {ticket.status === 'open' && (
@@ -114,10 +114,10 @@ export function ClientsPage() {
                   className="btn pri"
                   onClick={() => {
                     dispatch({ type: 'resolveTicket', ticketId: ticket.id });
-                    toast('Ticket resolved');
+                    toast('Звернення закрито');
                   }}
                 >
-                  Resolve
+                  Закрити
                 </button>
               )}
             </div>
@@ -131,7 +131,7 @@ export function ClientsPage() {
                   <div key={m.id} className={`m ${m.from === 'client' ? 'cl' : 'me'}`}>
                     {m.text}
                     <small>
-                      {m.from === 'client' ? sel.name.split(' ')[0] : 'Fitkit Support'} · {dayLabel(m.at, now)}
+                      {m.from === 'client' ? sel.name.split(' ')[0] : 'Підтримка Fitkit'} · {dayLabel(m.at, now)}
                     </small>
                   </div>
                 ),
@@ -164,11 +164,11 @@ export function ClientsPage() {
                         send();
                       }
                     }}
-                    placeholder="Reply as Fitkit Support…"
+                    placeholder="Відповісти від імені Підтримки Fitkit…"
                   />
                   <button className="btn pri" style={{ height: 42 }} disabled={!text.trim()}>
                     <Icon name="send" />
-                    Send
+                    Надіслати
                   </button>
                 </form>
               </>
@@ -180,7 +180,7 @@ export function ClientsPage() {
       {sel && (
         <div className="info">
           <div>
-            <div className="lbl">Contacts</div>
+            <div className="lbl">Контакти</div>
             {sel.telegram && (
               <div className="kv2">
                 <span>Telegram</span>
@@ -188,33 +188,33 @@ export function ClientsPage() {
               </div>
             )}
             <div className="kv2">
-              <span>Phone</span>
+              <span>Телефон</span>
               {revealed ? sel.phoneMasked.replace('•••', '555') : sel.phoneMasked}{' '}
               {!revealed && (
-                <button className="btn link" onClick={() => setRevealed(true)} title="Every reveal is logged">
-                  Show
+                <button className="btn link" onClick={() => setRevealed(true)} title="Кожен перегляд записується в журнал">
+                  Показати
                 </button>
               )}
             </div>
           </div>
           <div>
-            <div className="lbl">Address</div>
+            <div className="lbl">Адреса</div>
             <div style={{ fontSize: 13.5 }}>{sel.address}</div>
             <div className="sub">{sel.delivery}</div>
           </div>
           <div>
-            <div className="lbl">Preferences</div>
+            <div className="lbl">Вподобання</div>
             <div className="kv2">
-              <span>Sizes</span>
+              <span>Розміри</span>
               {sel.sizes}
             </div>
             <div className="kv2">
-              <span>Stores</span>
+              <span>Магазини</span>
               {sel.stores}
             </div>
             {sel.dislikes && (
               <div className="kv2">
-                <span>Dislikes</span>
+                <span>Не любить</span>
                 <em style={{ color: 'var(--bad)', fontStyle: 'normal' }}>{sel.dislikes}</em>
               </div>
             )}
@@ -225,7 +225,7 @@ export function ClientsPage() {
             )}
           </div>
           <div>
-            <div className="lbl">Orders · {clientOrders.length}</div>
+            <div className="lbl">Замовлення · {clientOrders.length}</div>
             {clientOrders.slice(0, 5).map((o) => (
               <button key={o.id} className="ord" onClick={() => navigate(`/orders/${o.id}`)}>
                 <Thumbs items={o.items} w={24} h={30} max={2} />

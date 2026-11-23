@@ -17,10 +17,10 @@ export function Layout() {
   const trackProblems = state.shipments.filter((s) => s.problem).length;
 
   const nav: { to: string; icon: IconName; label: string; n: number; red: boolean }[] = [
-    { to: '/requests', icon: 'inbox', label: 'Requests', n: newReq.length, red: overdue },
-    { to: '/orders', icon: 'bag', label: 'Current orders', n: mine.length, red: false },
-    { to: '/clients', icon: 'users', label: 'Clients', n: openTickets, red: openTickets > 0 },
-    { to: '/tracking', icon: 'truck', label: 'Tracking', n: trackProblems, red: trackProblems > 0 },
+    { to: '/requests', icon: 'inbox', label: 'Заявки', n: newReq.length, red: overdue },
+    { to: '/orders', icon: 'bag', label: 'Поточні замовлення', n: mine.length, red: false },
+    { to: '/clients', icon: 'users', label: 'Клієнти', n: openTickets, red: openTickets > 0 },
+    { to: '/tracking', icon: 'truck', label: 'Відстеження', n: trackProblems, red: trackProblems > 0 },
   ];
 
   function search(e: FormEvent) {
@@ -34,7 +34,7 @@ export function Layout() {
     if (byNum) navigate(`/orders/${byNum.id}`);
     else if (byTrack) navigate(`/tracking?order=${byTrack.orderId}`);
     else if (byClient) navigate(`/clients?client=${byClient.id}`);
-    else return toast(`Nothing found for “${q}”`, 'bad');
+    else return toast(`Нічого не знайдено за запитом «${q}»`, 'bad');
     setQ('');
   }
 
@@ -58,7 +58,7 @@ export function Layout() {
           <Avatar name={me.name} color={me.color} />
           <div>
             {me.name}
-            <small>Buyer</small>
+            <small>Закупник</small>
           </div>
         </div>
       </aside>
@@ -66,9 +66,9 @@ export function Layout() {
         <header className="top">
           <form className="search" onSubmit={search}>
             <Icon name="search" size={14} />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search request #, client, phone or tracking…" aria-label="Search" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Пошук: № заявки, клієнт, телефон або ТТН…" aria-label="Пошук" />
           </form>
-          <button className="bell" aria-label="Notifications" onClick={() => navigate('/clients')}>
+          <button className="bell" aria-label="Сповіщення" onClick={() => navigate('/clients')}>
             <Icon name="bell" size={18} />
             {openTickets > 0 && <i />}
           </button>

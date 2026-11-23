@@ -1,3 +1,4 @@
+import { uah } from './format';
 import type { Item, Order, OrderStatus } from './types';
 
 /** Price increase Fitkit covers silently. Set in the admin back office. */
@@ -15,37 +16,35 @@ export interface RuleResult {
   covered?: number;
 }
 
-const uah = (n: number) => '₴' + n.toLocaleString('en-US');
-
 /** Which rule applies to an item, if any. */
 export function ruleFor(item: Item): RuleResult | null {
   if (item.status === 'sold_out') {
     const refund = (item.price ?? 0) * item.qty;
     return {
       kind: 'sold_out',
-      title: `Out of stock in ${item.size}`,
-      detail: `Rule: cancel the item and refund ${uah(refund)}. The client gets “Item no longer available, money refunded”.`,
+      title: `Немає в наявності: розмір ${item.size}`,
+      detail: `Правило: скасувати товар і повернути ${uah(refund)}. Клієнт отримає «Товару більше немає, кошти повернуто».`,
     };
   }
   if (item.price != null && item.storePrice != null && item.storePrice > item.price) {
     const diff = (item.storePrice - item.price) * item.qty;
     const pct = (item.storePrice - item.price) / item.price;
-    const pctText = `${(pct * 100).toFixed(1).replace(/\.0$/, '')}%`;
+    const pctText = `${(pct * 100).toFixed(1).replace(/\.0$/, '').replace('.', ',')}%`;
     if (pct <= PRICE_TOLERANCE) {
       return {
         kind: 'covered',
-        title: `Price up ${uah(diff)} (+${pctText})`,
-        detail: `Within the ${PRICE_TOLERANCE * 100}% tolerance — Fitkit covers the difference, the client sees nothing.`,
+        title: `Ціна зросла на ${uah(diff)} (+${pctText})`,
+        detail: `У межах ${PRICE_TOLERANCE * 100}% — різницю доплачує Fitkit, клієнт нічого не бачить.`,
         covered: diff,
       };
     }
     return {
       kind: 'confirm',
-      title: `Price up ${uah(diff)} (+${pctText})`,
+      title: `Ціна зросла на ${uah(diff)} (+${pctText})`,
       detail:
         item.status === 'awaiting'
-          ? `Confirmation sent. No answer in ${CONFIRM_HOURS} h → the item is cancelled and refunded.`
-          : `Over ${PRICE_TOLERANCE * 100}% — the client confirms in one tap. No answer in ${CONFIRM_HOURS} h → refund.`,
+          ? `Запит надіслано. Без відповіді ${CONFIRM_HOURS} год → товар скасовується, кошти повертаються.`
+          : `Більше ${PRICE_TOLERANCE * 100}% — клієнт підтверджує одним натиском. Без відповіді ${CONFIRM_HOURS} год → повернення коштів.`,
     };
   }
   return null;
@@ -67,18 +66,18 @@ export function canMarkPurchased(order: Order): boolean {
 export function clientStatus(status: OrderStatus, order?: Order): string {
   switch (status) {
     case 'new':
-      return 'Order confirmed';
+      return 'Замовлення підтверджено';
     case 'in_progress':
     case 'purchased':
-      return 'Preparing your order';
+      return 'Готуємо ваше замовлення';
     case 'awaiting':
-      return order?.items.some((i) => i.status === 'awaiting') ? 'Price changed (action)' : 'Preparing your order';
+      return order?.items.some((i) => i.status === 'awaiting') ? 'Ціна змінилась (потрібна дія)' : 'Готуємо ваше замовлення';
     case 'shipped':
-      return 'Shipped';
+      return 'Відправлено';
     case 'delivered':
-      return 'Delivered';
+      return 'Доставлено';
     case 'cancelled':
-      return 'Cancelled, refunded';
+      return 'Скасовано, кошти повернуто';
   }
 }
 
@@ -112,27 +111,27 @@ export function money(order: Order): Money {
 }
 
 export const STATUS_LABEL: Record<OrderStatus, string> = {
-  new: 'New',
-  in_progress: 'In progress',
-  awaiting: 'Awaiting confirmation',
-  purchased: 'Purchased',
-  shipped: 'Shipped',
-  delivered: 'Delivered',
-  cancelled: 'Cancelled',
+  new: 'Нова',
+  in_progress: 'В роботі',
+  awaiting: 'Чекає підтвердження',
+  purchased: 'Викуплено',
+  shipped: 'Відправлено',
+  delivered: 'Доставлено',
+  cancelled: 'Скасовано',
 };
 
 /** Next main action for the order card button. */
 export function nextStep(status: OrderStatus): { label: string; to: OrderStatus } | null {
   switch (status) {
     case 'new':
-      return { label: 'Take request', to: 'in_progress' };
+      return { label: 'Взяти заявку', to: 'in_progress' };
     case 'in_progress':
     case 'awaiting':
-      return { label: 'Move to “Purchased” →', to: 'purchased' };
+      return { label: 'Перевести у «Викуплено» →', to: 'purchased' };
     case 'purchased':
-      return { label: 'Create shipment & ship →', to: 'shipped' };
+      return { label: 'Створити ТТН і відправити →', to: 'shipped' };
     case 'shipped':
-      return { label: 'Mark as delivered', to: 'delivered' };
+      return { label: 'Позначити доставленим', to: 'delivered' };
     default:
       return null;
   }
