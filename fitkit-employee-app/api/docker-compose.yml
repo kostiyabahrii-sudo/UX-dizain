@@ -1,0 +1,25 @@
+# Local stack: PostgreSQL + API. `docker compose up --build`, then
+# `docker compose run --rm api seed` to load the demo data.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: fitkit
+      POSTGRES_USER: fitkit
+      POSTGRES_PASSWORD: fitkit
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fitkit"]
+      interval: 2s
+      retries: 20
+  api:
+    build: .
+    depends_on:
+      db: { condition: service_healthy }
+    env_file: .env.example
+    environment:
+      DATABASE_URL: postgres://fitkit:fitkit@db:5432/fitkit?sslmode=disable
+    ports: ["8080:8080"]
+volumes:
+  pgdata:
