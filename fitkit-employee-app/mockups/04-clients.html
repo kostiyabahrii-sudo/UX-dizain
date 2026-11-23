@@ -50,7 +50,9 @@ tr.on td { background: var(--clay-veil); }
 .m small { display: block; font-size: 11px; color: var(--faint); margin-top: 4px; }
 .m.cl { background: var(--panel); border: 1px solid var(--line); align-self: flex-start; border-bottom-left-radius: 5px; }
 .m.me { background: rgba(240,174,194,.13); border: 1px solid rgba(240,174,194,.22); align-self: flex-end; border-bottom-right-radius: 5px; }
-.prod { display: flex; gap: 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 8px; margin-top: 8px; font-size: 12.5px; }
+.sys { align-self: center; font-size: 12px; color: var(--muted); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; }
+.quick { display: flex; gap: 6px; padding: 0 24px 10px; }
+.quick span { font-size: 12px; border: 1px solid var(--line-2); border-radius: 999px; padding: 3px 10px; color: var(--muted); }
 .composer { border-top: 1px solid var(--line); padding: 14px 24px; display: flex; gap: 10px; align-items: center; }
 .composer .in { flex: 1; height: 42px; border: 1px solid var(--line-2); border-radius: 12px; display: flex; align-items: center; padding: 0 14px; color: var(--faint); background: var(--bg); }
 .info { width: 310px; border-left: 1px solid var(--line); flex: none; padding: 22px 20px; display: flex; flex-direction: column; gap: 20px; }
@@ -71,30 +73,29 @@ tr.on td { background: var(--clay-veil); }
   <div class="list">
     <div class="hd2"><h1>Clients</h1></div>
     <div class="s2">Find a client…</div>
-    <div class="tabs"><a class="on">All</a><a class="red">Unread <b>3</b></a></div>
-    <div class="c on"><div class="ava c2">ML</div><div class="t"><b>Maria Lebedenko<small>09:41</small></b><p><span style="color:var(--clay)">#001</span> · Let’s go with S, thanks!</p></div><span class="badge" style="align-self:center">1</span></div><div class="c "><div class="ava c4">IS</div><div class="t"><b>Ihor Sokolenko<small>09:20</small></b><p><span style="color:var(--clay)">#002</span> · Why did the price go up?</p></div><span class="badge" style="align-self:center">1</span></div><div class="c "><div class="ava c3">OP</div><div class="t"><b>Olha Petrenko<small>09:12</small></b><p><span style="color:var(--clay)">#003</span> · Sent one more link</p></div><span class="badge" style="align-self:center">1</span></div><div class="c "><div class="ava c5">DV</div><div class="t"><b>Daria Vovk<small>08:55</small></b><p><span style="color:var(--clay)">#004</span> · You: Checking stock, back soon…</p></div></div><div class="c "><div class="ava c2">PT</div><div class="t"><b>Pavlo Tykhonenko<small>yesterday</small></b><p><span style="color:var(--clay)">#005</span> · You: Tracking number tomorrow</p></div></div><div class="c "><div class="ava c5">OS</div><div class="t"><b>Olena Smyrnova<small>yesterday</small></b><p><span style="color:var(--clay)">#008</span> · Thanks, everything arrived!</p></div></div><div class="c "><div class="ava c4">KO</div><div class="t"><b>Kseniia Orlyk<small>Nov 20</small></b><p><span style="color:var(--clay)">#0990</span> · You: Bought, waiting for tracking</p></div></div><div class="c "><div class="ava c3">AB</div><div class="t"><b>Artem Bilyk<small>Nov 19</small></b><p><span style="color:var(--clay)">#0993</span> · Ok, thank you</p></div></div>
+    <div class="tabs"><a>All</a><a class="on">Open tickets <b>3</b></a></div>
+    <div class="c on"><div class="ava c2">ML</div><div class="t"><b>Maria Lebedenko<small>09:41</small></b><p><span style="color:var(--clay)">#001</span> · When will my order arrive?</p></div><span class="badge" style="align-self:center">1</span></div><div class="c "><div class="ava c4">IS</div><div class="t"><b>Ihor Sokolenko<small>09:20</small></b><p><span style="color:var(--clay)">#0995</span> · Can I change the delivery address?</p></div><span class="badge" style="align-self:center">1</span></div><div class="c "><div class="ava c3">OP</div><div class="t"><b>Olha Petrenko<small>09:12</small></b><p><span style="color:var(--clay)">#0932</span> · Parcel says delivered but…</p></div><span class="badge" style="align-self:center">1</span></div><div class="c "><div class="ava c5">DV</div><div class="t"><b>Daria Vovk<small>Nov 22</small></b><p><span style="color:var(--clay)">#0976</span> · Resolved · refund received</p></div></div><div class="c "><div class="ava c2">PT</div><div class="t"><b>Pavlo Tykhonenko<small>Nov 21</small></b><p><span style="color:var(--clay)">#0981</span> · Resolved · size question</p></div></div><div class="c "><div class="ava c5">OS</div><div class="t"><b>Olena Smyrnova<small></small></b><p><span style="color:var(--clay)">#0968</span> · —</p></div></div><div class="c "><div class="ava c4">KO</div><div class="t"><b>Kseniia Orlyk<small></small></b><p><span style="color:var(--clay)">#0990</span> · —</p></div></div><div class="c "><div class="ava c3">AB</div><div class="t"><b>Artem Bilyk<small></small></b><p><span style="color:var(--clay)">#0993</span> · —</p></div></div>
   </div>
   <div class="chat">
-    <div class="head"><div class="ava c2">ML</div><div class="grow"><b>Maria Lebedenko</b><div class="sub">Telegram · online 2 min ago</div></div><span class="tag">#001 · In progress</span><button class="btn">Open request</button></div>
+    <div class="head"><div class="grow"><b>Support ticket · Maria Lebedenko</b><div class="sub">Order #001 · client sees “Preparing your order”</div></div><button class="btn">Open order</button><button class="btn pri">Resolve</button></div>
     <div class="msgs">
       <div class="day">Today</div>
-      <div class="m cl">Hi! I sent 3 items, please take a look 🙏<small>08:40</small></div>
-      <div class="m me">Hi Maria! I’m Anna, your buyer. Checking stock and sizes, I’ll be back shortly.<small>09:05</small></div>
-      <div class="m me">Unfortunately the black jacket is out of stock in M. S is the same price — shall we take S?
-        <div class="prod"><img class="ph" src="assets/photos/jacket-black.jpg" style="width:40px;height:50px"><div><b>Black jacket</b><div class="sub" style="font-size:12px">Zara · S · ₴3,999</div><div style="color:var(--clay);font-size:12px">zara.com ↗</div></div></div><small>09:30</small></div>
-      <div class="m cl">Let’s go with S, thanks!<small>09:41</small></div>
+      <div class="sys">Item cancelled automatically: Black jacket · ₴3,999 refunded · client notified</div>
+      <div class="m cl">Hi! I got a refund for the jacket, but when will the rest of my order arrive?<small>Maria · 09:41</small></div>
+      <div class="m me">Hi Maria! The sweater and jeans are being prepared and will ship by Nov 24. You’ll get a Nova Poshta tracking number as soon as they leave our warehouse.<small>Fitkit Support · draft</small></div>
     </div>
-    <div class="composer"><button class="btn iconbtn" style="height:42px;width:42px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button><div class="in">Message Maria…</div><button class="btn pri" style="height:42px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg>Send</button></div>
+    <div class="quick"><span>Order status</span><span>Refund info</span><span>Delivery date</span><span>Change address</span></div>
+    <div class="composer"><div class="in">Reply as Fitkit Support…</div><button class="btn pri" style="height:42px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg>Send</button></div>
   </div>
   <div class="info">
     <div><div class="lbl">Contacts</div>
       <div class="kv2"><span>Telegram</span>@maria_l</div><div class="kv2"><span>Phone</span>+380 67 ••• 45 12 <span class="btn link" style="width:auto">Show</span></div></div>
-    <div><div class="lbl">Address</div><div style="font-size:13.5px">Kyiv, 12 Velyka Vasylkivska St, apt 48</div><div class="sub">Courier, 10:00–18:00</div></div>
+    <div><div class="lbl">Address</div><div style="font-size:13.5px">Kyiv, 12 Velyka Vasylkivska St, apt 48</div><div class="sub">Nova Poshta courier</div></div>
     <div><div class="lbl">Preferences</div>
       <div class="kv2"><span>Sizes</span>S–M · W28 L32 · 38</div><div class="kv2"><span>Stores</span>Zara, COS, Massimo Dutti</div><div class="kv2"><span>Dislikes</span><span style="color:var(--bad);width:auto">synthetics, loud prints</span></div>
       <div class="sub" style="margin-top:6px;font-size:12.5px">Zara runs small for her — take one size up.</div></div>
     <div><div class="lbl">Orders · 7</div>
-      <div class="ord"><div class="thumbs"><img class="ph" src="assets/photos/stripe.jpg" style="width:24px;height:30px"><img class="ph" src="assets/photos/jacket-black.jpg" style="width:24px;height:30px;margin-left:-8px"></div><span class="num">#001</span><span class="grow"></span><span class="st wait">In progress</span></div>
+      <div class="ord"><div class="thumbs"><img class="ph" src="assets/photos/stripe.jpg" style="width:24px;height:30px"><img class="ph" src="assets/photos/jeans-black.jpg" style="width:24px;height:30px;margin-left:-8px"></div><span class="num">#001</span><span class="grow"></span><span class="st wait">In progress</span></div>
       <div class="ord"><div class="thumbs"><img class="ph" src="assets/photos/sweater-grey.jpg" style="width:24px;height:30px"></div><span class="num">#0874</span><span class="grow"></span><span class="st ok">Delivered</span></div>
       <div class="ord"><div class="thumbs"><img class="ph" src="assets/photos/loafers.jpg" style="width:24px;height:30px"><img class="ph" src="assets/photos/scarf.jpg" style="width:24px;height:30px;margin-left:-8px"></div><span class="num">#0812</span><span class="grow"></span><span class="st ok">Delivered</span></div>
     </div>

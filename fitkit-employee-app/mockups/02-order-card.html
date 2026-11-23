@@ -40,7 +40,12 @@ tr.on td { background: var(--clay-veil); }
 .it .spec span { color: var(--faint); }
 .it .q { font-size: 13px; color: var(--muted); font-style: italic; }
 .it .acts { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; flex: none; }
-.warn { margin-top: 10px; font-size: 13px; color: var(--bad); display: flex; gap: 6px; align-items: center; }
+.rule { margin-top: 12px; border: 1px solid rgba(255,122,122,.3); background: var(--bad-bg); border-radius: 12px; padding: 10px 12px; font-size: 13px; }
+.rule.ok { border-color: rgba(114,208,138,.3); background: var(--ok-bg); }
+.rule .h { display: flex; gap: 6px; align-items: center; font-weight: 600; color: var(--bad); }
+.rule.ok .h { color: var(--ok); }
+.rule .d { color: var(--muted); margin: 2px 0 8px 20px; }
+.rule .b { display: flex; gap: 8px; margin-left: 20px; }
 .kv { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13.5px; }
 .kv span { color: var(--muted); }
 .kv.total { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 12px; font-size: 18px; font-weight: 600; }
@@ -61,7 +66,7 @@ tr.on td { background: var(--clay-veil); }
   <button class="btn iconbtn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
   <div class="grow"><div class="row" style="gap:10px"><h1 class="num" style="font-size:28px">#001</h1><span class="st wait">In progress</span></div>
   <div class="sub">Maria Lebedenko · received Nov 21, 08:40 · <span class="btn link">History</span></div></div>
-  <button class="btn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Message client</button><button class="btn iconbtn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button>
+  <button class="btn iconbtn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button>
 </div>
 <div class="cols">
   <div class="left">
@@ -72,14 +77,15 @@ tr.on td { background: var(--clay-veil); }
 <div class="acts"><span class="st ok">Checked</span><button class="btn">Open in store <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button></div></div><div class="it"><img class="ph" src="assets/photos/jacket-black.jpg" style="width:80px;height:100px"><div class="grow">
 <div class="row" style="gap:8px"><div class="name">Black jacket</div><span class="tag">Zara</span></div>
 <div class="spec"><span>Size</span> M &nbsp;·&nbsp; <span>Qty</span> 1 &nbsp;·&nbsp; ₴3,999</div>
-<div class="q">“Need it by Nov 25. If no M — S is fine”</div><div class="warn"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>No size M in stock <span class="btn link" style="margin-left:6px">Ask client</span></div></div>
-<div class="acts"><span class="st bad">Size missing</span><button class="btn">Open in store <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button></div></div><div class="it"><img class="ph" src="assets/photos/jeans-black.jpg" style="width:80px;height:100px"><div class="grow">
+<div class="q">“Need it by Nov 25”</div><div class="rule"><div class="h"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Out of stock in M</div><div class="d">Rule: cancel the item and refund ₴3,999. The client gets “Item no longer available, money refunded”.</div>
+<div class="b"><button class="btn sm pri">Cancel &amp; refund</button><button class="btn sm">Check other stores</button></div></div></div>
+<div class="acts"><span class="st bad">Sold out</span><button class="btn">Open in store <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button></div></div><div class="it"><img class="ph" src="assets/photos/jeans-black.jpg" style="width:80px;height:100px"><div class="grow">
 <div class="row" style="gap:8px"><div class="name">Wide-leg jeans</div><span class="tag">H&amp;M</span></div>
-<div class="spec"><span>Size</span> W28 L32 &nbsp;·&nbsp; <span>Qty</span> 1 &nbsp;·&nbsp; <span>price not set</span></div>
-<div class="q">“Dark, like in the photo. Couldn’t find the price”</div></div>
-<div class="acts"><span class="st wait">Checking</span><button class="btn">Open in store <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button></div></div></div>
+<div class="spec"><span>Size</span> W28 L32 &nbsp;·&nbsp; <span>Qty</span> 1 &nbsp;·&nbsp; ₴1,399 → ₴1,449</div>
+<div class="q">“Dark, like in the photo”</div><div class="rule ok"><div class="h"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Price up ₴50 (+3.6%)</div><div class="d">Within the 5% tolerance — Fitkit covers the difference, the client sees nothing.</div></div></div>
+<div class="acts"><span class="st ok">Checked</span><button class="btn">Open in store <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button></div></div></div>
     <div class="card"><div class="bd row" style="gap:30px;align-items:flex-start">
-      <div><div class="lbl">Deliver to</div>Kyiv, 12 Velyka Vasylkivska St, apt 48<div class="sub">Maria Lebedenko · +380 67 ••• 45 12 · courier 10:00–18:00</div></div>
+      <div><div class="lbl">Deliver to</div>Kyiv, 12 Velyka Vasylkivska St, apt 48<div class="sub">Maria Lebedenko · +380 67 ••• 45 12 · Nova Poshta courier</div></div>
       <span class="grow"></span><span class="btn link"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy</span>
     </div></div>
   </div>
@@ -87,16 +93,19 @@ tr.on td { background: var(--clay-veil); }
     <div class="card"><div class="bd">
       <div class="kv"><span>Owner</span>Anna Koval</div>
       <div class="kv"><span>Due</span><span style="color:var(--wait);font-weight:600">1h 20m left</span></div>
-      <div class="kv" style="margin-top:8px"><span>Items (2 priced)</span>₴5,798</div>
+      <div class="kv"><span>Client sees</span>Preparing your order</div>
+      <div class="kv" style="margin-top:8px"><span>Client paid</span>₴7,777</div>
+      <div class="kv"><span>Refund · jacket</span>−₴3,999</div>
       <div class="kv"><span>Fitkit fee</span>₴580</div>
-      <div class="kv total"><span style="color:var(--text)">Total</span><span class="num" style="color:var(--text)">₴6,378</span></div>
+      <div class="kv"><span>Fitkit covers</span>₴50</div>
+      <div class="kv total"><span style="color:var(--text)">To buy</span><span class="num" style="color:var(--text)">₴3,248</span></div>
       <button class="btn pri big" style="width:100%;margin-top:16px">Move to “Purchased” →</button>
-      <div class="row" style="gap:8px;margin-top:8px"><button class="btn" style="flex:1">Waiting for client</button><button class="btn" style="flex:1">Problem</button></div>
+      <div class="row" style="gap:8px;margin-top:8px"><button class="btn" style="flex:1">Problem</button><button class="btn" style="flex:1">Hand over</button></div>
       <div style="text-align:center;margin-top:12px"><span class="btn link" style="color:var(--faint);font-weight:500">Cancel order</span></div>
     </div></div>
     <div class="card"><div class="bd">
       <div class="lbl">Team notes</div>
-      <div class="com"><b>Iryna R.</b><small>09:20</small><div>If S is also gone — suggest Massimo Dutti, she has bought there before.</div></div>
+      <div class="com"><b>Iryna R.</b><small>09:20</small><div>Massimo Dutti has a similar jacket in M — check before refunding.</div></div>
       <div class="input">Add a note…</div>
     </div></div>
   </div>

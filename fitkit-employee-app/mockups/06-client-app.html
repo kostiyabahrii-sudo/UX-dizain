@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Fitkit — client app</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.stage { width: 1440px; height: 900px; display: flex; gap: 56px; padding: 60px 80px; background: var(--bg); align-items: center; }
+.phone { width: 340px; height: 740px; background: #000; border: 1px solid #2a2f37; border-radius: 46px; padding: 12px; box-shadow: 0 0 60px -20px rgba(240,174,194,.25); flex: none; }
+.screen { background: var(--bg); height: 100%; border-radius: 36px; overflow: hidden; display: flex; flex-direction: column; }
+.ptop { padding: 40px 18px 14px; display: flex; gap: 10px; align-items: center; }
+.pb { padding: 0 16px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+.cardp { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 14px; font-size: 13.5px; }
+.steps { display: flex; flex-direction: column; gap: 10px; }
+.sp { display: flex; gap: 10px; align-items: center; font-size: 13.5px; color: var(--faint); }
+.sp i { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--faint); flex: none; }
+.sp.d { color: var(--text); } .sp.d i { background: var(--clay); border-color: var(--clay); }
+.sp.c { color: var(--text); font-weight: 600; } .sp.c i { border-color: var(--clay); box-shadow: 0 0 0 4px rgba(240,174,194,.2); }
+.it { display: flex; gap: 10px; align-items: center; font-size: 13px; }
+.alert { border-color: rgba(240,180,92,.4); }
+.btns { display: flex; gap: 8px; margin-top: 10px; }
+.btns .btn { flex: 1; }
+.nt { display: flex; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+.nt:last-child { border-bottom: 0; }
+.nt .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--clay); margin-top: 6px; flex: none; }
+.nt small { display: block; color: var(--faint); font-size: 11.5px; margin-top: 2px; }
+.help { text-align: center; color: var(--clay); font-weight: 600; font-size: 13.5px; padding: 14px 0 26px; }
+.expl { max-width: 420px; display: flex; flex-direction: column; gap: 14px; }
+.expl h1 { font-size: 28px; line-height: 1.2; }
+.expl p { color: var(--muted); font-size: 15px; }
+</style></head>
+<body><div class="app" style="display:block;min-height:900px"><div class="stage">
+  <div class="phone"><div class="screen">
+    <div class="ptop"><img src="assets/logo-mark.png" style="width:28px;height:28px;filter:invert(1)"><b class="serif" style="font-size:20px;font-weight:600">Order #001</b></div>
+    <div class="pb">
+      <div class="cardp"><div class="steps">
+        <div class="sp d"><i></i>Order confirmed</div><div class="sp c"><i></i>Preparing your order</div><div class="sp"><i></i>Shipped</div><div class="sp"><i></i>Delivered · by Nov 25</div>
+      </div></div>
+      <div class="cardp">
+        <div class="it"><img class="ph" src="assets/photos/stripe.jpg" style="width:36px;height:46px"><div class="grow">Striped sweater · L</div>₴1,799</div>
+        <div class="it" style="margin-top:8px"><img class="ph" src="assets/photos/jeans-black.jpg" style="width:36px;height:46px"><div class="grow">Wide-leg jeans · W28</div>₴1,399</div>
+        <div class="it" style="margin-top:8px;opacity:.55"><img class="ph" src="assets/photos/jacket-black.jpg" style="width:36px;height:46px"><div class="grow">Black jacket · M<div class="sub" style="font-size:12px">Sold out · ₴3,999 refunded</div></div><s>₴3,999</s></div>
+      </div>
+    </div>
+    <div class="help">Need help? Contact Fitkit Support</div>
+  </div></div>
+  <div class="phone"><div class="screen">
+    <div class="ptop"><b style="font-size:20px">Notifications</b></div>
+    <div class="pb">
+      <div class="cardp alert"><b>Price changed · Order #0995</b><div class="sub" style="margin-top:4px">Sneakers: ₴5,899 → ₴6,599. Keep the item at the new price?</div>
+        <div class="btns"><button class="btn pri sm">Confirm</button><button class="btn sm">Remove item</button></div></div>
+      <div class="cardp" style="padding:4px 14px">
+      <div class="nt"><span class="dot"></span><div><b>Item no longer available</b><div class="sub">Black jacket (M) sold out. ₴3,999 refunded to your card.</div><small>Today, 09:35</small></div></div>
+      <div class="nt"><span class="dot"></span><div><b>Order #0918 shipped</b><div class="sub">Nova Poshta 2045 0055 3000 81 · courier today</div><small>Today, 09:55</small></div></div>
+      <div class="nt"><span class="dot" style="background:var(--faint)"></span><div><b>Order #001 confirmed</b><div class="sub">We’re preparing your order.</div><small>Nov 21, 08:41</small></div></div>
+    </div></div>
+  </div></div>
+  <div class="expl">
+    <span class="tag" style="align-self:flex-start">What the client sees</span>
+    <h1>Order, status, parcel — nothing else</h1>
+    <p>No buyer names, no store tracking. Simple statuses, one-tap decisions when a price changes, automatic refunds when an item sells out, and a support link if something goes wrong.</p>
+  </div>
+</div></div></body></html>
