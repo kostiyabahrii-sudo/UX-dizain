@@ -7,7 +7,7 @@ One app where a Fitkit buyer takes a client’s request, checks the items, buys 
 ## 1. Principles and navigation
 
 - **Hidden mechanism.** The client sees only Fitkit — no buyer names, store names or store tracking. Parcels arrive in Fitkit packaging without store receipts or boxes.
-- **No clarifying questions.** In the Fitkit app clients pick only sizes that are in stock, so the buyer doesn’t need to ask. Mismatches that still happen (a price change, an item sold out before purchase) are handled by **rules**, not chat (section 5).
+- **No clarifying questions.** Clients pick only sizes that are in stock, so the buyer doesn’t need to ask. Mismatches that still happen (a price change, an item sold out before purchase) are handled by **rules**, not chat (section 5).
 - **Minimal UI for the buyer.** Four sections, one main button per screen. Analytics and settings live in a separate **admin back office**.
 
 | Section | Contents |
@@ -71,15 +71,11 @@ Thresholds, wording and actions are set in the admin back office.
 
 ## 6. Clients and support
 
-There is **no separate client app** and **no chat between the buyer and the client**. The client writes to **Fitkit Support** in the chat of the existing Fitkit app; each conversation becomes a **support ticket** linked to the order. In Clients the buyer (or a support agent) sees the client list with *All / Open tickets*, the ticket thread in the middle and the client’s details on the right (contacts, address, preferences, recent orders).
+There is **no chat between the buyer and the client**. Client messages to Fitkit Support arrive here as **support tickets** linked to the order. In Clients the buyer (or a support agent) sees the client list with *All / Open tickets*, the ticket thread in the middle and the client’s details on the right (contacts, address, preferences, recent orders).
 
 Replies are always signed **Fitkit Support** — never a buyer’s name, never a store name. Quick replies cover the common cases (order status, refund info, delivery date, change address); automatic events such as a refund appear in the thread for context. *Resolve* closes the ticket. Fitkit writes first only in exceptional cases (e.g. a lost parcel).
 
 ![Clients and support](mockups/png/04-clients.png)
-
-**In the existing Fitkit app** only two things are added: an order screen with simple statuses and its items (cancelled ones greyed out with the refund), and the Fitkit Support chat. Price confirmations (one tap) and refund notices arrive in the same chat, plus a push notification.
-
-![Order screen and support chat in the Fitkit app](mockups/png/06-client-app.png)
 
 ## 7. Tracking
 
@@ -105,11 +101,11 @@ Every event is stored once and shown twice: in full in Tracking, and simplified 
 | Support ticket | order, client, status (open / resolved), messages signed “Fitkit Support” |
 | History event | who, what, old → new value, time |
 
-**Integrations:** the existing Fitkit app (order screen, support chat with action cards, push notifications); product-link parsing (Open Graph, schema.org, manual fallback); payments and refunds in ₴; a tracking aggregator with webhooks for the store → warehouse leg; the Nova Poshta API to create shipments and read statuses; a mailbox parser that pulls tracking numbers from store shipping emails. **Requirements:** real-time updates; atomic *Take*; masked contacts with every reveal logged; no card data or store passwords in the app; nothing store-related ever reaches the client; personal data under Ukrainian law and GDPR; layout from 1366 px plus a usable phone view.
+**Integrations:** the Fitkit app (incoming requests, status updates, price confirmations, support messages); product-link parsing (Open Graph, schema.org, manual fallback); payments and refunds in ₴; a tracking aggregator with webhooks for the store → warehouse leg; the Nova Poshta API to create shipments and read statuses; a mailbox parser that pulls tracking numbers from store shipping emails. **Requirements:** real-time updates; atomic *Take*; masked contacts with every reveal logged; no card data or store passwords in the app; nothing store-related ever reaches the client; personal data under Ukrainian law and GDPR; layout from 1366 px plus a usable phone view.
 
 | Stage | Scope |
 | --- | --- |
-| MVP | Requests, request card with rules, statuses, order screen and support chat in the Fitkit app |
+| MVP | Requests, request card with rules, statuses, support tickets |
 | Stage 2 | Tracking aggregator + email parsing, Nova Poshta API, status board, store directory |
 | Stage 3 | Warehouse (receiving, photos, repacking), admin back office with analytics, mobile |
 
