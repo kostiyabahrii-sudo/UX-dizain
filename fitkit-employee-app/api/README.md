@@ -102,6 +102,5 @@ Defined in `internal/integrations` with fakes that log and record calls (used no
 
 ## Not done yet
 
-- Front-end still runs on mock data; next step is an API client in `web/` (`/api` is already proxied to `:8080` in `vite.config.ts`) and a login screen.
 - Real Nova Poshta, aggregator, payment and client-app clients (need accounts and keys).
 - Warehouse photos, admin back office (analytics, rules and thresholds), login rate limiting, multi-instance events (Postgres LISTEN/NOTIFY).

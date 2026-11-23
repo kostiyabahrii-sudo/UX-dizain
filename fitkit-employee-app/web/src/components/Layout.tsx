@@ -9,6 +9,8 @@ import { cn } from '@/lib/utils';
 import { useLookups, useStore } from '@/store/AppStore';
 import { useSettings } from '@/store/Settings';
 
+const ROLE = { buyer: 'Закупник', lead: 'Старший зміни', warehouse: 'Склад', support: 'Підтримка' } as const;
+
 export function Layout() {
   const { state, now, toast } = useStore();
   const { order, client } = useLookups();
@@ -16,7 +18,7 @@ export function Layout() {
   const [q, setQ] = useState('');
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { settings } = useSettings();
-  const me = state.employees.find((e) => e.id === state.me)!;
+  const me = useStore().me;
 
   const newReq = state.orders.filter((o) => o.status === 'new');
   const overdueReq = settings.showRequests ? newReq.filter((o) => new Date(o.dueAt).getTime() < now) : [];
@@ -80,7 +82,7 @@ export function Layout() {
           <Avatar name={me.name} />
           <div className="flex-1 text-sm leading-tight">
             <div className="font-medium">{me.name}</div>
-            <div className="text-xs text-muted-foreground">Закупник</div>
+            <div className="text-xs text-muted-foreground">{ROLE[me.role]}</div>
           </div>
           <SettingsIcon className="size-[18px] text-muted-foreground" />
         </button>

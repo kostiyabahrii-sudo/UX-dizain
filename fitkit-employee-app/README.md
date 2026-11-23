@@ -126,13 +126,10 @@ Spend the build effort on the request card, rules and tracking — that is what 
 
 ---
 
-## Front-end
+## Run the app
 
-The React app lives in [`web/`](web/README.md): `cd web && npm install && npm run dev`.
-
-## Back-end
-
-The Go API lives in [`api/`](api/README.md): `cd api && docker compose up --build`, then `docker compose run --rm api seed`.
+1. Back-end (Go, [`api/`](api/README.md)): `cd api && docker compose up --build`, then `docker compose run --rm api seed` for demo data.
+2. Front-end (React, [`web/`](web/README.md)): `cd web && npm install && npm run dev`, open http://localhost:5173 and sign in as `anna@fitkit.space` / `fitkit-demo`.
 
 ## Mockup files
 

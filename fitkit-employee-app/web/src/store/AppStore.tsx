@@ -1,23 +1,15 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { toast as sonner } from 'sonner';
-import * as mock from '../data/mock';
-import { uah } from '../domain/format';
-import { canMarkPurchased, STATUS_LABEL } from '../domain/rules';
-import type { Client, Employee, Id, Item, Message, Order, OrderStatus, Shipment, Ticket } from '../domain/types';
+import { api, ApiError, type Snapshot } from '@/api/client';
+import { canMarkPurchased, STATUS_LABEL } from '@/domain/rules';
+import type { Client, Employee, Id, Order, OrderStatus } from '@/domain/types';
 
-/**
- * Client-side store for the mock phase. Each action maps 1:1 to a future API call
- * (see README → “API to implement”), so swapping the reducer for fetch calls is local.
- */
-export interface State {
+/** Server data as the UI sees it (money already in hryvnias). */
+export interface State extends Omit<Snapshot, 'me'> {
   me: Id;
-  employees: Employee[];
-  clients: Client[];
-  orders: Order[];
-  shipments: Shipment[];
-  tickets: Ticket[];
 }
 
+/** Every action is one API call; the server re-checks all rules. */
 export type Action =
   | { type: 'take'; orderId: Id }
   | { type: 'setStatus'; orderId: Id; status: OrderStatus }
@@ -30,151 +22,201 @@ export type Action =
   | { type: 'setProblem'; orderId: Id; problem?: string }
   | { type: 'cancelOrder'; orderId: Id }
   | { type: 'addNote'; orderId: Id; text: string }
-  | { type: 'createOutbound'; orderId: Id }
+  | { type: 'ship'; orderId: Id }
   | { type: 'setTracking'; shipmentId: Id; carrier: string; tracking: string }
+  | { type: 'arrived'; shipmentId: Id }
   | { type: 'sendMessage'; ticketId: Id; text: string }
   | { type: 'resolveTicket'; ticketId: Id };
 
-const nowIso = () => new Date().toISOString();
-let uid = 1000;
-const nextId = (p: string) => `${p}${++uid}`;
-
-function meName(s: State) {
-  return s.employees.find((e) => e.id === s.me)?.name ?? 'Я';
-}
-
-function patchOrder(s: State, id: Id, fn: (o: Order) => Order, what?: string): State {
-  return {
-    ...s,
-    orders: s.orders.map((o) => {
-      if (o.id !== id) return o;
-      const next = fn(o);
-      return what ? { ...next, history: [...next.history, { at: nowIso(), who: meName(s), what }] } : next;
-    }),
-  };
-}
-
-function patchItem(s: State, orderId: Id, itemId: Id, fn: (i: Item) => Item, what: (i: Item) => string): State {
-  const item = s.orders.find((o) => o.id === orderId)?.items.find((i) => i.id === itemId);
-  if (!item) return s;
-  return patchOrder(s, orderId, (o) => syncOrder({ ...o, items: o.items.map((i) => (i.id === itemId ? fn(i) : i)) }), what(item));
-}
-
-/** Keep the order status and red flag in line with its items. */
-function syncOrder(o: Order): Order {
-  const awaiting = o.items.some((i) => i.status === 'awaiting');
-  let status = o.status;
-  if (awaiting && (status === 'in_progress' || status === 'new')) status = 'awaiting';
-  if (!awaiting && status === 'awaiting') status = 'in_progress';
-  const soldOut = o.items.find((i) => i.status === 'sold_out');
-  const problem = soldOut ? `${soldOut.name}: немає в наявності — застосуйте правило` : o.problem?.includes('немає в наявності') ? undefined : o.problem;
-  return { ...o, status, problem };
-}
-
-export function reducer(s: State, a: Action): State {
-  switch (a.type) {
-    case 'take':
-      return patchOrder(s, a.orderId, (o) => ({ ...o, ownerId: s.me, status: o.status === 'new' ? 'in_progress' : o.status }), 'Заявку взято в роботу');
-    case 'setStatus': {
-      let next = patchOrder(
-        s,
-        a.orderId,
-        (o) => ({
-          ...o,
-          status: a.status,
-          items: a.status === 'purchased' ? o.items.map((i) => (i.status === 'cancelled' ? i : { ...i, status: 'bought' as const })) : o.items,
-          location: a.status === 'purchased' ? 'Чекаємо ТТН від магазину' : o.location,
-        }),
-        `Статус → ${STATUS_LABEL[a.status]}`,
-      );
-      if (a.status === 'purchased') {
-        const o = next.orders.find((x) => x.id === a.orderId)!;
-        const stores = [...new Set(o.items.filter((i) => i.status === 'bought').map((i) => i.store))];
-        const fresh: Shipment[] = stores
-          .filter((store) => !s.shipments.some((sh) => sh.orderId === o.id && sh.leg === 'in' && sh.store === store))
-          .map((store) => ({ id: nextId('s'), orderId: o.id, leg: 'in', store, events: [{ at: nowIso(), title: `Викуплено в ${store}` }] }));
-        next = { ...next, shipments: [...next.shipments, ...fresh] };
-      }
-      return next;
-    }
-    case 'itemCheck':
-      return patchItem(s, a.orderId, a.itemId, (i) => ({ ...i, status: 'checked' }), (i) => `${i.name}: перевірено`);
-    case 'itemSoldOut':
-      return patchItem(s, a.orderId, a.itemId, (i) => ({ ...i, status: 'sold_out' }), (i) => `${i.name}: позначено «немає в наявності»`);
-    case 'itemCancel':
-      return patchItem(s, a.orderId, a.itemId, (i) => ({ ...i, status: 'cancelled' }), (i) => `${i.name}: скасовано, ${uah((i.price ?? 0) * i.qty)} повернуто`);
-    case 'itemStorePrice':
-      return patchItem(s, a.orderId, a.itemId, (i) => ({ ...i, storePrice: a.price, status: i.status === 'pending' ? 'checked' : i.status }), (i) => `${i.name}: ціна в магазині ${uah(a.price)}`);
-    case 'itemSendConfirm':
-      return patchItem(s, a.orderId, a.itemId, (i) => ({ ...i, status: 'awaiting' }), (i) => `${i.name}: клієнту надіслано запит на підтвердження ціни`);
-    case 'itemClientConfirmed':
-      return patchItem(s, a.orderId, a.itemId, (i) => ({ ...i, status: 'checked', price: i.storePrice ?? i.price }), (i) => `${i.name}: клієнт підтвердив нову ціну`);
-    case 'setProblem':
-      return patchOrder(s, a.orderId, (o) => ({ ...o, problem: a.problem }), a.problem ? `Проблема: ${a.problem}` : 'Проблему знято');
-    case 'cancelOrder':
-      return patchOrder(s, a.orderId, (o) => ({ ...o, status: 'cancelled', items: o.items.map((i) => ({ ...i, status: 'cancelled' as const })) }), 'Замовлення скасовано, повне повернення коштів');
-    case 'addNote':
-      return patchOrder(s, a.orderId, (o) => ({ ...o, notes: [...o.notes, { id: nextId('n'), author: meName(s), at: nowIso(), text: a.text }] }));
-    case 'createOutbound': {
-      const tracking = `2045 ${String(Math.floor(Math.random() * 1e4)).padStart(4, '0')} ${String(Math.floor(Math.random() * 1e4)).padStart(4, '0')} ${String(Math.floor(Math.random() * 100)).padStart(2, '0')}`;
-      const sh: Shipment = { id: nextId('s'), orderId: a.orderId, leg: 'out', carrier: 'Нова Пошта', tracking, source: 'api', events: [{ at: nowIso(), title: 'ТТН створено', detail: 'API Нової Пошти' }] };
-      const next = patchOrder(s, a.orderId, (o) => ({ ...o, status: 'shipped', location: `Нова Пошта · ${tracking}` }), `Відправлено · Нова Пошта ${tracking}`);
-      return { ...next, shipments: [...next.shipments, sh] };
-    }
-    case 'setTracking':
-      return {
-        ...s,
-        shipments: s.shipments.map((sh) =>
-          sh.id === a.shipmentId
-            ? { ...sh, carrier: a.carrier, tracking: a.tracking, source: 'manual', problem: undefined, events: [...sh.events, { at: nowIso(), title: `ТТН додано · ${a.carrier}`, detail: 'введено закупником' }] }
-            : sh,
-        ),
-      };
-    case 'sendMessage': {
-      const m: Message = { id: nextId('m'), from: 'support', text: a.text, at: nowIso() };
-      return { ...s, tickets: s.tickets.map((t) => (t.id === a.ticketId ? { ...t, messages: [...t.messages, m], updatedAt: m.at } : t)) };
-    }
-    case 'resolveTicket':
-      return { ...s, tickets: s.tickets.map((t) => (t.id === a.ticketId ? { ...t, status: 'resolved', summary: 'Вирішено · ' + t.summary, updatedAt: nowIso() } : t)) };
-  }
-}
+type Phase = 'loading' | 'signedOut' | 'ready' | 'offline';
 
 interface Ctx {
   state: State;
-  dispatch: (a: Action) => void;
+  me: Employee;
   now: number;
   toast: (text: string, tone?: 'ok' | 'bad') => void;
-  /** Guarded status change used by the card and the board. Returns false if refused. */
-  moveOrder: (orderId: Id, status: OrderStatus) => boolean;
+  /** Runs an action; shows okMsg on success or the server's message on failure. */
+  dispatch: (a: Action, okMsg?: string) => Promise<boolean>;
+  /** Status change with the same guards as the server, for instant feedback (card and board). */
+  moveOrder: (orderId: Id, status: OrderStatus) => Promise<boolean>;
+  takeNext: () => Promise<Order | null>;
+  logout: () => Promise<void>;
 }
 
 const StoreCtx = createContext<Ctx | null>(null);
+const AuthCtx = createContext<{ phase: Phase; login: (email: string, password: string) => Promise<string | null>; retry: () => void } | null>(null);
+
+const ITEM_ACTION = {
+  itemCheck: 'check',
+  itemSoldOut: 'sold_out',
+  itemCancel: 'cancel',
+  itemSendConfirm: 'send_confirmation',
+  itemClientConfirmed: 'client_confirmed',
+} as const;
 
 export function AppStoreProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, {
-    me: mock.ME,
-    employees: mock.employees,
-    clients: mock.clients,
-    orders: mock.orders,
-    shipments: mock.shipments,
-    tickets: mock.tickets,
-  });
+  const [phase, setPhase] = useState<Phase>('loading');
+  const [snap, setSnap] = useState<Snapshot | null>(null);
   const [now, setNow] = useState(Date.now());
 
+  const toast = useCallback((text: string, tone: 'ok' | 'bad' = 'ok') => (tone === 'bad' ? sonner.error(text) : sonner(text)), []);
+
+  const load = useCallback(async () => {
+    try {
+      setSnap(await api.bootstrap());
+      setPhase('ready');
+    } catch (e) {
+      setPhase(e instanceof ApiError && e.status === 401 ? 'signedOut' : 'offline');
+    }
+  }, []);
+
   useEffect(() => {
+    load();
     const t = setInterval(() => setNow(Date.now()), 30_000);
     return () => clearInterval(t);
+  }, [load]);
+
+  // ---- targeted refreshes
+
+  const upsertOrder = useCallback(
+    (o: Order) => {
+      setSnap((s) => {
+        if (!s) return s;
+        const i = s.orders.findIndex((x) => x.id === o.id);
+        const orders = i >= 0 ? s.orders.map((x) => (x.id === o.id ? o : x)) : [...s.orders, o];
+        return { ...s, orders };
+      });
+      // a new client came with this order (webhook from the client app)
+      setSnap((s) => {
+        if (s && !s.clients.some((c) => c.id === o.clientId)) load();
+        return s;
+      });
+    },
+    [load],
+  );
+  const refreshOrder = useCallback(async (id: Id) => upsertOrder(await api.order(id)), [upsertOrder]);
+  const refreshShipments = useCallback(async () => {
+    const shipments = await api.shipments();
+    setSnap((s) => (s ? { ...s, shipments } : s));
+  }, []);
+  const refreshTickets = useCallback(async () => {
+    const tickets = await api.tickets();
+    setSnap((s) => (s ? { ...s, tickets } : s));
   }, []);
 
-  const toast = useCallback((text: string, tone: 'ok' | 'bad' = 'ok') => {
-    if (tone === 'bad') sonner.error(text);
-    else sonner(text);
-  }, []);
+  // ---- live updates (Server-Sent Events), coalesced per object
+
+  const pending = useRef(new Map<string, ReturnType<typeof setTimeout>>());
+  useEffect(() => {
+    if (phase !== 'ready') return;
+    const es = new EventSource('/api/events', { withCredentials: true });
+    const schedule = (key: string, fn: () => Promise<unknown>) => {
+      clearTimeout(pending.current.get(key));
+      pending.current.set(
+        key,
+        setTimeout(() => {
+          pending.current.delete(key);
+          fn().catch(() => {});
+        }, 150),
+      );
+    };
+    const on = (type: string, fn: (id: string) => void) => es.addEventListener(type, (e) => fn(JSON.parse((e as MessageEvent).data).id));
+    on('order', (id) => schedule('order:' + id, () => refreshOrder(id)));
+    on('shipment', () => schedule('shipments', refreshShipments));
+    on('ticket', () => schedule('tickets', refreshTickets));
+    // after a reconnect we may have missed events — reload everything
+    let opened = false;
+    es.onopen = () => {
+      if (opened) load();
+      opened = true;
+    };
+    return () => es.close();
+  }, [phase, refreshOrder, refreshShipments, refreshTickets, load]);
+
+  // ---- actions
+
+  const snapRef = useRef(snap);
+  snapRef.current = snap;
+
+  const fail = useCallback(
+    (e: unknown) => {
+      if (e instanceof ApiError && e.status === 401) {
+        setPhase('signedOut');
+        return;
+      }
+      toast(e instanceof Error ? e.message : 'Щось пішло не так', 'bad');
+    },
+    [toast],
+  );
+
+  const dispatch = useCallback(
+    async (a: Action, okMsg?: string) => {
+      try {
+        switch (a.type) {
+          case 'take':
+            upsertOrder(await api.take(a.orderId));
+            break;
+          case 'setStatus':
+            upsertOrder(await api.setStatus(a.orderId, a.status));
+            if (a.status === 'purchased') await refreshShipments();
+            break;
+          case 'itemStorePrice':
+            upsertOrder(await api.item(a.orderId, a.itemId, 'store_price', a.price));
+            break;
+          case 'itemCheck':
+          case 'itemSoldOut':
+          case 'itemCancel':
+          case 'itemSendConfirm':
+          case 'itemClientConfirmed':
+            upsertOrder(await api.item(a.orderId, a.itemId, ITEM_ACTION[a.type]));
+            break;
+          case 'setProblem':
+            upsertOrder(await api.setProblem(a.orderId, a.problem));
+            break;
+          case 'cancelOrder':
+            upsertOrder(await api.cancel(a.orderId));
+            break;
+          case 'addNote':
+            await api.addNote(a.orderId, a.text);
+            await refreshOrder(a.orderId);
+            break;
+          case 'ship':
+            upsertOrder(await api.ship(a.orderId));
+            await refreshShipments();
+            break;
+          case 'setTracking':
+          case 'arrived': {
+            if (a.type === 'setTracking') await api.setTracking(a.shipmentId, a.tracking, a.carrier);
+            else await api.arrived(a.shipmentId);
+            await refreshShipments();
+            const sh = snapRef.current?.shipments.find((x) => x.id === a.shipmentId);
+            if (sh) await refreshOrder(sh.orderId);
+            break;
+          }
+          case 'sendMessage':
+            await api.reply(a.ticketId, a.text);
+            await refreshTickets();
+            break;
+          case 'resolveTicket':
+            await api.resolve(a.ticketId);
+            await refreshTickets();
+            break;
+        }
+        if (okMsg) toast(okMsg);
+        return true;
+      } catch (e) {
+        fail(e);
+        return false;
+      }
+    },
+    [upsertOrder, refreshOrder, refreshShipments, refreshTickets, toast, fail],
+  );
 
   const moveOrder = useCallback(
-    (orderId: Id, status: OrderStatus) => {
-      const o = state.orders.find((x) => x.id === orderId);
-      if (!o || o.status === status) return false;
+    async (orderId: Id, status: OrderStatus) => {
+      const s = snapRef.current;
+      const o = s?.orders.find((x) => x.id === orderId);
+      if (!s || !o || o.status === status) return false;
       if (status === 'purchased' && !canMarkPurchased(o)) {
         toast('Спершу розберіть кожен товар: перевірте, застосуйте правило або скасуйте.', 'bad');
         return false;
@@ -184,42 +226,80 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
         return false;
       }
       if (status === 'shipped') {
-        if (o.status !== 'purchased') {
-          toast('Відправити можна лише викуплене замовлення.', 'bad');
-          return false;
-        }
-        const inbound = state.shipments.filter((sh) => sh.orderId === orderId && sh.leg === 'in');
-        if (!inbound.length || !inbound.every((sh) => sh.atWarehouse)) {
-          toast('Спершу всі посилки мають прибути на склад.', 'bad');
-          return false;
-        }
-        dispatch({ type: 'createOutbound', orderId });
-        toast(`${o.number} відправлено · ТТН Нової Пошти створено`);
-        return true;
+        const inbound = s.shipments.filter((sh) => sh.orderId === orderId && sh.leg === 'in');
+        if (o.status !== 'purchased') return toast('Відправити можна лише викуплене замовлення.', 'bad'), false;
+        if (!inbound.length || !inbound.every((sh) => sh.atWarehouse)) return toast('Спершу всі посилки мають прибути на склад.', 'bad'), false;
+        return dispatch({ type: 'ship', orderId }, `${o.number} відправлено · ТТН Нової Пошти створено`);
       }
-      dispatch({ type: 'setStatus', orderId, status });
-      toast(`${o.number} → ${STATUS_LABEL[status]}`);
-      return true;
+      return dispatch({ type: 'setStatus', orderId, status }, `${o.number} → ${STATUS_LABEL[status]}`);
     },
-    [state.orders, state.shipments, toast],
+    [dispatch, toast],
   );
 
-  const value = useMemo(() => ({ state, dispatch, now, toast, moveOrder }), [state, now, toast, moveOrder]);
-  return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>;
+  const takeNext = useCallback(async () => {
+    try {
+      const o = await api.takeNext();
+      upsertOrder(o);
+      toast(`${o.number} тепер ваша`);
+      return o;
+    } catch (e) {
+      fail(e);
+      return null;
+    }
+  }, [upsertOrder, toast, fail]);
+
+  const login = useCallback(
+    async (email: string, password: string) => {
+      try {
+        await api.login(email, password);
+        setPhase('loading');
+        await load();
+        return null;
+      } catch (e) {
+        return e instanceof Error ? e.message : 'Не вдалося увійти';
+      }
+    },
+    [load],
+  );
+
+  const logout = useCallback(async () => {
+    await api.logout().catch(() => {});
+    setSnap(null);
+    setPhase('signedOut');
+  }, []);
+
+  const auth = useMemo(() => ({ phase, login, retry: () => (setPhase('loading'), load()) }), [phase, login, load]);
+  const value = useMemo<Ctx | null>(
+    () => (snap ? { state: { ...snap, me: snap.me.id }, me: snap.me, now, toast, dispatch, moveOrder, takeNext, logout } : null),
+    [snap, now, toast, dispatch, moveOrder, takeNext, logout],
+  );
+
+  return (
+    <AuthCtx.Provider value={auth}>
+      <StoreCtx.Provider value={phase === 'ready' ? value : null}>{children}</StoreCtx.Provider>
+    </AuthCtx.Provider>
+  );
+}
+
+export function useAuth() {
+  const c = useContext(AuthCtx);
+  if (!c) throw new Error('useAuth outside AppStoreProvider');
+  return c;
 }
 
 export function useStore() {
   const c = useContext(StoreCtx);
-  if (!c) throw new Error('useStore outside AppStoreProvider');
+  if (!c) throw new Error('useStore used before sign-in');
   return c;
 }
 
-/** Lookup helpers */
+const UNKNOWN_CLIENT: Client = { id: '', name: '—', phone: '', city: '', branch: '', sizes: '', stores: '' };
+
 export function useLookups() {
   const { state } = useStore();
   return useMemo(
     () => ({
-      client: (id: Id) => state.clients.find((c) => c.id === id)!,
+      client: (id: Id) => state.clients.find((c) => c.id === id) ?? UNKNOWN_CLIENT,
       employee: (id?: Id) => state.employees.find((e) => e.id === id),
       order: (id: Id) => state.orders.find((o) => o.id === id),
       orderByNumber: (num: string) => state.orders.find((o) => o.number === num),

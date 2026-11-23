@@ -5,10 +5,16 @@ import { ClientsPage } from '@/pages/ClientsPage';
 import { OrderPage } from '@/pages/OrderPage';
 import { RequestsPage } from '@/pages/RequestsPage';
 import { TrackingPage } from '@/pages/TrackingPage';
+import { LoginPage, SplashScreen } from '@/pages/LoginPage';
+import { useAuth } from '@/store/AppStore';
 import { useSettings } from '@/store/Settings';
 
 export function App() {
   const { settings } = useSettings();
+  const { phase, retry } = useAuth();
+  if (phase === 'loading') return <SplashScreen />;
+  if (phase === 'offline') return <SplashScreen offline onRetry={retry} />;
+  if (phase === 'signedOut') return <LoginPage />;
   return (
     <Routes>
       <Route element={<Layout />}>

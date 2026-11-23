@@ -5,14 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, CopyButton, Empty, FilterTabs, OrderStatus, StatusDot, Thumbs } from '@/components/shared';
-import { QUICK_REPLIES } from '@/data/mock';
+import { QUICK_REPLIES } from '@/data/quickReplies';
 import { clock, dayLabel } from '@/domain/format';
 import { clientStatus } from '@/domain/rules';
 import { cn } from '@/lib/utils';
 import { useLookups, useStore } from '@/store/AppStore';
 
 export function ClientsPage() {
-  const { state, dispatch, now, toast } = useStore();
+  const { state, dispatch, now } = useStore();
   const { client, order } = useLookups();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
@@ -39,17 +39,19 @@ export function ClientsPage() {
   const sel = selectedId ? client(selectedId) : undefined;
   const selTickets = state.tickets.filter((t) => t.clientId === selectedId).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   const ticket = selTickets.find((t) => t.status === 'open') ?? selTickets[0];
-  const tOrder = ticket ? order(ticket.orderId) : undefined;
+  const tOrder = ticket?.orderId ? order(ticket.orderId) : undefined;
   const clientOrders = state.orders.filter((o) => o.clientId === selectedId).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
   useEffect(() => {
     msgsRef.current?.scrollTo({ top: msgsRef.current.scrollHeight });
   }, [ticket?.messages.length, selectedId]);
 
-  function send() {
-    if (!ticket || !text.trim()) return;
-    dispatch({ type: 'sendMessage', ticketId: ticket.id, text: text.trim() });
-    setText('');
+  const [sending, setSending] = useState(false);
+  async function send() {
+    if (!ticket || !text.trim() || sending) return;
+    setSending(true);
+    if (await dispatch({ type: 'sendMessage', ticketId: ticket.id, text: text.trim() })) setText('');
+    setSending(false);
   }
 
   return (
@@ -64,7 +66,7 @@ export function ClientsPage() {
         <div className="flex-1 overflow-auto px-3 pb-3">
           {rows.length === 0 && <Empty>{tab === 'open' ? 'Відкритих звернень немає.' : 'Нікого не знайдено.'}</Empty>}
           {rows.map(({ c, ticket: t }) => {
-            const o = t ? order(t.orderId) : undefined;
+            const o = t?.orderId ? order(t.orderId) : undefined;
             const unread = t?.status === 'open' && t.messages.at(-1)?.from === 'client';
             return (
               <button key={c.id} onClick={() => setParams({ client: c.id })} className={cn('mb-1 flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left transition-colors hover:bg-secondary', c.id === selectedId && 'bg-secondary')}>
@@ -109,8 +111,7 @@ export function ClientsPage() {
                 <Button
                   size="sm"
                   onClick={() => {
-                    dispatch({ type: 'resolveTicket', ticketId: ticket.id });
-                    toast('Звернення закрито');
+                    dispatch({ type: 'resolveTicket', ticketId: ticket.id }, 'Звернення закрито');
                   }}
                 >
                   Закрити звернення
@@ -162,7 +163,7 @@ export function ClientsPage() {
                     placeholder="Відповідь від імені Підтримки Fitkit. Enter — надіслати"
                     className="max-h-40 min-h-11"
                   />
-                  <Button type="submit" size="lg" disabled={!text.trim()}>
+                  <Button type="submit" size="lg" disabled={!text.trim() || sending}>
                     <SendIcon /> Надіслати
                   </Button>
                 </form>

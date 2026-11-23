@@ -36,7 +36,7 @@ const ITEM_STATUS: Record<ItemStatus, [string, Tone]> = {
 
 export function OrderPage() {
   const { id = '' } = useParams();
-  const { state, now, moveOrder, dispatch, toast } = useStore();
+  const { state, now, moveOrder, dispatch } = useStore();
   const { client, employee, order: getOrder } = useLookups();
   const navigate = useNavigate();
   const [priceItem, setPriceItem] = useState<Item | null>(null);
@@ -68,10 +68,9 @@ export function OrderPage() {
   function main() {
     if (!step) return;
     if (o!.status === 'new') {
-      dispatch({ type: 'take', orderId: o!.id });
-      return toast(`${o!.number} тепер ваша`);
+      return dispatch({ type: 'take', orderId: o!.id }, `${o!.number} тепер ваша`);
     }
-    moveOrder(o!.id, step.to);
+    return moveOrder(o!.id, step.to);
   }
 
   return (
@@ -200,13 +199,12 @@ function Row({ label, value }: { label: string; value: string }) {
 }
 
 function ItemRow({ order, item, editable, onPrice }: { order: Order; item: Item; editable: boolean; onPrice: () => void }) {
-  const { dispatch, toast } = useStore();
+  const { dispatch } = useStore();
   const rule = ruleFor(item);
   const [label, tone] = ITEM_STATUS[item.status];
   const cancelled = item.status === 'cancelled';
   const d = (type: 'itemCheck' | 'itemSoldOut' | 'itemCancel' | 'itemSendConfirm' | 'itemClientConfirmed', msg: string) => {
-    dispatch({ type, orderId: order.id, itemId: item.id });
-    toast(msg);
+    dispatch({ type, orderId: order.id, itemId: item.id }, msg);
   };
   const price =
     item.price == null ? (
@@ -397,7 +395,7 @@ function Notes({ order }: { order: Order }) {
 }
 
 function CancelOrder({ order, paid }: { order: Order; paid: string | null }) {
-  const { dispatch, toast } = useStore();
+  const { dispatch } = useStore();
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -414,8 +412,7 @@ function CancelOrder({ order, paid }: { order: Order; paid: string | null }) {
           <AlertDialogCancel>Залишити</AlertDialogCancel>
           <AlertDialogAction
             onClick={() => {
-              dispatch({ type: 'cancelOrder', orderId: order.id });
-              toast(`${order.number} скасовано`);
+              dispatch({ type: 'cancelOrder', orderId: order.id }, `${order.number} скасовано`);
             }}
           >
             Скасувати й повернути кошти
@@ -478,11 +475,10 @@ function PriceForm({ order, item, onClose }: { order: Order; item: Item; onClose
 const PROBLEMS = ['Магазин скасував замовлення', 'Оплату відхилено', 'Прийшов не той товар', 'Посилку втрачено або пошкоджено', 'Клієнт не на зв’язку'];
 
 function ProblemDialog({ order, open, onOpenChange }: { order: Order; open: boolean; onOpenChange: (v: boolean) => void }) {
-  const { dispatch, toast } = useStore();
+  const { dispatch } = useStore();
   const [text, setText] = useState(order.problem ?? '');
   const save = (p?: string) => {
-    dispatch({ type: 'setProblem', orderId: order.id, problem: p });
-    toast(p ? 'Проблему позначено — старшого зміни сповіщено' : 'Проблему знято');
+    dispatch({ type: 'setProblem', orderId: order.id, problem: p }, p ? 'Проблему позначено — старшого зміни сповіщено' : 'Проблему знято');
     onOpenChange(false);
   };
   return (

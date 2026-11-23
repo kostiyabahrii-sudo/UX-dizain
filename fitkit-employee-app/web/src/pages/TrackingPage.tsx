@@ -17,7 +17,7 @@ type Tab = 'all' | 'in' | 'warehouse' | 'out' | 'problems';
 const SOURCE = { email: 'з листа магазину', manual: 'введено закупником', api: 'створено через API Нової Пошти' } as const;
 
 export function TrackingPage() {
-  const { state, now, moveOrder } = useStore();
+  const { state, now, moveOrder, dispatch } = useStore();
   const { client, order } = useLookups();
   const [params, setParams] = useSearchParams();
   const [tab, setTab] = useState<Tab>('all');
@@ -132,11 +132,16 @@ export function TrackingPage() {
                   <Timeline key={s.id} events={s.events} now={now}>
                     {!s.atWarehouse && (
                       <Step pending title={s.problem ?? 'Прибуде на склад'} sub={s.tracking ? 'оновлення від агрегатора трекінгу' : undefined}>
-                        {!s.tracking && (
-                          <Button size="sm" variant="secondary" className="mt-2" onClick={() => setEdit(s)}>
-                            Додати ТТН
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {!s.tracking && (
+                            <Button size="sm" variant="secondary" onClick={() => setEdit(s)}>
+                              Додати ТТН
+                            </Button>
+                          )}
+                          <Button size="sm" variant="outline" onClick={() => dispatch({ type: 'arrived', shipmentId: s.id }, `Посилку від ${s.store} прийнято на складі`)}>
+                            Прийнято на складі
                           </Button>
-                        )}
+                        </div>
                       </Step>
                     )}
                   </Timeline>
@@ -207,7 +212,7 @@ function Step({ title, sub, pending, children }: { title: string; sub?: string; 
 }
 
 function TrackingDialog({ shipment, onClose }: { shipment: Shipment | null; onClose: () => void }) {
-  const { dispatch, toast } = useStore();
+  const { dispatch } = useStore();
   const [carrier, setCarrier] = useState('');
   const [tracking, setTracking] = useState('');
   return (
@@ -224,11 +229,11 @@ function TrackingDialog({ shipment, onClose }: { shipment: Shipment | null; onCl
       <DialogContent>
         <form
           className="grid gap-5"
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             if (!shipment) return;
-            dispatch({ type: 'setTracking', shipmentId: shipment.id, carrier: carrier.trim() || 'Автовизначення', tracking: tracking.trim() });
-            toast('ТТН додано — агрегатор відстежуватиме посилку');
+            const ok = await dispatch({ type: 'setTracking', shipmentId: shipment.id, carrier: carrier.trim(), tracking: tracking.trim() }, 'ТТН додано — агрегатор відстежуватиме посилку');
+            if (!ok) return;
             onClose();
             setCarrier('');
             setTracking('');

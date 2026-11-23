@@ -18,16 +18,13 @@ export type ItemStatus = 'pending' | 'checked' | 'sold_out' | 'price_up' | 'awai
 export interface Employee {
   id: Id;
   name: string;
+  email?: string;
   role: 'buyer' | 'lead' | 'warehouse' | 'support';
-  color: AvatarColor;
 }
-
-export type AvatarColor = 'c1' | 'c2' | 'c3' | 'c4' | 'c5';
 
 export interface Client {
   id: Id;
   name: string;
-  color: AvatarColor;
   telegram?: string;
   phone: string;
   /** Nova Poshta delivery: city + branch (or postomat). */
@@ -121,7 +118,7 @@ export interface Message {
 export interface Ticket {
   id: Id;
   clientId: Id;
-  orderId: Id;
+  orderId?: Id;
   status: 'open' | 'resolved';
   summary: string;
   messages: Message[];

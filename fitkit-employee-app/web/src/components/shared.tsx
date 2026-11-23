@@ -11,7 +11,8 @@ import { cn } from '@/lib/utils';
 
 /** Garment photo (white background cut-outs). */
 export function Photo({ src, className }: { src: string; className?: string }) {
-  return <img src={`/assets/photos/${src}.jpg`} alt="" loading="lazy" className={cn('shrink-0 rounded-xl bg-white object-cover', className)} />;
+  const url = src.includes('/') ? src : `/assets/photos/${src}.jpg`;
+  return <img src={url} alt="" loading="lazy" className={cn('shrink-0 rounded-xl bg-white object-cover', className)} />;
 }
 
 export function Thumbs({ items, max = 3, className = 'h-10 w-8' }: { items: Pick<Item, 'photo' | 'id'>[]; max?: number; className?: string }) {

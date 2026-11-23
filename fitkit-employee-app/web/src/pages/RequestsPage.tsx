@@ -12,7 +12,7 @@ import { useStore } from '@/store/AppStore';
 type Tab = 'all' | 'new' | 'overdue';
 
 export function RequestsPage() {
-  const { state, dispatch, now, toast } = useStore();
+  const { state, now, takeNext: takeNextApi } = useStore();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>('all');
 
@@ -22,12 +22,12 @@ export function RequestsPage() {
   const fresh = requests.filter((o) => !isLate(o.dueAt));
   const rows = tab === 'overdue' ? overdue : tab === 'new' ? fresh : requests;
 
-  function takeNext() {
-    const next = [...requests].sort((a, b) => a.createdAt.localeCompare(b.createdAt))[0];
-    if (!next) return;
-    dispatch({ type: 'take', orderId: next.id });
-    toast(`${next.number} тепер ваша`);
-    navigate(`/orders/${next.id}`);
+  const [busy, setBusy] = useState(false);
+  async function takeNext() {
+    setBusy(true);
+    const o = await takeNextApi();
+    setBusy(false);
+    if (o) navigate(`/orders/${o.id}`);
   }
 
   return (
@@ -36,7 +36,7 @@ export function RequestsPage() {
         <h1 className="flex-1 text-2xl font-semibold tracking-tight">
           Заявки <Count>{requests.length}</Count>
         </h1>
-        <Button size="lg" onClick={takeNext} disabled={!requests.length}>
+        <Button size="lg" onClick={takeNext} disabled={!requests.length || busy}>
           Взяти наступну заявку <ArrowRightIcon />
         </Button>
       </div>

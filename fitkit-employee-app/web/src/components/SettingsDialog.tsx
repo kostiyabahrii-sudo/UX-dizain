@@ -1,12 +1,15 @@
-import { MoonIcon, SunIcon } from 'lucide-react';
+import { LogOutIcon, MoonIcon, SunIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useStore } from '@/store/AppStore';
 import { useSettings, type Theme } from '@/store/Settings';
 
 export function SettingsDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   const { settings, update } = useSettings();
+  const { me, logout } = useStore();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -38,6 +41,15 @@ export function SettingsDialog({ open, onOpenChange }: { open: boolean; onOpenCh
             </Label>
             <Switch id="show-requests" checked={settings.showRequests} onCheckedChange={(v) => update({ showRequests: v })} />
           </div>
+        </div>
+        <div className="flex items-center justify-between gap-4 border-t pt-4">
+          <div className="min-w-0 text-sm">
+            <div className="truncate font-medium">{me.name}</div>
+            <div className="truncate text-xs text-muted-foreground">{me.email}</div>
+          </div>
+          <Button variant="outline" onClick={() => logout()}>
+            <LogOutIcon /> Вийти
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
