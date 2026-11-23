@@ -29,9 +29,10 @@ export interface Client {
   name: string;
   color: AvatarColor;
   telegram?: string;
-  phoneMasked: string;
-  address: string;
-  delivery: string;
+  phone: string;
+  /** Nova Poshta delivery: city + branch (or postomat). */
+  city: string;
+  branch: string;
   sizes: string;
   stores: string;
   dislikes?: string;

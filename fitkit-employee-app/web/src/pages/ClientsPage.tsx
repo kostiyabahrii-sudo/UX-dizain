@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Icon } from '../components/Icon';
-import { Avatar, Empty, StatusPill, Tabs, Thumbs } from '../components/ui';
-import { QUICK_REPLIES } from '../data/mock';
-import { clock, dayLabel } from '../domain/format';
-import { clientStatus } from '../domain/rules';
-import { useLookups, useStore } from '../store/AppStore';
+import { SendIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Avatar, CopyButton, Empty, FilterTabs, OrderStatus, StatusDot, Thumbs } from '@/components/shared';
+import { QUICK_REPLIES } from '@/data/mock';
+import { clock, dayLabel } from '@/domain/format';
+import { clientStatus } from '@/domain/rules';
+import { cn } from '@/lib/utils';
+import { useLookups, useStore } from '@/store/AppStore';
 
 export function ClientsPage() {
   const { state, dispatch, now, toast } = useStore();
@@ -15,22 +19,21 @@ export function ClientsPage() {
   const [tab, setTab] = useState<'all' | 'open'>('open');
   const [q, setQ] = useState('');
   const [text, setText] = useState('');
-  const [revealed, setRevealed] = useState(false);
   const msgsRef = useRef<HTMLDivElement>(null);
 
   const openCount = state.tickets.filter((t) => t.status === 'open').length;
-
-  /** One row per client: latest ticket if any, else the latest order. */
-  const rows = useMemo(() => {
-    return state.clients
-      .map((c) => {
-        const ts = state.tickets.filter((t) => t.clientId === c.id).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
-        return { c, ticket: ts.find((t) => t.status === 'open') ?? ts[0] };
-      })
-      .filter((r) => (tab === 'all' ? true : r.ticket?.status === 'open'))
-      .filter((r) => r.c.name.toLowerCase().includes(q.toLowerCase()))
-      .sort((a, b) => (b.ticket?.updatedAt ?? '').localeCompare(a.ticket?.updatedAt ?? ''));
-  }, [state.clients, state.tickets, tab, q]);
+  const rows = useMemo(
+    () =>
+      state.clients
+        .map((c) => {
+          const ts = state.tickets.filter((t) => t.clientId === c.id).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+          return { c, ticket: ts.find((t) => t.status === 'open') ?? ts[0] };
+        })
+        .filter((r) => (tab === 'all' ? true : r.ticket?.status === 'open'))
+        .filter((r) => r.c.name.toLowerCase().includes(q.toLowerCase()))
+        .sort((a, b) => (b.ticket?.updatedAt ?? '').localeCompare(a.ticket?.updatedAt ?? '')),
+    [state.clients, state.tickets, tab, q],
+  );
 
   const selectedId = params.get('client') ?? rows[0]?.c.id;
   const sel = selectedId ? client(selectedId) : undefined;
@@ -42,7 +45,6 @@ export function ClientsPage() {
   useEffect(() => {
     msgsRef.current?.scrollTo({ top: msgsRef.current.scrollHeight });
   }, [ticket?.messages.length, selectedId]);
-  useEffect(() => setRevealed(false), [selectedId]);
 
   function send() {
     if (!ticket || !text.trim()) return;
@@ -51,110 +53,103 @@ export function ClientsPage() {
   }
 
   return (
-    <div className="wrap">
-      <div className="list">
-        <div className="hd2">
-          <h1>Клієнти</h1>
+    <div className="-mx-10 -my-8 flex h-[calc(100vh-4rem)]">
+      {/* list */}
+      <div className="flex w-72 shrink-0 flex-col border-r">
+        <div className="flex flex-col gap-3 px-5 pt-6 pb-4">
+          <h1 className="text-2xl font-semibold tracking-tight">Клієнти</h1>
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Знайти клієнта" aria-label="Знайти клієнта" />
+          <FilterTabs value={tab} onChange={setTab} tabs={[{ key: 'all', label: 'Усі' }, { key: 'open', label: 'Відкриті звернення', count: openCount }]} />
         </div>
-        <input className="s2" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Знайти клієнта…" />
-        <div style={{ padding: '0 14px 10px' }}>
-          <Tabs value={tab} onChange={setTab} tabs={[{ key: 'all', label: 'Усі' }, { key: 'open', label: 'Відкриті звернення', count: openCount }]} />
-        </div>
-        <div className="scroll">
-          {rows.length === 0 && <Empty>Відкритих звернень немає 🎉</Empty>}
+        <div className="flex-1 overflow-auto px-3 pb-3">
+          {rows.length === 0 && <Empty>{tab === 'open' ? 'Відкритих звернень немає.' : 'Нікого не знайдено.'}</Empty>}
           {rows.map(({ c, ticket: t }) => {
             const o = t ? order(t.orderId) : undefined;
+            const unread = t?.status === 'open' && t.messages.at(-1)?.from === 'client';
             return (
-              <button key={c.id} className={`c ${c.id === selectedId ? 'on' : ''}`} onClick={() => setParams({ client: c.id })}>
-                <Avatar name={c.name} color={c.color} />
-                <div className="t">
-                  <b>
-                    {c.name}
-                    <small>{t ? (t.status === 'open' ? clock(t.updatedAt) : dayLabel(t.updatedAt, now).split(',')[0]) : ''}</small>
-                  </b>
-                  <p>
-                    {o && <span style={{ color: 'var(--clay)' }}>{o.number}</span>}
-                    {t ? ` · ${t.summary}` : ' · звернень немає'}
-                  </p>
+              <button key={c.id} onClick={() => setParams({ client: c.id })} className={cn('flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left transition-colors hover:bg-secondary/60', c.id === selectedId && 'bg-secondary')}>
+                <Avatar name={c.name} className={c.id === selectedId ? 'bg-background' : undefined} />
+                <div className="min-w-0 flex-1 text-sm">
+                  <div className="flex justify-between gap-2 font-medium">
+                    <span className="truncate">{c.name}</span>
+                    <span className="tabular shrink-0 text-xs font-normal text-muted-foreground">{t ? (t.status === 'open' ? clock(t.updatedAt) : dayLabel(t.updatedAt, now).split(',')[0]) : ''}</span>
+                  </div>
+                  <div className="truncate text-muted-foreground">
+                    {o && <span className="text-foreground">{o.number} · </span>}
+                    {t ? t.summary : 'звернень немає'}
+                  </div>
                 </div>
-                {t?.status === 'open' && t.messages.at(-1)?.from === 'client' && (
-                  <span className="badge" style={{ alignSelf: 'center' }}>
-                    1
-                  </span>
-                )}
+                {unread && <span className="size-2 shrink-0 rounded-full bg-foreground" aria-label="Нове повідомлення" />}
               </button>
             );
           })}
         </div>
       </div>
 
-      <div className="chat">
+      {/* thread */}
+      <div className="flex min-w-0 flex-1 flex-col">
         {!sel || !ticket ? (
           <Empty>{sel ? 'Звернень від цього клієнта немає.' : 'Оберіть клієнта.'}</Empty>
         ) : (
           <>
-            <div className="head">
-              <div className="grow">
-                <b>
-                  Звернення · {sel.name} {ticket.status === 'resolved' && <span className="st ok">Вирішено</span>}
-                </b>
-                {tOrder && (
-                  <div className="sub">
-                    Замовлення {tOrder.number} · клієнт бачить «{clientStatus(tOrder.status, tOrder)}»
-                  </div>
-                )}
+            <div className="flex items-center gap-3 border-b px-6 py-4">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 font-semibold">
+                  {sel.name}
+                  {ticket.status === 'resolved' && <StatusDot tone="ok">Вирішено</StatusDot>}
+                </div>
+                {tOrder && <div className="truncate text-sm text-muted-foreground">Клієнт бачить «{clientStatus(tOrder.status, tOrder)}»</div>}
               </div>
               {tOrder && (
-                <button className="btn" onClick={() => navigate(`/orders/${tOrder.id}`)}>
-                  Відкрити замовлення
-                </button>
+                <Button variant="outline" size="sm" onClick={() => navigate(`/orders/${tOrder.id}`)}>
+                  Замовлення {tOrder.number}
+                </Button>
               )}
               {ticket.status === 'open' && (
-                <button
-                  className="btn pri"
+                <Button
+                  size="sm"
                   onClick={() => {
                     dispatch({ type: 'resolveTicket', ticketId: ticket.id });
                     toast('Звернення закрито');
                   }}
                 >
-                  Закрити
-                </button>
+                  Закрити звернення
+                </Button>
               )}
             </div>
-            <div className="msgs" ref={msgsRef}>
+            <div ref={msgsRef} className="flex flex-1 flex-col gap-3 overflow-auto px-6 py-6">
               {ticket.messages.map((m) =>
                 m.from === 'system' ? (
-                  <div key={m.id} className="sys">
+                  <div key={m.id} className="self-center rounded-full bg-secondary px-3 py-1 text-xs text-muted-foreground">
                     {m.text}
                   </div>
                 ) : (
-                  <div key={m.id} className={`m ${m.from === 'client' ? 'cl' : 'me'}`}>
+                  <div key={m.id} className={cn('max-w-[64%] rounded-3xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap', m.from === 'client' ? 'self-start rounded-bl-md bg-card border' : 'self-end rounded-br-md bg-primary text-primary-foreground')}>
                     {m.text}
-                    <small>
+                    <div className={cn('mt-1 text-[11px]', m.from === 'client' ? 'text-muted-foreground' : 'text-primary-foreground/60')}>
                       {m.from === 'client' ? sel.name.split(' ')[0] : 'Підтримка Fitkit'} · {dayLabel(m.at, now)}
-                    </small>
+                    </div>
                   </div>
                 ),
               )}
             </div>
             {ticket.status === 'open' && (
-              <>
-                <div className="quick">
+              <div className="flex flex-col gap-3 border-t px-6 py-4">
+                <div className="flex flex-wrap gap-2">
                   {Object.entries(QUICK_REPLIES).map(([k, v]) => (
-                    <button key={k} onClick={() => setText(v)}>
+                    <Button key={k} size="sm" variant="secondary" onClick={() => setText(v)}>
                       {k}
-                    </button>
+                    </Button>
                   ))}
                 </div>
                 <form
-                  className="composer"
+                  className="flex items-end gap-3"
                   onSubmit={(e) => {
                     e.preventDefault();
                     send();
                   }}
                 >
-                  <textarea
-                    className="in"
+                  <Textarea
                     value={text}
                     rows={1}
                     onChange={(e) => setText(e.target.value)}
@@ -164,79 +159,78 @@ export function ClientsPage() {
                         send();
                       }
                     }}
-                    placeholder="Відповісти від імені Підтримки Fitkit…"
+                    placeholder="Відповідь від імені Підтримки Fitkit. Enter — надіслати"
+                    className="max-h-40 min-h-11"
                   />
-                  <button className="btn pri" style={{ height: 42 }} disabled={!text.trim()}>
-                    <Icon name="send" />
-                    Надіслати
-                  </button>
+                  <Button type="submit" size="lg" disabled={!text.trim()}>
+                    <SendIcon /> Надіслати
+                  </Button>
                 </form>
-              </>
+              </div>
             )}
           </>
         )}
       </div>
 
+      {/* details */}
       {sel && (
-        <div className="info">
-          <div>
-            <div className="lbl">Контакти</div>
-            {sel.telegram && (
-              <div className="kv2">
-                <span>Telegram</span>
-                {sel.telegram}
-              </div>
-            )}
-            <div className="kv2">
-              <span>Телефон</span>
-              {revealed ? sel.phoneMasked.replace('•••', '555') : sel.phoneMasked}{' '}
-              {!revealed && (
-                <button className="btn link" onClick={() => setRevealed(true)} title="Кожен перегляд записується в журнал">
-                  Показати
-                </button>
+        <div className="flex w-72 shrink-0 flex-col gap-6 overflow-auto border-l px-5 py-6 text-sm">
+          <Section title="Контакти">
+            <Field label="Телефон" value={sel.phone} />
+            {sel.telegram && <Field label="Telegram" value={sel.telegram} />}
+          </Section>
+          <Section title="Доставка">
+            <Field label="Місто" value={sel.city} />
+            <Field label="Нова Пошта" value={sel.branch} />
+          </Section>
+          <Section title="Вподобання">
+            <div className="grid grid-cols-[88px_1fr] gap-y-1.5">
+              <span className="text-muted-foreground">Розміри</span>
+              {sel.sizes}
+              <span className="text-muted-foreground">Магазини</span>
+              {sel.stores}
+              {sel.dislikes && (
+                <>
+                  <span className="text-muted-foreground">Не любить</span>
+                  {sel.dislikes}
+                </>
               )}
             </div>
-          </div>
-          <div>
-            <div className="lbl">Адреса</div>
-            <div style={{ fontSize: 13.5 }}>{sel.address}</div>
-            <div className="sub">{sel.delivery}</div>
-          </div>
-          <div>
-            <div className="lbl">Вподобання</div>
-            <div className="kv2">
-              <span>Розміри</span>
-              {sel.sizes}
-            </div>
-            <div className="kv2">
-              <span>Магазини</span>
-              {sel.stores}
-            </div>
-            {sel.dislikes && (
-              <div className="kv2">
-                <span>Не любить</span>
-                <em style={{ color: 'var(--bad)', fontStyle: 'normal' }}>{sel.dislikes}</em>
-              </div>
-            )}
-            {sel.note && (
-              <div className="sub" style={{ marginTop: 6, fontSize: 12.5 }}>
-                {sel.note}
-              </div>
-            )}
-          </div>
-          <div>
-            <div className="lbl">Замовлення · {clientOrders.length}</div>
+            {sel.note && <p className="mt-2 text-muted-foreground">{sel.note}</p>}
+          </Section>
+          <Section title={`Замовлення · ${clientOrders.length}`}>
             {clientOrders.slice(0, 5).map((o) => (
-              <button key={o.id} className="ord" onClick={() => navigate(`/orders/${o.id}`)}>
-                <Thumbs items={o.items} w={24} h={30} max={2} />
-                <span className="num">{o.number}</span>
-                <span className="grow" />
-                <StatusPill status={o.status} />
+              <button key={o.id} onClick={() => navigate(`/orders/${o.id}`)} className="-mx-2 flex items-center gap-3 rounded-2xl px-2 py-2 text-left hover:bg-secondary/60">
+                <Thumbs items={o.items} max={2} className="h-8 w-6" />
+                <span className="tabular font-medium">{o.number}</span>
+                <span className="flex-1" />
+                <OrderStatus status={o.status} />
               </button>
             ))}
-          </div>
+          </Section>
         </div>
       )}
+    </div>
+  );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="mb-1 text-xs font-medium tracking-wide text-muted-foreground uppercase">{title}</div>
+      {children}
+    </div>
+  );
+}
+
+function Field({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="-mx-2 flex items-center gap-1 rounded-2xl px-2 py-1 hover:bg-secondary/60">
+      <div className="min-w-0 flex-1">
+        <div className="text-xs text-muted-foreground">{label}</div>
+        <div className="font-medium">{value}</div>
+      </div>
+      <CopyButton value={value} label={`Копіювати: ${label.toLowerCase()}`} />
     </div>
   );
 }

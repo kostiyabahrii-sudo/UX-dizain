@@ -1,20 +1,37 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Icon } from '../components/Icon';
-import { Empty, Modal, Photo, Pill, StatusPill } from '../components/ui';
-import { clock, dayLabel, shortDate, timeLeft, uah } from '../domain/format';
-import { canMarkPurchased, clientStatus, money, nextStep, ruleFor } from '../domain/rules';
-import type { Item, ItemStatus, Order } from '../domain/types';
-import { useLookups, useStore } from '../store/AppStore';
+import { AlertTriangleIcon, ArrowLeftIcon, CheckIcon, CircleCheckIcon, ClockIcon, ExternalLinkIcon, FlagIcon, HistoryIcon, MessageSquareTextIcon, SearchIcon, XIcon } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
+import { CopyButton, Empty, OrderStatus, Photo, StatusDot, type Tone } from '@/components/shared';
+import { clock, dayLabel, shortDate, timeLeft, uah } from '@/domain/format';
+import { canMarkPurchased, clientStatus, money, nextStep, ruleFor } from '@/domain/rules';
+import type { Client, Item, ItemStatus, Order } from '@/domain/types';
+import { cn } from '@/lib/utils';
+import { useLookups, useStore } from '@/store/AppStore';
 
-const ITEM_PILL: Record<ItemStatus, [string, '' | 'new' | 'wait' | 'bad' | 'ok']> = {
-  pending: ['Перевірити', ''],
+const ITEM_STATUS: Record<ItemStatus, [string, Tone]> = {
+  pending: ['Перевірити', 'neutral'],
   checked: ['Перевірено', 'ok'],
   sold_out: ['Немає', 'bad'],
-  price_up: ['Ціна зросла', 'wait'],
-  awaiting: ['Чекаємо клієнта', 'wait'],
+  price_up: ['Ціна зросла', 'warn'],
+  awaiting: ['Чекаємо клієнта', 'warn'],
   bought: ['Викуплено', 'ok'],
-  cancelled: ['Скасовано', ''],
+  cancelled: ['Скасовано', 'neutral'],
 };
 
 export function OrderPage() {
@@ -22,10 +39,21 @@ export function OrderPage() {
   const { state, now, moveOrder, dispatch, toast } = useStore();
   const { client, employee, order: getOrder } = useLookups();
   const navigate = useNavigate();
-  const [modal, setModal] = useState<null | 'problem' | 'handover' | 'cancel' | 'history' | { price: Item }>(null);
+  const [priceItem, setPriceItem] = useState<Item | null>(null);
+  const [problemOpen, setProblemOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(true);
 
   const o = getOrder(id);
-  if (!o) return <Empty>Замовлення не знайдено. <Link to="/requests">До заявок</Link></Empty>;
+  if (!o)
+    return (
+      <Empty>
+        Замовлення не знайдено.{' '}
+        <Link to="/requests" className="underline underline-offset-4">
+          До заявок
+        </Link>
+      </Empty>
+    );
 
   const c = client(o.clientId);
   const owner = employee(o.ownerId);
@@ -34,7 +62,8 @@ export function OrderPage() {
   const t = timeLeft(o.dueAt, now);
   const step = nextStep(o.status);
   const blocked = (o.status === 'in_progress' || o.status === 'awaiting') && !canMarkPurchased(o);
-  const editable = o.status === 'new' || o.status === 'in_progress' || o.status === 'awaiting';
+  const editable = (o.status === 'new' || o.status === 'in_progress' || o.status === 'awaiting') && (mine || o.status === 'new');
+  const active = o.status !== 'cancelled' && o.status !== 'delivered';
 
   function main() {
     if (!step) return;
@@ -47,351 +76,291 @@ export function OrderPage() {
 
   return (
     <>
-      <div className="row">
-        <button className="btn iconbtn" onClick={() => navigate(-1)} aria-label="Назад">
-          <Icon name="back" />
-        </button>
-        <div className="grow">
-          <div className="row" style={{ gap: 10 }}>
-            <h1 className="num" style={{ fontSize: 28 }}>
-              {o.number}
-            </h1>
-            <StatusPill status={o.status} />
-            {o.problem && <Pill tone="bad">{o.problem}</Pill>}
+      <div className="flex items-center gap-4">
+        <Button variant="secondary" size="icon" onClick={() => navigate(-1)} aria-label="Назад">
+          <ArrowLeftIcon />
+        </Button>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <h1 className="tabular text-2xl font-semibold tracking-tight">{o.number}</h1>
+            <OrderStatus status={o.status} />
+            {o.problem && <StatusDot tone="bad">{o.problem}</StatusDot>}
           </div>
-          <div className="sub">
-            {c.name} · отримано {shortDate(o.createdAt)}, {clock(o.createdAt)} ·{' '}
-            <button className="btn link" onClick={() => setModal('history')}>
-              Історія
-            </button>
+          <div className="mt-0.5 text-sm text-muted-foreground">
+            {c.name} · отримано {shortDate(o.createdAt)}, {clock(o.createdAt)}
           </div>
         </div>
+        <Button variant="outline" size="sm" onClick={() => setHistoryOpen(true)}>
+          <HistoryIcon /> Історія
+        </Button>
       </div>
 
-      <div className="cols">
-        <div className="left">
-          <div className="card">
-            {o.items.map((it) => (
-              <ItemRow key={it.id} order={o} item={it} editable={editable && (mine || o.status === 'new')} onPrice={() => setModal({ price: it })} />
-            ))}
-          </div>
-          <div className="card">
-            <div className="bd row" style={{ gap: 30, alignItems: 'flex-start' }}>
-              <div>
-                <div className="lbl">Доставка</div>
-                {c.address}
-                <div className="sub">
-                  {c.name} · {c.phoneMasked} · {c.delivery}
-                </div>
+      <div className="grid grid-cols-[minmax(0,5fr)_minmax(0,7fr)] items-start gap-6">
+        {/* Left — items and delivery (narrow) */}
+        <div className="flex min-w-0 flex-col gap-6">
+          <Card className="gap-0 py-2">
+            {o.items.map((it, i) => (
+              <div key={it.id}>
+                {i > 0 && <Separator />}
+                <ItemRow order={o} item={it} editable={editable} onPrice={() => setPriceItem(it)} />
               </div>
-              <span className="grow" />
-              <button
-                className="btn link"
-                onClick={() => {
-                  navigator.clipboard?.writeText(`${c.name}, ${c.address}`);
-                  toast('Адресу скопійовано');
-                }}
-              >
-                <Icon name="copy" size={14} /> Копіювати
-              </button>
-            </div>
-          </div>
+            ))}
+          </Card>
+          <DeliveryCard order={o} client={c} />
         </div>
 
-        <div className="right">
-          <div className="card">
-            <div className="bd">
-              <div className="kv">
-                <span>Відповідальний</span>
-                {owner?.name ?? '—'}
-              </div>
-              <div className="kv">
-                <span>Термін</span>
-                <span className={`timer ${t.tone || 'org'}`}>{t.text}</span>
-              </div>
-              <div className="kv">
-                <span>Клієнт бачить</span>
-                {clientStatus(o.status, o)}
-              </div>
-              <div className="kv" style={{ marginTop: 8 }}>
-                <span>Клієнт сплатив</span>
-                {m.priceKnown ? uah(m.paid) : '—'}
-              </div>
-              {m.refunds > 0 && (
-                <div className="kv">
-                  <span>Повернення</span>−{uah(m.refunds)}
-                </div>
-              )}
-              <div className="kv">
-                <span>Комісія Fitkit</span>
-                {uah(m.fee)}
-              </div>
-              {m.covered > 0 && (
-                <div className="kv">
-                  <span>Fitkit доплачує</span>
-                  {uah(m.covered)}
-                </div>
-              )}
-              <div className="kv total">
-                <span style={{ color: 'var(--text)' }}>До викупу</span>
-                <span className="num">{m.toBuy ? uah(m.toBuy) : '—'}</span>
-              </div>
+        {/* Right — order details (wide) */}
+        <div className="sticky top-24 flex min-w-0 flex-col gap-6">
+          <Card>
+            <CardContent className="grid grid-cols-3 gap-3">
+              <Tile label="Відповідальний" value={owner?.name ?? 'Не призначено'} />
+              <Tile label="Термін" value={t.text} tone={t.tone === 'red' ? 'bad' : t.tone === 'org' ? 'warn' : undefined} icon={<ClockIcon className="size-4" />} />
+              <Tile label="Клієнт бачить" value={clientStatus(o.status, o)} />
+            </CardContent>
 
+            <CardContent className="flex flex-col gap-2.5 text-[15px]">
+              <Row label="Клієнт сплатив" value={m.priceKnown ? uah(m.paid) : '—'} />
+              {m.refunds > 0 && <Row label="Повернення клієнту" value={`−${uah(m.refunds)}`} />}
+              <Row label="Комісія Fitkit" value={uah(m.fee)} />
+              {m.covered > 0 && <Row label="Fitkit доплачує" value={uah(m.covered)} />}
+              <Separator className="my-2" />
+              <div className="flex items-baseline justify-between">
+                <span className="text-muted-foreground">До викупу в магазинах</span>
+                <span className="tabular text-3xl font-semibold tracking-tight">{m.toBuy ? uah(m.toBuy) : '—'}</span>
+              </div>
+            </CardContent>
+
+            <CardContent className="flex flex-col gap-3">
               {step && (o.status === 'new' || mine) && (
-                <button className="btn pri big" style={{ width: '100%', marginTop: 16 }} onClick={main} disabled={blocked} title={blocked ? 'Спершу розберіть кожен товар' : undefined}>
+                <Button size="lg" className="w-full" onClick={main} disabled={blocked}>
                   {step.label}
-                </button>
+                </Button>
               )}
-              {blocked && <div className="hint">Щоб продовжити, розберіть кожен товар.</div>}
-              {o.status !== 'new' && o.status !== 'cancelled' && o.status !== 'delivered' && (
-                <div className="row" style={{ gap: 8, marginTop: 8 }}>
-                  <button className={`btn ${o.problem ? 'danger' : ''}`} style={{ flex: 1 }} onClick={() => setModal('problem')}>
-                    {o.problem ? 'Проблема ✓' : 'Проблема'}
-                  </button>
-                  <button className="btn" style={{ flex: 1 }} onClick={() => setModal('handover')}>
-                    Передати
-                  </button>
+              {blocked && <p className="-mt-1 text-center text-xs text-muted-foreground">Щоб продовжити, розберіть кожен товар: перевірте, застосуйте правило або скасуйте.</p>}
+              {active && o.status !== 'new' && (
+                <div className="grid grid-cols-2 gap-3">
+                  <Button variant={o.problem ? 'destructive' : 'secondary'} onClick={() => setProblemOpen(true)}>
+                    <FlagIcon /> {o.problem ? 'Проблема позначена' : 'Проблема'}
+                  </Button>
+                  <Button variant="secondary" onClick={() => setNotesOpen((v) => !v)} aria-expanded={notesOpen}>
+                    <MessageSquareTextIcon /> Нотатки команди
+                    {o.notes.length > 0 && <span className="tabular text-muted-foreground">{o.notes.length}</span>}
+                  </Button>
                 </div>
               )}
-              {editable && (
-                <div style={{ textAlign: 'center', marginTop: 12 }}>
-                  <button className="btn link quiet" onClick={() => setModal('cancel')}>
-                    Скасувати замовлення
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-          <Notes order={o} />
+              {notesOpen && active && o.status !== 'new' && <Notes order={o} />}
+              {editable && o.status !== 'new' && <CancelOrder order={o} paid={m.priceKnown ? uah(m.paid) : null} />}
+            </CardContent>
+          </Card>
         </div>
       </div>
 
-      {modal === 'problem' && <ProblemModal order={o} onClose={() => setModal(null)} />}
-      {modal === 'handover' && (
-        <Modal title="Передати колезі" onClose={() => setModal(null)}>
-          <div className="stack">
-            {state.employees
-              .filter((e) => e.id !== o.ownerId)
-              .map((e) => (
-                <button
-                  key={e.id}
-                  className="btn"
-                  onClick={() => {
-                    dispatch({ type: 'handOver', orderId: o.id, to: e.id });
-                    toast(`${o.number} передано: ${e.name}`);
-                    setModal(null);
-                  }}
-                >
-                  {e.name} · {ROLE[e.role]}
-                </button>
-              ))}
-          </div>
-        </Modal>
-      )}
-      {modal === 'cancel' && (
-        <Modal title={`Скасувати ${o.number}?`} onClose={() => setModal(null)}>
-          <p className="sub">Клієнт отримає повне повернення {m.priceKnown ? uah(m.paid) : 'сплаченої суми'} і сповіщення «Скасовано, кошти повернуто».</p>
-          <div className="row" style={{ marginTop: 16, justifyContent: 'flex-end' }}>
-            <button className="btn" onClick={() => setModal(null)}>
-              Залишити
-            </button>
-            <button
-              className="btn danger"
-              onClick={() => {
-                dispatch({ type: 'cancelOrder', orderId: o.id });
-                toast(`${o.number} скасовано`);
-                setModal(null);
-              }}
-            >
-              Скасувати й повернути кошти
-            </button>
-          </div>
-        </Modal>
-      )}
-      {modal === 'history' && (
-        <Modal title={`${o.number} · історія`} onClose={() => setModal(null)}>
-          <div className="stack" style={{ gap: 10 }}>
+      <PriceDialog order={o} item={priceItem} onClose={() => setPriceItem(null)} />
+      <ProblemDialog order={o} open={problemOpen} onOpenChange={setProblemOpen} />
+      <Dialog open={historyOpen} onOpenChange={setHistoryOpen}>
+        <DialogContent className="max-h-[80vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle>{o.number} · історія</DialogTitle>
+          </DialogHeader>
+          <ol className="flex flex-col gap-4">
             {[...o.history].reverse().map((h, i) => (
-              <div key={i} className="com">
-                <b>{h.who}</b>
-                <small>{dayLabel(h.at, now)}</small>
-                <div>{h.what}</div>
-              </div>
+              <li key={i} className="text-sm">
+                <div className="text-xs text-muted-foreground">
+                  {h.who} · {dayLabel(h.at, now)}
+                </div>
+                {h.what}
+              </li>
             ))}
-          </div>
-        </Modal>
-      )}
-      {modal && typeof modal === 'object' && <PriceModal order={o} item={modal.price} onClose={() => setModal(null)} />}
+          </ol>
+        </DialogContent>
+      </Dialog>
     </>
+  );
+}
+
+function Tile({ label, value, tone, icon }: { label: string; value: string; tone?: 'bad' | 'warn'; icon?: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl bg-secondary/60 px-4 py-3.5">
+      <div className="text-xs font-medium tracking-wide text-muted-foreground uppercase">{label}</div>
+      <div className={cn('mt-1.5 flex items-center gap-1.5 text-[15px] leading-snug font-semibold', tone === 'bad' && 'text-destructive', tone === 'warn' && 'text-warning')}>
+        {icon}
+        {value}
+      </div>
+    </div>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="tabular font-medium">{value}</span>
+    </div>
   );
 }
 
 function ItemRow({ order, item, editable, onPrice }: { order: Order; item: Item; editable: boolean; onPrice: () => void }) {
   const { dispatch, toast } = useStore();
   const rule = ruleFor(item);
-  const [label, tone] = ITEM_PILL[item.status];
+  const [label, tone] = ITEM_STATUS[item.status];
+  const cancelled = item.status === 'cancelled';
   const d = (type: 'itemCheck' | 'itemSoldOut' | 'itemCancel' | 'itemSendConfirm' | 'itemClientConfirmed', msg: string) => {
     dispatch({ type, orderId: order.id, itemId: item.id });
     toast(msg);
   };
-  const cancelled = item.status === 'cancelled';
-  const priceText =
+  const price =
     item.price == null ? (
-      <span className="faint">{item.storePrice ? uah(item.storePrice) + ' (магазин)' : 'ціна невідома'}</span>
+      <span className="text-muted-foreground">{item.storePrice ? `${uah(item.storePrice)} у магазині` : 'ціна невідома'}</span>
     ) : item.storePrice != null && item.storePrice !== item.price ? (
       <>
-        {uah(item.price)} → {uah(item.storePrice)}
+        <span className="text-muted-foreground line-through">{uah(item.price)}</span> {uah(item.storePrice)}
       </>
     ) : (
       uah(item.price)
     );
 
   return (
-    <div className={`it ${cancelled ? 'off' : ''}`}>
-      <Photo src={item.photo} w={80} h={100} />
-      <div className="grow">
-        <div className="row" style={{ gap: 8 }}>
-          <div className="name">{item.name}</div>
-          <span className="tag">{item.store}</span>
+    <div className={cn('flex gap-4 px-5 py-4', cancelled && 'opacity-50')}>
+      <Photo src={item.photo} className="h-20 w-16" />
+      <div className="flex min-w-0 flex-1 flex-col gap-2">
+        <div className="flex items-start gap-2">
+          <div className="min-w-0 flex-1">
+            <div className="truncate font-semibold">{item.name}</div>
+            <div className="tabular text-sm">
+              <span className="text-muted-foreground">{item.store} · </span>
+              {item.size} · {item.qty} шт · {price}
+            </div>
+          </div>
+          <StatusDot tone={tone}>{label}</StatusDot>
         </div>
-        <div className="spec">
-          <span>Розмір</span> {item.size} &nbsp;·&nbsp; <span>К-сть</span> {item.qty} &nbsp;·&nbsp; {priceText}
-        </div>
-        {item.comment && <div className="q">{item.comment}</div>}
-        {cancelled && <div className="sub" style={{ marginTop: 6 }}>Скасовано · {uah((item.price ?? 0) * item.qty)} повернуто</div>}
+        {item.comment && <div className="text-sm text-muted-foreground italic">{item.comment}</div>}
+        {cancelled && <div className="text-sm text-muted-foreground">Скасовано · {uah((item.price ?? 0) * item.qty)} повернуто клієнту</div>}
 
         {rule && !cancelled && (
-          <div className={`rule ${rule.kind === 'covered' ? 'ok' : rule.kind === 'confirm' ? 'wt' : ''}`}>
-            <div className="h">
-              <Icon name="alert" size={14} />
+          <div className="rounded-2xl border bg-secondary/40 px-3.5 py-3 text-sm">
+            <div className="flex items-center gap-2 font-medium">
+              {rule.kind === 'covered' ? (
+                <CircleCheckIcon className="size-4 text-muted-foreground" />
+              ) : (
+                <AlertTriangleIcon className={cn('size-4', rule.kind === 'sold_out' ? 'text-destructive' : 'text-warning')} />
+              )}
               {rule.title}
             </div>
-            <div className="d">{rule.detail}</div>
+            <div className="mt-1 text-muted-foreground">{rule.detail}</div>
             {editable && rule.kind === 'sold_out' && (
-              <div className="b">
-                <button className="btn sm pri" onClick={() => d('itemCancel', `${item.name}: скасовано, кошти повернуто`)}>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button size="sm" onClick={() => d('itemCancel', `${item.name}: скасовано, кошти повернуто`)}>
                   Скасувати й повернути
-                </button>
-                <a className="btn sm" href={`https://www.google.com/search?q=${encodeURIComponent(item.name + ' ' + item.size + ' купити')}`} target="_blank" rel="noreferrer">
-                  Шукати в інших магазинах
-                </a>
+                </Button>
+                <Button size="sm" variant="outline" asChild>
+                  <a href={`https://www.google.com/search?q=${encodeURIComponent(item.name + ' ' + item.size + ' купити')}`} target="_blank" rel="noreferrer">
+                    <SearchIcon /> Інші магазини
+                  </a>
+                </Button>
               </div>
             )}
             {editable && rule.kind === 'confirm' && item.status !== 'awaiting' && (
-              <div className="b">
-                <button className="btn sm pri" onClick={() => d('itemSendConfirm', 'Запит на підтвердження ціни надіслано клієнту')}>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button size="sm" onClick={() => d('itemSendConfirm', 'Запит на підтвердження ціни надіслано клієнту')}>
                   Надіслати запит
-                </button>
-                <button className="btn sm" onClick={() => d('itemCancel', `${item.name} cancelled, refund sent`)}>
-                  Cancel & refund
-                </button>
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => d('itemCancel', `${item.name}: скасовано, кошти повернуто`)}>
+                  Скасувати й повернути
+                </Button>
               </div>
             )}
             {editable && item.status === 'awaiting' && (
-              <div className="b">
-                <button className="btn sm" onClick={() => d('itemClientConfirmed', 'Клієнт підтвердив — купуйте за новою ціною')}>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button size="sm" variant="secondary" onClick={() => d('itemClientConfirmed', 'Клієнт підтвердив — купуйте за новою ціною')}>
                   Клієнт підтвердив
-                </button>
-                <button className="btn sm" onClick={() => d('itemCancel', `${item.name} cancelled, refund sent`)}>
-                  Cancel & refund
-                </button>
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => d('itemCancel', `${item.name}: скасовано, кошти повернуто`)}>
+                  Скасувати й повернути
+                </Button>
               </div>
             )}
           </div>
         )}
-      </div>
-      <div className="acts">
-        <Pill tone={tone}>{label}</Pill>
-        <a className="btn" href={item.url} target="_blank" rel="noreferrer">
-          Відкрити в магазині <Icon name="ext" size={14} />
-        </a>
-        {editable && item.status === 'pending' && (
-          <div className="row" style={{ gap: 6 }}>
-            <button className="btn sm" onClick={() => d('itemCheck', `${item.name}: перевірено`)}>
-              <Icon name="check" size={13} /> Збігається
-            </button>
-            <button className="btn sm" onClick={() => d('itemSoldOut', `${item.name}: немає в наявності`)}>
-              Немає
-            </button>
+
+        {!cancelled && (
+          <div className="flex flex-wrap items-center gap-2">
+            <Button size="sm" variant="outline" asChild>
+              <a href={item.url} target="_blank" rel="noreferrer">
+                Відкрити в магазині <ExternalLinkIcon />
+              </a>
+            </Button>
+            {editable && item.status === 'pending' && (
+              <>
+                <Button size="sm" variant="secondary" onClick={() => d('itemCheck', `${item.name}: перевірено`)}>
+                  <CheckIcon /> Збігається
+                </Button>
+                <Button size="sm" variant="secondary" onClick={() => d('itemSoldOut', `${item.name}: немає в наявності`)}>
+                  <XIcon /> Немає
+                </Button>
+              </>
+            )}
+            {editable && item.status !== 'sold_out' && (
+              <Button size="sm" variant="ghost" onClick={onPrice}>
+                {item.storePrice ? 'Змінити ціну' : 'Ціна в магазині'}
+              </Button>
+            )}
           </div>
-        )}
-        {editable && !cancelled && item.status !== 'sold_out' && (
-          <button className="btn link" onClick={onPrice}>
-            {item.storePrice ? 'Змінити ціну магазину' : 'Вказати ціну магазину'}
-          </button>
         )}
       </div>
     </div>
   );
 }
 
-function PriceModal({ order, item, onClose }: { order: Order; item: Item; onClose: () => void }) {
-  const { dispatch } = useStore();
-  const [v, setV] = useState(String(item.storePrice ?? item.price ?? ''));
-  const n = Number(v.replace(/[^\d.]/g, ''));
-  const preview = n > 0 ? ruleFor({ ...item, storePrice: n }) : null;
+/** Large, bold, copy-friendly delivery data for the Nova Poshta shipment. */
+function DeliveryCard({ order, client }: { order: Order; client: Client }) {
+  const { toast } = useStore();
+  const items = order.items.filter((i) => i.status !== 'cancelled' && i.status !== 'sold_out');
+  const itemsText = items.map((i) => `${i.name}, ${i.size}, ${i.qty} шт`).join('\n');
+  const all = [client.city, client.branch, client.name, client.phone, '', itemsText].join('\n');
+  const fields: [string, string][] = [
+    ['Місто', client.city],
+    ['Нова Пошта', client.branch],
+    ['Отримувач', client.name],
+    ['Телефон', client.phone],
+  ];
   return (
-    <Modal title={`Ціна в магазині · ${item.name}`} onClose={onClose}>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (n > 0) {
-            dispatch({ type: 'itemStorePrice', orderId: order.id, itemId: item.id, price: n });
-            onClose();
-          }
-        }}
-      >
-        <div className="sub" style={{ marginBottom: 8 }}>
-          Клієнт сплатив {item.price != null ? uah(item.price) : '—'} за одиницю.
-        </div>
-        <input className="input" autoFocus inputMode="numeric" value={v} onChange={(e) => setV(e.target.value)} placeholder="₴" />
-        {preview && <div className={`rule ${preview.kind === 'covered' ? 'ok' : 'wt'}`} style={{ marginTop: 12 }}><div className="h">{preview.title}</div><div className="d">{preview.detail}</div></div>}
-        <div className="row" style={{ marginTop: 16, justifyContent: 'flex-end' }}>
-          <button type="button" className="btn" onClick={onClose}>
-            Скасувати
-          </button>
-          <button className="btn pri" disabled={!(n > 0)}>
-            Зберегти
-          </button>
-        </div>
-      </form>
-    </Modal>
-  );
-}
-
-const PROBLEMS = ['Магазин скасував замовлення', 'Оплату відхилено', 'Прийшов не той товар', 'Посилку втрачено або пошкоджено', 'Клієнт не на зв’язку'];
-
-const ROLE = { buyer: 'закупник', lead: 'старший зміни', warehouse: 'склад', support: 'підтримка' } as const;
-
-function ProblemModal({ order, onClose }: { order: Order; onClose: () => void }) {
-  const { dispatch, toast } = useStore();
-  const [text, setText] = useState(order.problem ?? '');
-  const save = (p?: string) => {
-    dispatch({ type: 'setProblem', orderId: order.id, problem: p });
-    toast(p ? 'Проблему позначено — старшого зміни сповіщено' : 'Проблему знято');
-    onClose();
-  };
-  return (
-    <Modal title="Позначити проблему" onClose={onClose}>
-      <div className="chips">
-        {PROBLEMS.map((p) => (
-          <button key={p} className={`chip ${text === p ? 'on' : ''}`} onClick={() => setText(p)}>
-            {p}
-          </button>
+    <Card>
+      <CardHeader>
+        <CardTitle>Доставка</CardTitle>
+        <CardAction>
+          <Button size="sm" variant="secondary" onClick={() => {
+              navigator.clipboard?.writeText(all);
+              toast('Дані доставки скопійовано');
+            }}>
+            Копіювати все
+          </Button>
+        </CardAction>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-1">
+        {fields.map(([label, value]) => (
+          <div key={label} className="group flex items-center gap-2 rounded-2xl px-3 py-2 -mx-3 hover:bg-secondary/50">
+            <div className="min-w-0 flex-1">
+              <div className="text-xs text-muted-foreground">{label}</div>
+              <div className="text-lg leading-snug font-semibold select-all">{value}</div>
+            </div>
+            <CopyButton value={value} label={`Копіювати: ${label.toLowerCase()}`} />
+          </div>
         ))}
-      </div>
-      <input className="input" style={{ marginTop: 12 }} value={text} onChange={(e) => setText(e.target.value)} placeholder="Або опишіть…" />
-      <div className="row" style={{ marginTop: 16, justifyContent: 'flex-end' }}>
-        {order.problem && (
-          <button className="btn" onClick={() => save(undefined)}>
-            Зняти проблему
-          </button>
-        )}
-        <button className="btn pri" disabled={!text.trim()} onClick={() => save(text.trim())}>
-          Позначити
-        </button>
-      </div>
-    </Modal>
+        <div className="-mx-3 mt-1 flex items-start gap-2 rounded-2xl px-3 py-2 hover:bg-secondary/50">
+          <div className="min-w-0 flex-1">
+            <div className="text-xs text-muted-foreground">Позиції · {items.length}</div>
+            <ul className="mt-0.5 flex flex-col gap-0.5">
+              {items.map((i) => (
+                <li key={i.id} className="text-lg leading-snug font-semibold">
+                  {i.name}, {i.size}, {i.qty} шт
+                </li>
+              ))}
+            </ul>
+          </div>
+          <CopyButton value={itemsText} label="Копіювати позиції" />
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -399,28 +368,156 @@ function Notes({ order }: { order: Order }) {
   const { dispatch, now } = useStore();
   const [text, setText] = useState('');
   return (
-    <div className="card">
-      <div className="bd">
-        <div className="lbl">Нотатки команди</div>
-        {order.notes.length === 0 && <div className="sub" style={{ marginBottom: 12 }}>Нотаток поки немає.</div>}
-        {order.notes.map((n) => (
-          <div key={n.id} className="com">
-            <b>{n.author}</b>
-            <small>{dayLabel(n.at, now)}</small>
-            <div>{n.text}</div>
+    <div className="flex flex-col gap-3 rounded-2xl bg-secondary/40 p-4">
+      {order.notes.length === 0 && <div className="text-sm text-muted-foreground">Нотаток поки немає.</div>}
+      {order.notes.map((n) => (
+        <div key={n.id} className="text-sm">
+          <div className="text-xs text-muted-foreground">
+            <span className="font-medium text-foreground">{n.author}</span> · {dayLabel(n.at, now)}
           </div>
-        ))}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!text.trim()) return;
-            dispatch({ type: 'addNote', orderId: order.id, text: text.trim() });
-            setText('');
-          }}
-        >
-          <input className="input" value={text} onChange={(e) => setText(e.target.value)} placeholder="Додати нотатку…" />
-        </form>
-      </div>
+          {n.text}
+        </div>
+      ))}
+      <form
+        className="flex gap-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!text.trim()) return;
+          dispatch({ type: 'addNote', orderId: order.id, text: text.trim() });
+          setText('');
+        }}
+      >
+        <Input value={text} onChange={(e) => setText(e.target.value)} placeholder="Нотатка для команди" className="bg-background" />
+        <Button type="submit" variant="secondary" disabled={!text.trim()}>
+          Додати
+        </Button>
+      </form>
     </div>
   );
 }
+
+function CancelOrder({ order, paid }: { order: Order; paid: string | null }) {
+  const { dispatch, toast } = useStore();
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="ghost" size="sm" className="self-center text-muted-foreground">
+          Скасувати замовлення
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Скасувати {order.number}?</AlertDialogTitle>
+          <AlertDialogDescription>Клієнт отримає повне повернення {paid ?? 'сплаченої суми'} і сповіщення «Скасовано, кошти повернуто».</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Залишити</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => {
+              dispatch({ type: 'cancelOrder', orderId: order.id });
+              toast(`${order.number} скасовано`);
+            }}
+          >
+            Скасувати й повернути кошти
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+function PriceDialog({ order, item, onClose }: { order: Order; item: Item | null; onClose: () => void }) {
+  return (
+    <Dialog open={!!item} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent>{item && <PriceForm key={item.id} order={order} item={item} onClose={onClose} />}</DialogContent>
+    </Dialog>
+  );
+}
+
+function PriceForm({ order, item, onClose }: { order: Order; item: Item; onClose: () => void }) {
+  const { dispatch } = useStore();
+  const [v, setV] = useState(String(item.storePrice ?? item.price ?? ''));
+  const n = Number(v.replace(/[^\d.]/g, ''));
+  const preview = n > 0 ? ruleFor({ ...item, storePrice: n }) : null;
+  return (
+    <form
+      className="grid gap-5"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (n > 0) {
+          dispatch({ type: 'itemStorePrice', orderId: order.id, itemId: item.id, price: n });
+          onClose();
+        }
+      }}
+    >
+      <DialogHeader>
+        <DialogTitle>Ціна в магазині</DialogTitle>
+        <DialogDescription>
+          {item.name} · клієнт сплатив {item.price != null ? uah(item.price) : '—'} за одиницю
+        </DialogDescription>
+      </DialogHeader>
+      <Input autoFocus inputMode="numeric" value={v} onChange={(e) => setV(e.target.value)} aria-label="Ціна, ₴" />
+      {preview && (
+        <div className="rounded-2xl border bg-secondary/40 px-3.5 py-3 text-sm">
+          <div className="font-medium">{preview.title}</div>
+          <div className="mt-1 text-muted-foreground">{preview.detail}</div>
+        </div>
+      )}
+      <DialogFooter>
+        <Button type="button" variant="outline" onClick={onClose}>
+          Скасувати
+        </Button>
+        <Button type="submit" disabled={!(n > 0)}>
+          Зберегти
+        </Button>
+      </DialogFooter>
+    </form>
+  );
+}
+
+const PROBLEMS = ['Магазин скасував замовлення', 'Оплату відхилено', 'Прийшов не той товар', 'Посилку втрачено або пошкоджено', 'Клієнт не на зв’язку'];
+
+function ProblemDialog({ order, open, onOpenChange }: { order: Order; open: boolean; onOpenChange: (v: boolean) => void }) {
+  const { dispatch, toast } = useStore();
+  const [text, setText] = useState(order.problem ?? '');
+  const save = (p?: string) => {
+    dispatch({ type: 'setProblem', orderId: order.id, problem: p });
+    toast(p ? 'Проблему позначено — старшого зміни сповіщено' : 'Проблему знято');
+    onOpenChange(false);
+  };
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (v) setText(order.problem ?? '');
+        onOpenChange(v);
+      }}
+    >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Проблема із замовленням</DialogTitle>
+          <DialogDescription>Замовлення отримає червону позначку, старший зміни побачить його у сповіщеннях.</DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-wrap gap-2">
+          {PROBLEMS.map((p) => (
+            <Button key={p} size="sm" variant={text === p ? 'default' : 'secondary'} onClick={() => setText(p)}>
+              {p}
+            </Button>
+          ))}
+        </div>
+        <Input value={text} onChange={(e) => setText(e.target.value)} placeholder="Або опишіть своїми словами" />
+        <DialogFooter>
+          {order.problem && (
+            <Button variant="outline" onClick={() => save(undefined)}>
+              Зняти проблему
+            </Button>
+          )}
+          <Button disabled={!text.trim()} onClick={() => save(text.trim())}>
+            Позначити
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+

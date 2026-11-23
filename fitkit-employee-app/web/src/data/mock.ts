@@ -14,14 +14,14 @@ export const employees: Employee[] = [
 ];
 
 export const clients: Client[] = [
-  { id: 'cl1', name: 'Марія Лебеденко', color: 'c2', telegram: '@maria_l', phoneMasked: '+380 67 ••• 45 12', address: 'Київ, вул. Велика Васильківська, 12, кв. 48', delivery: 'Кур’єр Нової Пошти', sizes: 'S–M · W28 L32 · 38', stores: 'Zara, COS, Massimo Dutti', dislikes: 'синтетика, яскраві принти', note: 'Zara на неї маломірить — беріть на розмір більше.' },
-  { id: 'cl2', name: 'Ігор Соколенко', color: 'c4', telegram: '@ihor_s', phoneMasked: '+380 50 ••• 11 07', address: 'Львів, відділення Нової Пошти №14', delivery: 'Відділення Нової Пошти', sizes: 'L · 44', stores: 'Answear, Nike' },
-  { id: 'cl3', name: 'Ольга Петренко', color: 'c3', phoneMasked: '+380 93 ••• 80 21', address: 'Одеса, вул. Дерибасівська, 5, кв. 3', delivery: 'Кур’єр Нової Пошти', sizes: 'XS–S · W26 · 37', stores: 'Reserved, Zara' },
-  { id: 'cl4', name: 'Дарія Вовк', color: 'c5', telegram: '@dariavovk', phoneMasked: '+380 63 ••• 52 90', address: 'Київ, відділення Нової Пошти №101', delivery: 'Відділення Нової Пошти', sizes: 'M · W29', stores: 'ASOS, H&M' },
-  { id: 'cl5', name: 'Павло Тихоненко', color: 'c2', phoneMasked: '+380 97 ••• 33 18', address: 'Дніпро, просп. Яворницького, 40, кв. 12', delivery: 'Кур’єр Нової Пошти', sizes: 'L · 43', stores: 'Nike, Zara' },
-  { id: 'cl6', name: 'Ксенія Орлик', color: 'c4', telegram: '@ks_orlyk', phoneMasked: '+380 66 ••• 74 05', address: 'Харків, відділення Нової Пошти №7', delivery: 'Відділення Нової Пошти', sizes: 'S · 38', stores: 'Mango, COS' },
-  { id: 'cl7', name: 'Артем Білик', color: 'c3', phoneMasked: '+380 68 ••• 19 44', address: 'Київ, вул. Хрещатик, 3, кв. 9', delivery: 'Кур’єр Нової Пошти', sizes: 'M · 42', stores: 'Zara, AliExpress' },
-  { id: 'cl8', name: 'Олена Смирнова', color: 'c5', phoneMasked: '+380 99 ••• 62 31', address: 'Вінниця, відділення Нової Пошти №2', delivery: 'Відділення Нової Пошти', sizes: 'S · W27 · 38', stores: 'Massimo Dutti, H&M' },
+  { id: 'cl1', name: 'Марія Лебеденко', color: 'c2', telegram: '@maria_l', phone: '+380 67 214 45 12', city: 'Київ', branch: 'Відділення №48, вул. Велика Васильківська, 72', sizes: 'S–M · W28 L32 · 38', stores: 'Zara, COS, Massimo Dutti', dislikes: 'синтетика, яскраві принти', note: 'Zara на неї маломірить — беріть на розмір більше.' },
+  { id: 'cl2', name: 'Ігор Соколенко', color: 'c4', telegram: '@ihor_s', phone: '+380 50 318 11 07', city: 'Львів', branch: 'Відділення №14, вул. Городоцька, 120', sizes: 'L · 44', stores: 'Answear, Nike' },
+  { id: 'cl3', name: 'Ольга Петренко', color: 'c3', phone: '+380 93 402 80 21', city: 'Одеса', branch: 'Відділення №3, вул. Дерибасівська, 5', sizes: 'XS–S · W26 · 37', stores: 'Reserved, Zara' },
+  { id: 'cl4', name: 'Дарія Вовк', color: 'c5', telegram: '@dariavovk', phone: '+380 63 775 52 90', city: 'Київ', branch: 'Відділення №101, просп. Перемоги, 37', sizes: 'M · W29', stores: 'ASOS, H&M' },
+  { id: 'cl5', name: 'Павло Тихоненко', color: 'c2', phone: '+380 97 561 33 18', city: 'Дніпро', branch: 'Відділення №12, просп. Яворницького, 40', sizes: 'L · 43', stores: 'Nike, Zara' },
+  { id: 'cl6', name: 'Ксенія Орлик', color: 'c4', telegram: '@ks_orlyk', phone: '+380 66 129 74 05', city: 'Харків', branch: 'Відділення №7, вул. Сумська, 18', sizes: 'S · 38', stores: 'Mango, COS' },
+  { id: 'cl7', name: 'Артем Білик', color: 'c3', phone: '+380 68 233 19 44', city: 'Київ', branch: 'Поштомат №31045, вул. Хрещатик, 3', sizes: 'M · 42', stores: 'Zara, AliExpress' },
+  { id: 'cl8', name: 'Олена Смирнова', color: 'c5', phone: '+380 99 640 62 31', city: 'Вінниця', branch: 'Відділення №2, вул. Соборна, 54', sizes: 'S · W27 · 38', stores: 'Massimo Dutti, H&M' },
 ];
 
 let seq = 0;

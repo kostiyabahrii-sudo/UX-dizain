@@ -1,8 +1,13 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Avatar, Empty, StatusPill, Tabs, Thumbs } from '../components/ui';
-import { itemsCount, timeLeft, uah } from '../domain/format';
-import { useLookups, useStore } from '../store/AppStore';
+import { ArrowRightIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Avatar, Count, Empty, FilterTabs, OrderStatus, Thumbs } from '@/components/shared';
+import { itemsCount, timeLeft, uah } from '@/domain/format';
+import { cn } from '@/lib/utils';
+import { useLookups, useStore } from '@/store/AppStore';
 
 type Tab = 'all' | 'new' | 'overdue';
 
@@ -12,10 +17,7 @@ export function RequestsPage() {
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>('all');
 
-  const requests = useMemo(
-    () => state.orders.filter((o) => o.status === 'new').sort((a, b) => a.dueAt.localeCompare(b.dueAt)),
-    [state.orders],
-  );
+  const requests = useMemo(() => state.orders.filter((o) => o.status === 'new').sort((a, b) => a.dueAt.localeCompare(b.dueAt)), [state.orders]);
   const isLate = (dueAt: string) => new Date(dueAt).getTime() < now;
   const overdue = requests.filter((o) => isLate(o.dueAt));
   const fresh = requests.filter((o) => !isLate(o.dueAt));
@@ -23,7 +25,7 @@ export function RequestsPage() {
 
   function takeNext() {
     const next = [...requests].sort((a, b) => a.createdAt.localeCompare(b.createdAt))[0];
-    if (!next) return toast('Черга порожня', 'bad');
+    if (!next) return;
     dispatch({ type: 'take', orderId: next.id });
     toast(`${next.number} тепер ваша`);
     navigate(`/orders/${next.id}`);
@@ -31,82 +33,75 @@ export function RequestsPage() {
 
   return (
     <>
-      <div className="row">
-        <h1 className="grow">
-          Заявки <span className="cnt">{requests.length}</span>
+      <div className="flex items-center gap-4">
+        <h1 className="flex-1 text-2xl font-semibold tracking-tight">
+          Заявки <Count>{requests.length}</Count>
         </h1>
-        <button className="btn pri big" onClick={takeNext} disabled={!requests.length}>
-          Взяти наступну заявку
-        </button>
+        <Button size="lg" onClick={takeNext} disabled={!requests.length}>
+          Взяти наступну заявку <ArrowRightIcon />
+        </Button>
       </div>
-      <Tabs
+      <FilterTabs
         value={tab}
         onChange={setTab}
         tabs={[
           { key: 'all', label: 'Усі', count: requests.length },
           { key: 'new', label: 'Нові', count: fresh.length },
-          { key: 'overdue', label: 'Прострочені', count: overdue.length, red: overdue.length > 0 },
+          { key: 'overdue', label: 'Прострочені', count: overdue.length, alert: true },
         ]}
       />
-      <div className="card" style={{ overflow: 'hidden' }}>
+      <Card className="gap-0 overflow-hidden py-0">
         {rows.length === 0 ? (
           <Empty>Тут порожньо — черга чиста.</Empty>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Заявка</th>
-                <th>Клієнт</th>
-                <th>Магазини</th>
-                <th>Сума</th>
-                <th>Статус</th>
-                <th>Термін</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="pl-6">Заявка</TableHead>
+                <TableHead>Клієнт</TableHead>
+                <TableHead>Магазини</TableHead>
+                <TableHead>Сума</TableHead>
+                <TableHead>Статус</TableHead>
+                <TableHead className="pr-6 text-right">Термін</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {rows.map((o) => {
                 const c = client(o.clientId);
                 const late = isLate(o.dueAt);
                 const t = timeLeft(o.dueAt, now);
-                const stores = [...new Set(o.items.map((i) => i.store))].join(', ');
                 return (
-                  <tr key={o.id} className={`click ${late ? 'late' : ''}`} onClick={() => navigate(`/orders/${o.id}`)}>
-                    <td>
-                      <div className="row" style={{ gap: 14 }}>
-                        <div style={{ width: 82 }}>
-                          <Thumbs items={o.items} w={32} h={40} />
+                  <TableRow key={o.id} className="cursor-pointer hover:bg-secondary/50" onClick={() => navigate(`/orders/${o.id}`)}>
+                    <TableCell className="pl-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-20">
+                          <Thumbs items={o.items} />
                         </div>
                         <div>
-                          <div className="num" style={{ fontSize: 16 }}>
-                            {o.number}
-                          </div>
-                          <div className="sub" style={{ fontSize: 12 }}>
-                            {itemsCount(o.items.length)}
-                          </div>
+                          <div className="tabular text-[15px] font-semibold">{o.number}</div>
+                          <div className="text-xs text-muted-foreground">{itemsCount(o.items.length)}</div>
                         </div>
                       </div>
-                    </td>
-                    <td>
-                      <div className="who">
-                        <Avatar name={c.name} color={c.color} size={30} />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar name={c.name} />
                         {c.name}
                       </div>
-                    </td>
-                    <td className="sub">{stores}</td>
-                    <td>{o.paid != null ? uah(o.paid) : <span className="sub">ціна не вказана</span>}</td>
-                    <td>
-                      <StatusPill status={o.status} overdue={late} />
-                    </td>
-                    <td>
-                      <span className={`timer ${t.tone}`}>{t.text}</span>
-                    </td>
-                  </tr>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">{[...new Set(o.items.map((i) => i.store))].join(', ')}</TableCell>
+                    <TableCell className="tabular">{o.paid != null ? uah(o.paid) : <span className="text-muted-foreground">ціна не вказана</span>}</TableCell>
+                    <TableCell>
+                      <OrderStatus status={o.status} overdue={late} />
+                    </TableCell>
+                    <TableCell className={cn('tabular pr-6 text-right font-medium', late ? 'text-destructive' : t.tone === 'org' ? 'text-warning' : 'text-muted-foreground')}>{t.text}</TableCell>
+                  </TableRow>
                 );
               })}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         )}
-      </div>
+      </Card>
     </>
   );
 }

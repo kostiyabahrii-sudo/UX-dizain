@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState, type ReactNode } from 'react';
+import { toast as sonner } from 'sonner';
 import * as mock from '../data/mock';
 import { uah } from '../domain/format';
 import { canMarkPurchased, STATUS_LABEL } from '../domain/rules';
@@ -27,7 +28,6 @@ export type Action =
   | { type: 'itemSendConfirm'; orderId: Id; itemId: Id }
   | { type: 'itemClientConfirmed'; orderId: Id; itemId: Id }
   | { type: 'setProblem'; orderId: Id; problem?: string }
-  | { type: 'handOver'; orderId: Id; to: Id }
   | { type: 'cancelOrder'; orderId: Id }
   | { type: 'addNote'; orderId: Id; text: string }
   | { type: 'createOutbound'; orderId: Id }
@@ -111,10 +111,6 @@ export function reducer(s: State, a: Action): State {
       return patchItem(s, a.orderId, a.itemId, (i) => ({ ...i, status: 'checked', price: i.storePrice ?? i.price }), (i) => `${i.name}: клієнт підтвердив нову ціну`);
     case 'setProblem':
       return patchOrder(s, a.orderId, (o) => ({ ...o, problem: a.problem }), a.problem ? `Проблема: ${a.problem}` : 'Проблему знято');
-    case 'handOver': {
-      const to = s.employees.find((e) => e.id === a.to)?.name ?? a.to;
-      return patchOrder(s, a.orderId, (o) => ({ ...o, ownerId: a.to }), `Передано: ${to}`);
-    }
     case 'cancelOrder':
       return patchOrder(s, a.orderId, (o) => ({ ...o, status: 'cancelled', items: o.items.map((i) => ({ ...i, status: 'cancelled' as const })) }), 'Замовлення скасовано, повне повернення коштів');
     case 'addNote':
@@ -164,7 +160,6 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     tickets: mock.tickets,
   });
   const [now, setNow] = useState(Date.now());
-  const [toasts, setToasts] = useState<{ id: number; text: string; tone: 'ok' | 'bad' }[]>([]);
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 30_000);
@@ -172,9 +167,8 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const toast = useCallback((text: string, tone: 'ok' | 'bad' = 'ok') => {
-    const id = Date.now() + Math.random();
-    setToasts((ts) => [...ts, { id, text, tone }]);
-    setTimeout(() => setToasts((ts) => ts.filter((x) => x.id !== id)), 3200);
+    if (tone === 'bad') sonner.error(text);
+    else sonner(text);
   }, []);
 
   const moveOrder = useCallback(
@@ -194,6 +188,11 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
           toast('Відправити можна лише викуплене замовлення.', 'bad');
           return false;
         }
+        const inbound = state.shipments.filter((sh) => sh.orderId === orderId && sh.leg === 'in');
+        if (!inbound.length || !inbound.every((sh) => sh.atWarehouse)) {
+          toast('Спершу всі посилки мають прибути на склад.', 'bad');
+          return false;
+        }
         dispatch({ type: 'createOutbound', orderId });
         toast(`${o.number} відправлено · ТТН Нової Пошти створено`);
         return true;
@@ -202,22 +201,11 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
       toast(`${o.number} → ${STATUS_LABEL[status]}`);
       return true;
     },
-    [state.orders, toast],
+    [state.orders, state.shipments, toast],
   );
 
   const value = useMemo(() => ({ state, dispatch, now, toast, moveOrder }), [state, now, toast, moveOrder]);
-  return (
-    <StoreCtx.Provider value={value}>
-      {children}
-      <div className="toasts">
-        {toasts.map((t) => (
-          <div key={t.id} className={`toast ${t.tone}`}>
-            {t.text}
-          </div>
-        ))}
-      </div>
-    </StoreCtx.Provider>
-  );
+  return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>;
 }
 
 export function useStore() {
