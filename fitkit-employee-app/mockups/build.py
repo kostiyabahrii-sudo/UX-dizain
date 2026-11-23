@@ -337,7 +337,7 @@ save('05-tracking.html', shell('Tracking', 'Tracking', main5, css5))
 
 # ---------- 06 Client app ----------
 page6 = f'''<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>Fitkit — client app</title>
+<html lang="en"><head><meta charset="utf-8"><title>Fitkit — in the Fitkit app</title>
 <link rel="stylesheet" href="styles.css">
 <style>
 .stage {{ width: 1440px; height: 900px; display: flex; gap: 56px; padding: 60px 80px; background: var(--bg); align-items: center; }}
@@ -360,6 +360,10 @@ page6 = f'''<!doctype html>
 .nt .dot {{ width: 8px; height: 8px; border-radius: 50%; background: var(--clay); margin-top: 6px; flex: none; }}
 .nt small {{ display: block; color: var(--faint); font-size: 11.5px; margin-top: 2px; }}
 .help {{ text-align: center; color: var(--clay); font-weight: 600; font-size: 13.5px; padding: 14px 0 26px; }}
+.msg {{ background: var(--panel); border: 1px solid var(--line); border-radius: 14px 14px 14px 4px; padding: 9px 12px; font-size: 13px; max-width: 85%; }}
+.msg.me {{ align-self: flex-end; background: var(--clay-veil); border-color: rgba(240,174,194,.3); border-radius: 14px 14px 4px 14px; }}
+.sysm {{ align-self: center; text-align: center; font-size: 11.5px; color: var(--faint); }}
+.inp {{ margin: 0 14px 22px; height: 40px; border: 1px solid var(--line-2); border-radius: 999px; display: flex; align-items: center; padding: 0 14px; color: var(--faint); font-size: 13px; }}
 .expl {{ max-width: 420px; display: flex; flex-direction: column; gap: 14px; }}
 .expl h1 {{ font-size: 28px; line-height: 1.2; }}
 .expl p {{ color: var(--muted); font-size: 15px; }}
@@ -377,23 +381,24 @@ page6 = f'''<!doctype html>
         <div class="it" style="margin-top:8px;opacity:.55">{photo('jacket-black', 36, 46)}<div class="grow">Black jacket · M<div class="sub" style="font-size:12px">Sold out · ₴3,999 refunded</div></div><s>₴3,999</s></div>
       </div>
     </div>
-    <div class="help">Need help? Contact Fitkit Support</div>
+    <div class="help">Chat with Fitkit Support</div>
   </div></div>
   <div class="phone"><div class="screen">
-    <div class="ptop"><b style="font-size:20px">Notifications</b></div>
-    <div class="pb">
-      <div class="cardp alert"><b>Price changed · Order #0995</b><div class="sub" style="margin-top:4px">Sneakers: ₴5,899 → ₴6,599. Keep the item at the new price?</div>
+    <div class="ptop"><img src="assets/logo-mark.png" style="width:28px;height:28px;filter:invert(1)"><div><b style="font-size:16px">Fitkit Support</b><div class="sub" style="font-size:11.5px">Chat in the Fitkit app</div></div></div>
+    <div class="pb" style="gap:10px">
+      <div class="sysm">Order #0995</div>
+      <div class="cardp alert"><b>Price changed</b><div class="sub" style="margin-top:4px">Sneakers: ₴5,899 → ₴6,599. Keep the item at the new price?</div>
         <div class="btns"><button class="btn pri sm">Confirm</button><button class="btn sm">Remove item</button></div></div>
-      <div class="cardp" style="padding:4px 14px">
-      <div class="nt"><span class="dot"></span><div><b>Item no longer available</b><div class="sub">Black jacket (M) sold out. ₴3,999 refunded to your card.</div><small>Today, 09:35</small></div></div>
-      <div class="nt"><span class="dot"></span><div><b>Order #0918 shipped</b><div class="sub">Nova Poshta 2045 0055 3000 81 · courier today</div><small>Today, 09:55</small></div></div>
-      <div class="nt"><span class="dot" style="background:var(--faint)"></span><div><b>Order #001 confirmed</b><div class="sub">We’re preparing your order.</div><small>Nov 21, 08:41</small></div></div>
-    </div></div>
+      <div class="msg me">Can I still change the delivery address?</div>
+      <div class="msg">Sure! Send the new Nova Poshta branch and we’ll update it before shipping. — Fitkit Support</div>
+      <div class="sysm">Order #001 · Black jacket (M) sold out · ₴3,999 refunded</div>
+    </div>
+    <div class="inp">Write a message…</div>
   </div></div>
   <div class="expl">
-    <span class="tag" style="align-self:flex-start">What the client sees</span>
-    <h1>Order, status, parcel — nothing else</h1>
-    <p>No buyer names, no store tracking. Simple statuses, one-tap decisions when a price changes, automatic refunds when an item sells out, and a support link if something goes wrong.</p>
+    <span class="tag" style="align-self:flex-start">Inside the existing Fitkit app</span>
+    <h1>Order status and support chat — in the app clients already use</h1>
+    <p>No separate client app. The Fitkit app gets an order screen with simple statuses and a chat with Fitkit Support. Price confirmations and refunds arrive in the same chat. No buyer names, no store tracking.</p>
   </div>
 </div></div></body></html>'''
 save('06-client-app.html', page6)
