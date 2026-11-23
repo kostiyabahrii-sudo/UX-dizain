@@ -18,7 +18,7 @@ export function Thumbs({ items, max = 3, className = 'h-10 w-8' }: { items: Pick
   return (
     <div className="flex">
       {items.slice(0, max).map((i, n) => (
-        <Photo key={i.id + n} src={i.photo} className={cn(className, 'rounded-lg ring-2 ring-card', n > 0 && '-ml-2')} />
+        <Photo key={i.id + n} src={i.photo} className={cn(className, 'rounded-lg ring-2 ring-secondary', n > 0 && '-ml-2')} />
       ))}
     </div>
   );

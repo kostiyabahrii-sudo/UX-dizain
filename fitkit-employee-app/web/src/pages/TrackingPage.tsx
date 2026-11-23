@@ -151,7 +151,7 @@ export function TrackingPage() {
                   </Timeline>
                 )}
               </Leg>
-              <div className="rounded-2xl bg-secondary/60 px-4 py-3">
+              <div className="rounded-2xl bg-secondary px-4 py-3">
                 <div className="text-xs font-medium tracking-wide text-muted-foreground uppercase">Клієнт бачить</div>
                 <div className="mt-1 text-sm font-medium">
                   «{clientStatus(selOrder.status, selOrder)}»

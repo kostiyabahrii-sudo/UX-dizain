@@ -1,31 +1,35 @@
 import { useState, type FormEvent } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { BellIcon, InboxIcon, SearchIcon, ShoppingBagIcon, TruckIcon, UsersIcon, type LucideIcon } from 'lucide-react';
+import { BellIcon, InboxIcon, SearchIcon, SettingsIcon, ShoppingBagIcon, TruckIcon, UsersIcon, type LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { SettingsDialog } from '@/components/SettingsDialog';
 import { Avatar } from '@/components/shared';
 import { cn } from '@/lib/utils';
 import { useLookups, useStore } from '@/store/AppStore';
+import { useSettings } from '@/store/Settings';
 
 export function Layout() {
   const { state, now, toast } = useStore();
   const { order, client } = useLookups();
   const navigate = useNavigate();
   const [q, setQ] = useState('');
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const { settings } = useSettings();
   const me = state.employees.find((e) => e.id === state.me)!;
 
   const newReq = state.orders.filter((o) => o.status === 'new');
-  const overdueReq = newReq.filter((o) => new Date(o.dueAt).getTime() < now);
+  const overdueReq = settings.showRequests ? newReq.filter((o) => new Date(o.dueAt).getTime() < now) : [];
   const mine = state.orders.filter((o) => o.ownerId === state.me && ['in_progress', 'awaiting', 'purchased', 'shipped'].includes(o.status));
   const openTickets = state.tickets.filter((t) => t.status === 'open');
   const trackProblems = state.shipments.filter((s) => s.problem);
   const problems = state.orders.filter((o) => o.problem && o.ownerId === state.me && o.status !== 'cancelled');
 
-  const nav: { to: string; icon: LucideIcon; label: string; n: number; alert: boolean }[] = [
-    { to: '/requests', icon: InboxIcon, label: 'Заявки', n: newReq.length, alert: overdueReq.length > 0 },
-    { to: '/orders', icon: ShoppingBagIcon, label: 'Поточні замовлення', n: mine.length, alert: false },
-    { to: '/clients', icon: UsersIcon, label: 'Клієнти', n: openTickets.length, alert: openTickets.length > 0 },
-    { to: '/tracking', icon: TruckIcon, label: 'Відстеження', n: trackProblems.length, alert: trackProblems.length > 0 },
+  const nav: { to: string; icon: LucideIcon; label: string; n: number; end?: boolean }[] = [
+    { to: '/orders', icon: ShoppingBagIcon, label: 'Поточні замовлення', n: mine.length },
+    ...(settings.showRequests ? [{ to: '/requests', icon: InboxIcon, label: 'Заявки', n: newReq.length }] : []),
+    { to: '/clients', icon: UsersIcon, label: 'Клієнти', n: openTickets.length },
+    { to: '/tracking', icon: TruckIcon, label: 'Відстеження', n: trackProblems.length },
   ];
   const alerts = overdueReq.length + openTickets.length + trackProblems.length + problems.length;
 
@@ -48,9 +52,9 @@ export function Layout() {
   return (
     <div className="flex min-h-screen min-w-[1280px]">
       <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col border-r bg-background px-3 py-5">
-        <Link to="/requests" className="mb-6 flex items-center gap-2 px-3">
-          <img src="/assets/logo-mark.png" alt="" className="size-7 invert" />
-          <span className="text-xl font-semibold tracking-tight">Fitkit</span>
+        <Link to="/orders" className="mb-6 flex items-center gap-2 px-3">
+          <img src="/assets/logo-mark.png" alt="" className="size-7 dark:invert" />
+          <span className="font-serif text-[26px] leading-none font-medium tracking-tight">Fitkit</span>
         </Link>
         <nav className="flex flex-col gap-0.5">
           {nav.map((n) => (
@@ -63,19 +67,25 @@ export function Layout() {
             >
               <n.icon className="size-[18px] shrink-0" />
               {n.label}
-              {n.n > 0 && (
-                <span className={cn('tabular ml-auto rounded-full px-2 text-xs font-semibold', n.alert ? 'bg-destructive/15 text-destructive' : 'text-muted-foreground')}>{n.n}</span>
-              )}
+              {n.n > 0 && <span className="tabular ml-auto grid h-5 min-w-5 place-items-center rounded-full bg-foreground px-1.5 text-[11px] font-semibold text-background">{n.n}</span>}
             </NavLink>
           ))}
         </nav>
-        <div className="mt-auto flex items-center gap-3 border-t px-2 pt-4">
+        <div className="mt-auto border-t pt-3">
+        <button
+          onClick={() => setSettingsOpen(true)}
+          className="flex w-full items-center gap-3 rounded-2xl px-2 py-2 text-left transition-colors hover:bg-secondary [&:hover_svg]:text-foreground"
+          aria-label="Налаштування"
+        >
           <Avatar name={me.name} />
-          <div className="text-sm leading-tight">
+          <div className="flex-1 text-sm leading-tight">
             <div className="font-medium">{me.name}</div>
             <div className="text-xs text-muted-foreground">Закупник</div>
           </div>
+          <SettingsIcon className="size-[18px] text-muted-foreground" />
+        </button>
         </div>
+        <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
@@ -94,7 +104,7 @@ export function Layout() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="absolute right-6" aria-label="Сповіщення">
                 <BellIcon className="size-[18px]" />
-                {alerts > 0 && <span className="absolute top-2 right-2 size-2 rounded-full bg-destructive" />}
+                {alerts > 0 && <span className="absolute top-2 right-2 size-2 rounded-full bg-foreground" />}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-80">

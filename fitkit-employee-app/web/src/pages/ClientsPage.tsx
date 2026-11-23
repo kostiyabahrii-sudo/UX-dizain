@@ -53,9 +53,9 @@ export function ClientsPage() {
   }
 
   return (
-    <div className="-mx-10 -my-8 flex h-[calc(100vh-4rem)]">
+    <div className="-mx-4 -my-4 flex h-[calc(100vh-6rem)] gap-4">
       {/* list */}
-      <div className="flex w-72 shrink-0 flex-col border-r">
+      <div className="flex w-72 shrink-0 flex-col overflow-hidden rounded-3xl border bg-card">
         <div className="flex flex-col gap-3 px-5 pt-6 pb-4">
           <h1 className="text-2xl font-semibold tracking-tight">Клієнти</h1>
           <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Знайти клієнта" aria-label="Знайти клієнта" />
@@ -67,7 +67,7 @@ export function ClientsPage() {
             const o = t ? order(t.orderId) : undefined;
             const unread = t?.status === 'open' && t.messages.at(-1)?.from === 'client';
             return (
-              <button key={c.id} onClick={() => setParams({ client: c.id })} className={cn('flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left transition-colors hover:bg-secondary/60', c.id === selectedId && 'bg-secondary')}>
+              <button key={c.id} onClick={() => setParams({ client: c.id })} className={cn('mb-1 flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left transition-colors hover:bg-secondary', c.id === selectedId && 'bg-secondary')}>
                 <Avatar name={c.name} className={c.id === selectedId ? 'bg-background' : undefined} />
                 <div className="min-w-0 flex-1 text-sm">
                   <div className="flex justify-between gap-2 font-medium">
@@ -87,7 +87,7 @@ export function ClientsPage() {
       </div>
 
       {/* thread */}
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-3xl border bg-card">
         {!sel || !ticket ? (
           <Empty>{sel ? 'Звернень від цього клієнта немає.' : 'Оберіть клієнта.'}</Empty>
         ) : (
@@ -120,11 +120,11 @@ export function ClientsPage() {
             <div ref={msgsRef} className="flex flex-1 flex-col gap-3 overflow-auto px-6 py-6">
               {ticket.messages.map((m) =>
                 m.from === 'system' ? (
-                  <div key={m.id} className="self-center rounded-full bg-secondary px-3 py-1 text-xs text-muted-foreground">
+                  <div key={m.id} className="self-center rounded-full border px-3 py-1 text-xs text-muted-foreground">
                     {m.text}
                   </div>
                 ) : (
-                  <div key={m.id} className={cn('max-w-[64%] rounded-3xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap', m.from === 'client' ? 'self-start rounded-bl-md bg-card border' : 'self-end rounded-br-md bg-primary text-primary-foreground')}>
+                  <div key={m.id} className={cn('max-w-[64%] rounded-3xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap', m.from === 'client' ? 'self-start rounded-bl-md bg-secondary' : 'self-end rounded-br-md bg-primary text-primary-foreground')}>
                     {m.text}
                     <div className={cn('mt-1 text-[11px]', m.from === 'client' ? 'text-muted-foreground' : 'text-primary-foreground/60')}>
                       {m.from === 'client' ? sel.name.split(' ')[0] : 'Підтримка Fitkit'} · {dayLabel(m.at, now)}
@@ -174,7 +174,7 @@ export function ClientsPage() {
 
       {/* details */}
       {sel && (
-        <div className="flex w-72 shrink-0 flex-col gap-6 overflow-auto border-l px-5 py-6 text-sm">
+        <div className="flex w-72 shrink-0 flex-col gap-6 overflow-auto rounded-3xl border bg-card px-5 py-6 text-sm">
           <Section title="Контакти">
             <Field label="Телефон" value={sel.phone} />
             {sel.telegram && <Field label="Telegram" value={sel.telegram} />}
@@ -200,7 +200,7 @@ export function ClientsPage() {
           </Section>
           <Section title={`Замовлення · ${clientOrders.length}`}>
             {clientOrders.slice(0, 5).map((o) => (
-              <button key={o.id} onClick={() => navigate(`/orders/${o.id}`)} className="-mx-2 flex items-center gap-3 rounded-2xl px-2 py-2 text-left hover:bg-secondary/60">
+              <button key={o.id} onClick={() => navigate(`/orders/${o.id}`)} className="flex items-center gap-3 rounded-2xl bg-secondary px-3 py-2 text-left hover:bg-accent">
                 <Thumbs items={o.items} max={2} className="h-8 w-6" />
                 <span className="tabular font-medium">{o.number}</span>
                 <span className="flex-1" />
@@ -225,7 +225,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function Field({ label, value }: { label: string; value: string }) {
   return (
-    <div className="-mx-2 flex items-center gap-1 rounded-2xl px-2 py-1 hover:bg-secondary/60">
+    <div className="flex items-center gap-1 rounded-2xl bg-secondary px-3 py-2">
       <div className="min-w-0 flex-1">
         <div className="text-xs text-muted-foreground">{label}</div>
         <div className="font-medium">{value}</div>

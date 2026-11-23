@@ -98,12 +98,12 @@ export function OrderPage() {
       <div className="grid grid-cols-[minmax(0,5fr)_minmax(0,7fr)] items-start gap-6">
         {/* Left — items and delivery (narrow) */}
         <div className="flex min-w-0 flex-col gap-6">
-          <Card className="gap-0 py-2">
-            {o.items.map((it, i) => (
-              <div key={it.id}>
-                {i > 0 && <Separator />}
-                <ItemRow order={o} item={it} editable={editable} onPrice={() => setPriceItem(it)} />
-              </div>
+          <Card className="gap-3 p-3">
+            <div className="px-3 pt-2 text-lg font-semibold">
+              Товари <span className="tabular font-medium text-muted-foreground">{o.items.length}</span>
+            </div>
+            {o.items.map((it) => (
+              <ItemRow key={it.id} order={o} item={it} editable={editable} onPrice={() => setPriceItem(it)} />
             ))}
           </Card>
           <DeliveryCard order={o} client={c} />
@@ -118,7 +118,7 @@ export function OrderPage() {
               <Tile label="Клієнт бачить" value={clientStatus(o.status, o)} />
             </CardContent>
 
-            <CardContent className="flex flex-col gap-2.5 text-[15px]">
+            <CardContent className="mx-6 flex flex-col gap-2.5 rounded-2xl bg-secondary px-5 py-4 text-[15px]">
               <Row label="Клієнт сплатив" value={m.priceKnown ? uah(m.paid) : '—'} />
               {m.refunds > 0 && <Row label="Повернення клієнту" value={`−${uah(m.refunds)}`} />}
               <Row label="Комісія Fitkit" value={uah(m.fee)} />
@@ -180,7 +180,7 @@ export function OrderPage() {
 
 function Tile({ label, value, tone, icon }: { label: string; value: string; tone?: 'bad' | 'warn'; icon?: React.ReactNode }) {
   return (
-    <div className="rounded-2xl bg-secondary/60 px-4 py-3.5">
+    <div className="rounded-2xl bg-secondary px-4 py-3.5">
       <div className="text-xs font-medium tracking-wide text-muted-foreground uppercase">{label}</div>
       <div className={cn('mt-1.5 flex items-center gap-1.5 text-[15px] leading-snug font-semibold', tone === 'bad' && 'text-destructive', tone === 'warn' && 'text-warning')}>
         {icon}
@@ -220,7 +220,7 @@ function ItemRow({ order, item, editable, onPrice }: { order: Order; item: Item;
     );
 
   return (
-    <div className={cn('flex gap-4 px-5 py-4', cancelled && 'opacity-50')}>
+    <div className={cn('flex gap-4 rounded-2xl bg-secondary p-4', cancelled && 'opacity-50')}>
       <Photo src={item.photo} className="h-20 w-16" />
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <div className="flex items-start gap-2">
@@ -237,7 +237,7 @@ function ItemRow({ order, item, editable, onPrice }: { order: Order; item: Item;
         {cancelled && <div className="text-sm text-muted-foreground">Скасовано · {uah((item.price ?? 0) * item.qty)} повернуто клієнту</div>}
 
         {rule && !cancelled && (
-          <div className="rounded-2xl border bg-secondary/40 px-3.5 py-3 text-sm">
+          <div className="rounded-xl bg-card px-3.5 py-3 text-sm">
             <div className="flex items-center gap-2 font-medium">
               {rule.kind === 'covered' ? (
                 <CircleCheckIcon className="size-4 text-muted-foreground" />
@@ -336,9 +336,9 @@ function DeliveryCard({ order, client }: { order: Order; client: Client }) {
           </Button>
         </CardAction>
       </CardHeader>
-      <CardContent className="flex flex-col gap-1">
+      <CardContent className="flex flex-col gap-2">
         {fields.map(([label, value]) => (
-          <div key={label} className="group flex items-center gap-2 rounded-2xl px-3 py-2 -mx-3 hover:bg-secondary/50">
+          <div key={label} className="flex items-center gap-2 rounded-2xl bg-secondary px-4 py-3">
             <div className="min-w-0 flex-1">
               <div className="text-xs text-muted-foreground">{label}</div>
               <div className="text-lg leading-snug font-semibold select-all">{value}</div>
@@ -346,7 +346,7 @@ function DeliveryCard({ order, client }: { order: Order; client: Client }) {
             <CopyButton value={value} label={`Копіювати: ${label.toLowerCase()}`} />
           </div>
         ))}
-        <div className="-mx-3 mt-1 flex items-start gap-2 rounded-2xl px-3 py-2 hover:bg-secondary/50">
+        <div className="flex items-start gap-2 rounded-2xl bg-secondary px-4 py-3">
           <div className="min-w-0 flex-1">
             <div className="text-xs text-muted-foreground">Позиції · {items.length}</div>
             <ul className="mt-0.5 flex flex-col gap-0.5">
@@ -368,7 +368,7 @@ function Notes({ order }: { order: Order }) {
   const { dispatch, now } = useStore();
   const [text, setText] = useState('');
   return (
-    <div className="flex flex-col gap-3 rounded-2xl bg-secondary/40 p-4">
+    <div className="flex flex-col gap-3 rounded-2xl bg-secondary p-4">
       {order.notes.length === 0 && <div className="text-sm text-muted-foreground">Нотаток поки немає.</div>}
       {order.notes.map((n) => (
         <div key={n.id} className="text-sm">
@@ -458,7 +458,7 @@ function PriceForm({ order, item, onClose }: { order: Order; item: Item; onClose
       </DialogHeader>
       <Input autoFocus inputMode="numeric" value={v} onChange={(e) => setV(e.target.value)} aria-label="Ціна, ₴" />
       {preview && (
-        <div className="rounded-2xl border bg-secondary/40 px-3.5 py-3 text-sm">
+        <div className="rounded-2xl bg-secondary px-3.5 py-3 text-sm">
           <div className="font-medium">{preview.title}</div>
           <div className="mt-1 text-muted-foreground">{preview.detail}</div>
         </div>

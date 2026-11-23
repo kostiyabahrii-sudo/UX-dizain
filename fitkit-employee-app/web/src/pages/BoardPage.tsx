@@ -46,7 +46,7 @@ export function BoardPage() {
           return (
             <div
               key={col.status}
-              className={cn('-m-2 flex min-h-48 flex-col gap-3 rounded-3xl p-2 transition-colors', over === col.status && 'bg-secondary/60')}
+              className={cn('flex min-h-48 flex-col gap-2.5 rounded-3xl border bg-card p-2.5 transition-colors', over === col.status && 'border-input bg-accent/40')}
               onDragOver={(e) => {
                 e.preventDefault();
                 setOver(col.status);
@@ -59,7 +59,7 @@ export function BoardPage() {
                 setDrag(null);
               }}
             >
-              <div className="flex items-center gap-2 px-2 text-sm font-medium">
+              <div className="flex items-center gap-2 px-2.5 pt-1.5 pb-1 text-sm font-medium">
                 <span className={cn('size-2 rounded-full', DOT[col.tone])} />
                 {col.label}
                 <Count>{cards.length}</Count>
@@ -76,7 +76,7 @@ export function BoardPage() {
                     onDragEnd={() => setDrag(null)}
                     onClick={() => navigate(`/orders/${o.id}`)}
                     className={cn(
-                      'flex cursor-grab flex-col gap-3 rounded-3xl border bg-card p-4 text-left transition-colors hover:border-input active:cursor-grabbing',
+                      'flex cursor-grab flex-col gap-3 rounded-2xl bg-secondary p-3.5 text-left transition-colors hover:bg-accent active:cursor-grabbing',
                       drag === o.id && 'opacity-40',
                     )}
                   >

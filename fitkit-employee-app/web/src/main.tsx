@@ -5,17 +5,21 @@ import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { App } from './App';
 import { AppStoreProvider } from './store/AppStore';
+import { SettingsProvider } from './store/Settings';
+import '@fontsource-variable/newsreader';
 import './index.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <TooltipProvider delayDuration={300}>
-        <AppStoreProvider>
-          <App />
-          <Toaster />
-        </AppStoreProvider>
-      </TooltipProvider>
-    </BrowserRouter>
+    <SettingsProvider>
+      <BrowserRouter>
+        <TooltipProvider delayDuration={300}>
+          <AppStoreProvider>
+            <App />
+            <Toaster />
+          </AppStoreProvider>
+        </TooltipProvider>
+      </BrowserRouter>
+    </SettingsProvider>
   </StrictMode>,
 );

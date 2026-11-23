@@ -4,16 +4,15 @@ import { ArrowRightIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Avatar, Count, Empty, FilterTabs, OrderStatus, Thumbs } from '@/components/shared';
+import { Count, Empty, FilterTabs, OrderStatus, Thumbs } from '@/components/shared';
 import { itemsCount, timeLeft, uah } from '@/domain/format';
 import { cn } from '@/lib/utils';
-import { useLookups, useStore } from '@/store/AppStore';
+import { useStore } from '@/store/AppStore';
 
 type Tab = 'all' | 'new' | 'overdue';
 
 export function RequestsPage() {
   const { state, dispatch, now, toast } = useStore();
-  const { client } = useLookups();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>('all');
 
@@ -58,7 +57,6 @@ export function RequestsPage() {
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="pl-6">Заявка</TableHead>
-                <TableHead>Клієнт</TableHead>
                 <TableHead>Магазини</TableHead>
                 <TableHead>Сума</TableHead>
                 <TableHead>Статус</TableHead>
@@ -67,7 +65,6 @@ export function RequestsPage() {
             </TableHeader>
             <TableBody>
               {rows.map((o) => {
-                const c = client(o.clientId);
                 const late = isLate(o.dueAt);
                 const t = timeLeft(o.dueAt, now);
                 return (
@@ -81,12 +78,6 @@ export function RequestsPage() {
                           <div className="tabular text-[15px] font-semibold">{o.number}</div>
                           <div className="text-xs text-muted-foreground">{itemsCount(o.items.length)}</div>
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar name={c.name} />
-                        {c.name}
                       </div>
                     </TableCell>
                     <TableCell className="text-muted-foreground">{[...new Set(o.items.map((i) => i.store))].join(', ')}</TableCell>
