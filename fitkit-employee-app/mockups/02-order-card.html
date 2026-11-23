@@ -1,148 +1,105 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><title>Fitkit — Request #001</title>
-<link rel="stylesheet" href="styles.css">
-<style>
-.cols { display: flex; gap: 18px; align-items: flex-start; }
+<link rel="stylesheet" href="styles.css"><style>
+.side { width: 208px; padding: 20px 12px; }
+.side .cap { display: none; }
+.nav a { padding: 9px 10px; }
+.main { padding: 28px 36px; gap: 20px; }
+.card { border-radius: 16px; }
+h1 { font-size: 24px; }
+h1 .cnt { color: var(--faint); font-weight: 500; }
+.num { font-family: "Fraunces Variable", Georgia, serif; font-variation-settings: "opsz" 48, "SOFT" 20, "WONK" 1; font-weight: 600; letter-spacing: -.01em; }
+.who { display: flex; gap: 10px; align-items: center; }
+.thumbs { display: flex; } .thumbs img { border: 2px solid var(--panel); }
+.tabs { display: flex; gap: 2px; }
+.tabs a { padding: 7px 14px; border-radius: 999px; color: var(--muted); font-weight: 500; display: flex; gap: 7px; align-items: center; }
+.tabs a.on { background: var(--clay-veil); color: var(--text); font-weight: 600; }
+.tabs a b { font-weight: 600; font-size: 12px; color: var(--faint); }
+.tabs a.red b { color: var(--bad); }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-size: 12px; font-weight: 500; color: var(--faint); padding: 12px 16px; border-bottom: 1px solid var(--line); }
+td { padding: 12px 16px; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: middle; }
+tr:last-child td { border-bottom: 0; }
+tr.late td:first-child { box-shadow: inset 3px 0 0 var(--bad); }
+tr.on td { background: var(--clay-veil); }
+.timer { font-weight: 600; font-size: 13px; color: var(--muted); }
+.timer.red { color: var(--bad); } .timer.org { color: var(--wait); }
+.badge { background: var(--clay); color: #1c1013; font-size: 11px; font-weight: 700; border-radius: 9px; padding: 0 6px; }
+.lbl { font-size: 11.5px; color: var(--faint); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+.ghost { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center; }
+.ghost svg { color: var(--faint); }
+.iconbtn { width: 34px; padding: 0; }
+
+.cols { display: flex; gap: 20px; align-items: flex-start; }
 .left { flex: 1; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
-.right { width: 390px; flex: none; display: flex; flex-direction: column; gap: 16px; }
-.num { font-family: "Fraunces Variable", Georgia, serif; font-variation-settings: "opsz" 48, "SOFT" 20, "WONK" 1; font-weight: 600; letter-spacing: -.02em; }
-.it { display: flex; gap: 16px; padding: 16px 18px; border-bottom: 1px solid var(--line); }
+.right { width: 330px; flex: none; display: flex; flex-direction: column; gap: 16px; }
+.it { display: flex; gap: 16px; padding: 18px 20px; border-bottom: 1px solid var(--line); }
 .it:last-child { border-bottom: 0; }
-.it .name { font-size: 15px; font-weight: 600; }
-.grid { display: grid; grid-template-columns: repeat(3, 120px); gap: 2px 16px; margin: 10px 0; }
-.grid span { display: block; font-size: 11.5px; color: var(--muted); }
-.grid b { font-weight: 600; font-size: 14px; }
-.grid .none { color: var(--faint); font-weight: 500; }
-.cmt { background: var(--bg); border-radius: 10px; padding: 8px 12px; font-size: 13px; color: var(--text); }
-.cmt span { color: var(--muted); font-size: 11.5px; display: block; }
-.it .acts { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; flex: none; width: 200px; }
-.kv { display: flex; justify-content: space-between; padding: 7px 0; font-size: 13.5px; }
+.it .name { font-size: 15.5px; font-weight: 600; }
+.it .spec { margin: 6px 0 8px; font-size: 14px; }
+.it .spec span { color: var(--faint); }
+.it .q { font-size: 13px; color: var(--muted); font-style: italic; }
+.it .acts { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; flex: none; }
+.warn { margin-top: 10px; font-size: 13px; color: var(--bad); display: flex; gap: 6px; align-items: center; }
+.kv { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13.5px; }
 .kv span { color: var(--muted); }
-.kv.total { border-top: 1px solid var(--line); margin-top: 4px; padding-top: 12px; }
-.kv.total b { font-size: 20px; }
-.lbl { font-size: 11.5px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 7px; }
-.blk { padding: 14px 18px; border-bottom: 1px solid var(--line); }
-.blk:last-child { border-bottom: 0; }
-.prob { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; font-size: 13px; }
-.prob:last-child { margin-bottom: 0; }
-.prob.bad { background: var(--bad-bg); } .prob.wait { background: var(--wait-bg); }
-.prob svg { width: 16px; height: 16px; flex: none; margin-top: 1px; }
-.prob.bad svg { color: var(--bad); } .prob.wait svg { color: var(--wait); }
-.prob b { display: block; }
-.com { display: flex; gap: 10px; margin-bottom: 12px; font-size: 13px; }
-.com .t small { color: var(--faint); margin-left: 6px; }
+.kv.total { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 12px; font-size: 18px; font-weight: 600; }
+.com { font-size: 13px; margin-bottom: 12px; }
+.com b { font-weight: 600; } .com small { color: var(--faint); margin-left: 6px; }
 .input { border: 1px solid var(--line-2); border-radius: 10px; padding: 9px 12px; color: var(--faint); background: var(--bg); font-size: 13px; }
-.stbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.stbtns .btn { width: 100%; }
-.act { display: flex; gap: 12px; padding: 9px 0; font-size: 13px; }
-.act .dot { width: 26px; height: 26px; border-radius: 50%; background: var(--bg); border: 1px solid var(--line); flex: none; display: grid; place-items: center; }
-.act .dot svg { width: 13px; height: 13px; color: var(--muted); }
-.act .d { margin-left: auto; color: var(--faint); font-size: 11.5px; white-space: nowrap; }
-.copy { color: var(--clay-ink); font-weight: 600; font-size: 12.5px; display: inline-flex; gap: 5px; align-items: center; }
-.copy svg { width: 13px; height: 13px; }
 </style></head>
 <body><div class="app">
   <aside class="side">
     <div class="logo"><img src="assets/logo-mark.png" alt=""><b>Fitkit</b></div>
-    <div class="cap">Main</div>
-    <nav class="nav"><a class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Requests<span class="n red">12</span></a><a class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Current orders<span class="n">14</span></a><a class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients</a><a class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>Tracking<span class="n">2</span></a><a class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages<span class="n red">3</span></a><a class=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>Analytics</a></nav>
-    <div class="me"><div class="ava c2">AK</div><div>Anna Koval<small>Buyer · on shift</small></div></div>
+    <nav class="nav"><a class="on"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Requests<span class="n red">12</span></a><a class=""><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Current orders<span class="n">14</span></a><a class=""><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients<span class="n red">3</span></a><a class=""><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>Tracking<span class="n red">2</span></a></nav>
+    <div class="me"><div class="ava c2">AK</div><div>Anna Koval<small>Buyer</small></div></div>
   </aside>
   <div class="body">
-    <div class="top"><div class="search">Search: request #, client, phone, tracking number…<kbd>⌘K</kbd></div><div class="bell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><i></i></div></div>
+    <div class="top"><div class="search">Search request #, client, phone or tracking…<kbd>⌘K</kbd></div><div class="bell"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><i></i></div></div>
     <main class="main">
 <div class="row">
-  <div class="hicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></div>
-  <div class="grow">
-    <div class="row" style="gap:10px"><h1 class="num" style="font-size:26px">#001</h1><span class="st wait">In progress</span></div>
-    <div class="sub">Received Nov 21, 2026, 08:40 · via Telegram bot · Maria Lebedenko</div>
-  </div>
-  <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Message client</button><button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Hand over</button>
+  <button class="btn iconbtn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+  <div class="grow"><div class="row" style="gap:10px"><h1 class="num" style="font-size:28px">#001</h1><span class="st wait">In progress</span></div>
+  <div class="sub">Maria Lebedenko · received Nov 21, 08:40 · <span class="btn link">History</span></div></div>
+  <button class="btn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Message client</button><button class="btn iconbtn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button>
 </div>
 <div class="cols">
   <div class="left">
-    <div class="card">
-      <div class="hd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg><h2>Items · 3</h2><i class="mk">1</i><span class="grow"></span><span class="sub">1 of 3 checked</span></div>
-      <div class="it">
-  <img class="ph" src="assets/photos/stripe.jpg" style="width:76px;height:96px">
-  <div class="grow">
-    <div class="row" style="gap:8px"><div class="name">Striped sweater</div><span class="tag">Zara</span></div>
-    <div class="grid"><div><span>Size</span><b>L</b></div><div><span>Quantity</span><b>1</b></div><div><span>Price</span><b>₴1,799</b></div></div>
-    <div class="cmt"><span>Client comment</span>“One size up, I like a loose fit”</div>
+    <div class="card"><div class="it"><img class="ph" src="assets/photos/stripe.jpg" style="width:80px;height:100px"><div class="grow">
+<div class="row" style="gap:8px"><div class="name">Striped sweater</div><span class="tag">Zara</span></div>
+<div class="spec"><span>Size</span> L &nbsp;·&nbsp; <span>Qty</span> 1 &nbsp;·&nbsp; ₴1,799</div>
+<div class="q">“One size up, I like a loose fit”</div></div>
+<div class="acts"><span class="st ok">Checked</span><button class="btn">Open in store <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button></div></div><div class="it"><img class="ph" src="assets/photos/jacket-black.jpg" style="width:80px;height:100px"><div class="grow">
+<div class="row" style="gap:8px"><div class="name">Black jacket</div><span class="tag">Zara</span></div>
+<div class="spec"><span>Size</span> M &nbsp;·&nbsp; <span>Qty</span> 1 &nbsp;·&nbsp; ₴3,999</div>
+<div class="q">“Need it by Nov 25. If no M — S is fine”</div><div class="warn"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>No size M in stock <span class="btn link" style="margin-left:6px">Ask client</span></div></div>
+<div class="acts"><span class="st bad">Size missing</span><button class="btn">Open in store <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button></div></div><div class="it"><img class="ph" src="assets/photos/jeans-black.jpg" style="width:80px;height:100px"><div class="grow">
+<div class="row" style="gap:8px"><div class="name">Wide-leg jeans</div><span class="tag">H&amp;M</span></div>
+<div class="spec"><span>Size</span> W28 L32 &nbsp;·&nbsp; <span>Qty</span> 1 &nbsp;·&nbsp; <span>price not set</span></div>
+<div class="q">“Dark, like in the photo. Couldn’t find the price”</div></div>
+<div class="acts"><span class="st wait">Checking</span><button class="btn">Open in store <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button></div></div></div>
+    <div class="card"><div class="bd row" style="gap:30px;align-items:flex-start">
+      <div><div class="lbl">Deliver to</div>Kyiv, 12 Velyka Vasylkivska St, apt 48<div class="sub">Maria Lebedenko · +380 67 ••• 45 12 · courier 10:00–18:00</div></div>
+      <span class="grow"></span><span class="btn link"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy</span>
+    </div></div>
   </div>
-  <div class="acts"><span class="st ok">Checked</span><button class="btn pri">Open in store <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button></div>
-</div><div class="it">
-  <img class="ph" src="assets/photos/jacket-black.jpg" style="width:76px;height:96px">
-  <div class="grow">
-    <div class="row" style="gap:8px"><div class="name">Black jacket</div><span class="tag">Zara</span></div>
-    <div class="grid"><div><span>Size</span><b>M</b></div><div><span>Quantity</span><b>1</b></div><div><span>Price</span><b>₴3,999</b></div></div>
-    <div class="cmt"><span>Client comment</span>“Need it by Nov 25. If no M — S is fine”</div>
-  </div>
-  <div class="acts"><span class="st bad">Size missing</span><button class="btn pri">Open in store <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button><button class="btn sm">Message client</button></div>
-</div><div class="it">
-  <img class="ph" src="assets/photos/jeans-black.jpg" style="width:76px;height:96px">
-  <div class="grow">
-    <div class="row" style="gap:8px"><div class="name">Wide-leg jeans</div><span class="tag">H&amp;M</span></div>
-    <div class="grid"><div><span>Size</span><b>W28 L32</b></div><div><span>Quantity</span><b>1</b></div><div><span>Price</span><b class="none">not set</b></div></div>
-    <div class="cmt"><span>Client comment</span>“Dark, like in the photo. Couldn’t find the price”</div>
-  </div>
-  <div class="acts"><span class="st wait">Checking</span><button class="btn pri">Open in store <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button></div>
-</div>
-    </div>
-    <div class="card">
-      <div class="hd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg><h2>Client & delivery</h2></div>
-      <div class="bd row" style="align-items:flex-start;gap:28px">
-        <div class="who row" style="gap:10px"><div class="ava c2" style="width:40px;height:40px">ML</div><div><b>Maria Lebedenko</b><div class="sub">7th order · Telegram @maria_l</div><div class="sub">+380 67 ••• 45 12</div></div></div>
-        <div class="grow"><div class="lbl">Delivery address</div>Kyiv, 12 Velyka Vasylkivska St, apt 48<div class="sub">Courier, 10:00–18:00</div><span class="copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy address</span></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="hd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg><h2>History</h2></div>
-      <div class="bd" style="padding-top:8px;padding-bottom:8px">
-        <div class="act"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div><div><b>Problem found</b><div class="sub">Jacket: size M out of stock</div></div><span class="d">Nov 21, 09:12</span></div>
-        <div class="act"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg></div><div><b>Taken by Anna Koval</b><div class="sub">Status: New → In progress</div></div><span class="d">Nov 21, 09:01</span></div>
-        <div class="act"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></div><div><b>Request received</b><div class="sub">3 items, 6 photos, via Telegram bot</div></div><span class="d">Nov 21, 08:40</span></div>
-      </div>
-    </div>
-  </div>
-
   <div class="right">
-    <div class="card">
-      <div class="hd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg><h2>Order management</h2><i class="mk">2</i></div>
-      <div class="blk"><div class="lbl">Current status</div><div class="row"><span class="st wait">In progress</span><span class="grow"></span><span class="sub">since 09:01 · 1h 20m left</span></div></div>
-      <div class="blk"><div class="lbl">Owner</div><div class="row"><div class="ava c2">AK</div><div class="grow"><b>Anna Koval</b><div class="sub">Buyer</div></div><button class="btn sm">Change</button></div></div>
-      <div class="blk"><div class="lbl">Total cost</div>
-        <div class="kv"><span>Items (2 priced)</span>₴5,798</div>
-        <div class="kv"><span>Jeans</span><span>price pending</span></div>
-        <div class="kv"><span>Fitkit fee</span>₴580</div>
-        <div class="kv total"><b>Total</b><b class="num">₴6,378</b></div>
-      </div>
-      <div class="blk"><div class="lbl">Change status</div>
-        <div class="stbtns"><button class="btn">Waiting for client</button><button class="btn">Problem</button><button class="btn pri" style="grid-column:1/3">Move to “Purchased” →</button><button class="btn danger" style="grid-column:1/3">Cancel order</button></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="hd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><h2>Issues & problems · 2</h2><i class="mk">3</i></div>
-      <div class="bd">
-        <div class="prob bad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><div class="grow"><b>No size M</b>Black jacket · Zara</div><button class="btn sm">Ask client</button></div>
-        <div class="prob wait"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><div class="grow"><b>Price not set</b>Wide-leg jeans · H&amp;M — check on the site</div></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="hd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/></svg><h2>Team comments</h2><i class="mk">4</i></div>
-      <div class="bd">
-        <div class="com"><div class="ava c3">IR</div><div class="t"><b>Iryna R.</b><small>shift lead · 09:20</small><div>If S is also gone — suggest Massimo Dutti, she has bought there before.</div></div></div>
-        <div class="com"><div class="ava c2">AK</div><div class="t"><b>Anna K.</b><small>09:25</small><div>OK, I’ll check S and message the client.</div></div></div>
-        <div class="input">Comment for the team (client won’t see it)…</div>
-      </div>
-    </div>
+    <div class="card"><div class="bd">
+      <div class="kv"><span>Owner</span>Anna Koval</div>
+      <div class="kv"><span>Due</span><span style="color:var(--wait);font-weight:600">1h 20m left</span></div>
+      <div class="kv" style="margin-top:8px"><span>Items (2 priced)</span>₴5,798</div>
+      <div class="kv"><span>Fitkit fee</span>₴580</div>
+      <div class="kv total"><span style="color:var(--text)">Total</span><span class="num" style="color:var(--text)">₴6,378</span></div>
+      <button class="btn pri big" style="width:100%;margin-top:16px">Move to “Purchased” →</button>
+      <div class="row" style="gap:8px;margin-top:8px"><button class="btn" style="flex:1">Waiting for client</button><button class="btn" style="flex:1">Problem</button></div>
+      <div style="text-align:center;margin-top:12px"><span class="btn link" style="color:var(--faint);font-weight:500">Cancel order</span></div>
+    </div></div>
+    <div class="card"><div class="bd">
+      <div class="lbl">Team notes</div>
+      <div class="com"><b>Iryna R.</b><small>09:20</small><div>If S is also gone — suggest Massimo Dutti, she has bought there before.</div></div>
+      <div class="input">Add a note…</div>
+    </div></div>
   </div>
-</div>
-<div class="legend">
-  <span><i class="mk">1</i>Left — items: size, quantity, price (if known), client comment and a link to the store</span>
-  <span><i class="mk">2</i>Right — management: status, owner, cost and status buttons</span>
-  <span><i class="mk">3</i>Issues and problems for this request</span>
-  <span><i class="mk">4</i>Internal team comments</span>
 </div></main>
   </div>
 </div></body></html>

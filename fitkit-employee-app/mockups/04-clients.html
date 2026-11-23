@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Fitkit — Clients</title>
+<link rel="stylesheet" href="styles.css"><style>
+.side { width: 208px; padding: 20px 12px; }
+.side .cap { display: none; }
+.nav a { padding: 9px 10px; }
+.main { padding: 28px 36px; gap: 20px; }
+.card { border-radius: 16px; }
+h1 { font-size: 24px; }
+h1 .cnt { color: var(--faint); font-weight: 500; }
+.num { font-family: "Fraunces Variable", Georgia, serif; font-variation-settings: "opsz" 48, "SOFT" 20, "WONK" 1; font-weight: 600; letter-spacing: -.01em; }
+.who { display: flex; gap: 10px; align-items: center; }
+.thumbs { display: flex; } .thumbs img { border: 2px solid var(--panel); }
+.tabs { display: flex; gap: 2px; }
+.tabs a { padding: 7px 14px; border-radius: 999px; color: var(--muted); font-weight: 500; display: flex; gap: 7px; align-items: center; }
+.tabs a.on { background: var(--clay-veil); color: var(--text); font-weight: 600; }
+.tabs a b { font-weight: 600; font-size: 12px; color: var(--faint); }
+.tabs a.red b { color: var(--bad); }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-size: 12px; font-weight: 500; color: var(--faint); padding: 12px 16px; border-bottom: 1px solid var(--line); }
+td { padding: 12px 16px; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: middle; }
+tr:last-child td { border-bottom: 0; }
+tr.late td:first-child { box-shadow: inset 3px 0 0 var(--bad); }
+tr.on td { background: var(--clay-veil); }
+.timer { font-weight: 600; font-size: 13px; color: var(--muted); }
+.timer.red { color: var(--bad); } .timer.org { color: var(--wait); }
+.badge { background: var(--clay); color: #1c1013; font-size: 11px; font-weight: 700; border-radius: 9px; padding: 0 6px; }
+.lbl { font-size: 11.5px; color: var(--faint); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+.ghost { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center; }
+.ghost svg { color: var(--faint); }
+.iconbtn { width: 34px; padding: 0; }
+
+.main { padding: 0; gap: 0; }
+.wrap { display: flex; height: 904px; }
+.list { width: 290px; border-right: 1px solid var(--line); flex: none; display: flex; flex-direction: column; }
+.list .hd2 { padding: 22px 18px 12px; }
+.list .s2 { margin: 0 18px 12px; height: 34px; border: 1px solid var(--line-2); border-radius: 999px; display: flex; align-items: center; padding: 0 12px; color: var(--faint); font-size: 13px; background: var(--bg); }
+.list .tabs { padding: 0 14px 10px; }
+.c { display: flex; gap: 10px; padding: 12px 18px; }
+.c.on { background: var(--clay-veil); }
+.c .t { flex: 1; min-width: 0; font-size: 13px; }
+.c .t b { display: flex; justify-content: space-between; font-weight: 600; }
+.c .t b small { color: var(--faint); font-weight: 400; font-size: 11.5px; }
+.c .t p { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.chat .head { display: flex; align-items: center; gap: 12px; padding: 16px 24px; border-bottom: 1px solid var(--line); }
+.msgs { flex: 1; padding: 24px; display: flex; flex-direction: column; gap: 12px; }
+.day { align-self: center; font-size: 11.5px; color: var(--faint); }
+.m { max-width: 64%; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.45; }
+.m small { display: block; font-size: 11px; color: var(--faint); margin-top: 4px; }
+.m.cl { background: var(--panel); border: 1px solid var(--line); align-self: flex-start; border-bottom-left-radius: 5px; }
+.m.me { background: rgba(240,174,194,.13); border: 1px solid rgba(240,174,194,.22); align-self: flex-end; border-bottom-right-radius: 5px; }
+.prod { display: flex; gap: 10px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 8px; margin-top: 8px; font-size: 12.5px; }
+.composer { border-top: 1px solid var(--line); padding: 14px 24px; display: flex; gap: 10px; align-items: center; }
+.composer .in { flex: 1; height: 42px; border: 1px solid var(--line-2); border-radius: 12px; display: flex; align-items: center; padding: 0 14px; color: var(--faint); background: var(--bg); }
+.info { width: 310px; border-left: 1px solid var(--line); flex: none; padding: 22px 20px; display: flex; flex-direction: column; gap: 20px; }
+.kv2 { font-size: 13.5px; padding: 3px 0; }
+.kv2 span { color: var(--muted); display: inline-block; width: 70px; }
+.ord { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 6px 0; }
+</style></head>
+<body><div class="app">
+  <aside class="side">
+    <div class="logo"><img src="assets/logo-mark.png" alt=""><b>Fitkit</b></div>
+    <nav class="nav"><a class=""><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Requests<span class="n red">12</span></a><a class=""><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Current orders<span class="n">14</span></a><a class="on"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients<span class="n red">3</span></a><a class=""><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>Tracking<span class="n red">2</span></a></nav>
+    <div class="me"><div class="ava c2">AK</div><div>Anna Koval<small>Buyer</small></div></div>
+  </aside>
+  <div class="body">
+    <div class="top"><div class="search">Search request #, client, phone or tracking…<kbd>⌘K</kbd></div><div class="bell"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><i></i></div></div>
+    <main class="main">
+<div class="wrap">
+  <div class="list">
+    <div class="hd2"><h1>Clients</h1></div>
+    <div class="s2">Find a client…</div>
+    <div class="tabs"><a class="on">All</a><a class="red">Unread <b>3</b></a></div>
+    <div class="c on"><div class="ava c2">ML</div><div class="t"><b>Maria Lebedenko<small>09:41</small></b><p><span style="color:var(--clay)">#001</span> · Let’s go with S, thanks!</p></div><span class="badge" style="align-self:center">1</span></div><div class="c "><div class="ava c4">IS</div><div class="t"><b>Ihor Sokolenko<small>09:20</small></b><p><span style="color:var(--clay)">#002</span> · Why did the price go up?</p></div><span class="badge" style="align-self:center">1</span></div><div class="c "><div class="ava c3">OP</div><div class="t"><b>Olha Petrenko<small>09:12</small></b><p><span style="color:var(--clay)">#003</span> · Sent one more link</p></div><span class="badge" style="align-self:center">1</span></div><div class="c "><div class="ava c5">DV</div><div class="t"><b>Daria Vovk<small>08:55</small></b><p><span style="color:var(--clay)">#004</span> · You: Checking stock, back soon…</p></div></div><div class="c "><div class="ava c2">PT</div><div class="t"><b>Pavlo Tykhonenko<small>yesterday</small></b><p><span style="color:var(--clay)">#005</span> · You: Tracking number tomorrow</p></div></div><div class="c "><div class="ava c5">OS</div><div class="t"><b>Olena Smyrnova<small>yesterday</small></b><p><span style="color:var(--clay)">#008</span> · Thanks, everything arrived!</p></div></div><div class="c "><div class="ava c4">KO</div><div class="t"><b>Kseniia Orlyk<small>Nov 20</small></b><p><span style="color:var(--clay)">#0990</span> · You: Bought, waiting for tracking</p></div></div><div class="c "><div class="ava c3">AB</div><div class="t"><b>Artem Bilyk<small>Nov 19</small></b><p><span style="color:var(--clay)">#0993</span> · Ok, thank you</p></div></div>
+  </div>
+  <div class="chat">
+    <div class="head"><div class="ava c2">ML</div><div class="grow"><b>Maria Lebedenko</b><div class="sub">Telegram · online 2 min ago</div></div><span class="tag">#001 · In progress</span><button class="btn">Open request</button></div>
+    <div class="msgs">
+      <div class="day">Today</div>
+      <div class="m cl">Hi! I sent 3 items, please take a look 🙏<small>08:40</small></div>
+      <div class="m me">Hi Maria! I’m Anna, your buyer. Checking stock and sizes, I’ll be back shortly.<small>09:05</small></div>
+      <div class="m me">Unfortunately the black jacket is out of stock in M. S is the same price — shall we take S?
+        <div class="prod"><img class="ph" src="assets/photos/jacket-black.jpg" style="width:40px;height:50px"><div><b>Black jacket</b><div class="sub" style="font-size:12px">Zara · S · ₴3,999</div><div style="color:var(--clay);font-size:12px">zara.com ↗</div></div></div><small>09:30</small></div>
+      <div class="m cl">Let’s go with S, thanks!<small>09:41</small></div>
+    </div>
+    <div class="composer"><button class="btn iconbtn" style="height:42px;width:42px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button><div class="in">Message Maria…</div><button class="btn pri" style="height:42px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg>Send</button></div>
+  </div>
+  <div class="info">
+    <div><div class="lbl">Contacts</div>
+      <div class="kv2"><span>Telegram</span>@maria_l</div><div class="kv2"><span>Phone</span>+380 67 ••• 45 12 <span class="btn link" style="width:auto">Show</span></div></div>
+    <div><div class="lbl">Address</div><div style="font-size:13.5px">Kyiv, 12 Velyka Vasylkivska St, apt 48</div><div class="sub">Courier, 10:00–18:00</div></div>
+    <div><div class="lbl">Preferences</div>
+      <div class="kv2"><span>Sizes</span>S–M · W28 L32 · 38</div><div class="kv2"><span>Stores</span>Zara, COS, Massimo Dutti</div><div class="kv2"><span>Dislikes</span><span style="color:var(--bad);width:auto">synthetics, loud prints</span></div>
+      <div class="sub" style="margin-top:6px;font-size:12.5px">Zara runs small for her — take one size up.</div></div>
+    <div><div class="lbl">Orders · 7</div>
+      <div class="ord"><div class="thumbs"><img class="ph" src="assets/photos/stripe.jpg" style="width:24px;height:30px"><img class="ph" src="assets/photos/jacket-black.jpg" style="width:24px;height:30px;margin-left:-8px"></div><span class="num">#001</span><span class="grow"></span><span class="st wait">In progress</span></div>
+      <div class="ord"><div class="thumbs"><img class="ph" src="assets/photos/sweater-grey.jpg" style="width:24px;height:30px"></div><span class="num">#0874</span><span class="grow"></span><span class="st ok">Delivered</span></div>
+      <div class="ord"><div class="thumbs"><img class="ph" src="assets/photos/loafers.jpg" style="width:24px;height:30px"><img class="ph" src="assets/photos/scarf.jpg" style="width:24px;height:30px;margin-left:-8px"></div><span class="num">#0812</span><span class="grow"></span><span class="st ok">Delivered</span></div>
+    </div>
+  </div>
+</div></main>
+  </div>
+</div></body></html>

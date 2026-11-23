@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Fitkit — Current orders</title>
+<link rel="stylesheet" href="styles.css"><style>
+.side { width: 208px; padding: 20px 12px; }
+.side .cap { display: none; }
+.nav a { padding: 9px 10px; }
+.main { padding: 28px 36px; gap: 20px; }
+.card { border-radius: 16px; }
+h1 { font-size: 24px; }
+h1 .cnt { color: var(--faint); font-weight: 500; }
+.num { font-family: "Fraunces Variable", Georgia, serif; font-variation-settings: "opsz" 48, "SOFT" 20, "WONK" 1; font-weight: 600; letter-spacing: -.01em; }
+.who { display: flex; gap: 10px; align-items: center; }
+.thumbs { display: flex; } .thumbs img { border: 2px solid var(--panel); }
+.tabs { display: flex; gap: 2px; }
+.tabs a { padding: 7px 14px; border-radius: 999px; color: var(--muted); font-weight: 500; display: flex; gap: 7px; align-items: center; }
+.tabs a.on { background: var(--clay-veil); color: var(--text); font-weight: 600; }
+.tabs a b { font-weight: 600; font-size: 12px; color: var(--faint); }
+.tabs a.red b { color: var(--bad); }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-size: 12px; font-weight: 500; color: var(--faint); padding: 12px 16px; border-bottom: 1px solid var(--line); }
+td { padding: 12px 16px; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: middle; }
+tr:last-child td { border-bottom: 0; }
+tr.late td:first-child { box-shadow: inset 3px 0 0 var(--bad); }
+tr.on td { background: var(--clay-veil); }
+.timer { font-weight: 600; font-size: 13px; color: var(--muted); }
+.timer.red { color: var(--bad); } .timer.org { color: var(--wait); }
+.badge { background: var(--clay); color: #1c1013; font-size: 11px; font-weight: 700; border-radius: 9px; padding: 0 6px; }
+.lbl { font-size: 11.5px; color: var(--faint); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+.ghost { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center; }
+.ghost svg { color: var(--faint); }
+.iconbtn { width: 34px; padding: 0; }
+
+.board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: start; }
+.col { display: flex; flex-direction: column; gap: 10px; }
+.colh { display: flex; align-items: center; gap: 8px; padding: 0 4px 4px; font-weight: 600; }
+.colh .dot { width: 8px; height: 8px; border-radius: 50%; }
+.colh b { font-weight: 500; color: var(--faint); }
+.oc { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.oc.prob { box-shadow: inset 3px 0 0 var(--bad); }
+.oc.wt { box-shadow: inset 3px 0 0 var(--wait); }
+.oc .t { margin-left: auto; font-size: 12.5px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.oc .t.red { color: var(--bad); } .oc .t.org { color: var(--wait); }
+.note { font-size: 12.5px; color: var(--muted); }
+.note.red { color: var(--bad); } .note.org { color: var(--wait); }
+</style></head>
+<body><div class="app">
+  <aside class="side">
+    <div class="logo"><img src="assets/logo-mark.png" alt=""><b>Fitkit</b></div>
+    <nav class="nav"><a class=""><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Requests<span class="n red">12</span></a><a class="on"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Current orders<span class="n">14</span></a><a class=""><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients<span class="n red">3</span></a><a class=""><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>Tracking<span class="n red">2</span></a></nav>
+    <div class="me"><div class="ava c2">AK</div><div>Anna Koval<small>Buyer</small></div></div>
+  </aside>
+  <div class="body">
+    <div class="top"><div class="search">Search request #, client, phone or tracking…<kbd>⌘K</kbd></div><div class="bell"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><i></i></div></div>
+    <main class="main">
+<div class="row"><h1 class="grow">Current orders <span class="cnt">14</span></h1><div class="tabs"><a class="on">Mine</a><a>All</a></div></div>
+<div class="board"><div class="col"><div class="colh"><span class="dot" style="background:var(--muted)"></span>In progress <b>5</b></div><div class="oc prob"><div class="row" style="gap:10px"><div class="thumbs"><img class="ph" src="assets/photos/stripe.jpg" style="width:30px;height:38px"><img class="ph" src="assets/photos/jacket-black.jpg" style="width:30px;height:38px;margin-left:-8px"><img class="ph" src="assets/photos/jeans-black.jpg" style="width:30px;height:38px;margin-left:-8px"></div><span class="num" style="font-size:16px">#001</span><span class="badge">1</span><span class="t ">1h 20m</span></div>
+<div><div style="font-size:13.5px">Maria Lebedenko</div><div class="sub" style="font-size:12.5px">3 items · ₴6,378</div></div><div class="note red">No size M — asked in chat</div></div><div class="oc "><div class="row" style="gap:10px"><div class="thumbs"><img class="ph" src="assets/photos/jacket-black.jpg" style="width:30px;height:38px"></div><span class="num" style="font-size:16px">#008</span><span class="t ">2h</span></div>
+<div><div style="font-size:13.5px">Olena Smyrnova</div><div class="sub" style="font-size:12.5px">1 item · ₴3,999</div></div></div><div class="oc "><div class="row" style="gap:10px"><div class="thumbs"><img class="ph" src="assets/photos/hoodie.jpg" style="width:30px;height:38px"><img class="ph" src="assets/photos/sweatpants.jpg" style="width:30px;height:38px;margin-left:-8px"></div><span class="num" style="font-size:16px">#0993</span><span class="t ">2h 40m</span></div>
+<div><div style="font-size:13.5px">Artem Bilyk</div><div class="sub" style="font-size:12.5px">2 items · ₴5,380</div></div></div><div class="oc "><div class="row" style="gap:10px"><div class="thumbs"><img class="ph" src="assets/photos/scarf.jpg" style="width:30px;height:38px"></div><span class="num" style="font-size:16px">#0990</span><span class="t ">3h</span></div>
+<div><div style="font-size:13.5px">Kseniia Orlyk</div><div class="sub" style="font-size:12.5px">1 item · ₴1,599</div></div></div><div class="oc "><div class="row" style="gap:10px"><div class="thumbs"><img class="ph" src="assets/photos/sweater-grey.jpg" style="width:30px;height:38px"><img class="ph" src="assets/photos/jeans.jpg" style="width:30px;height:38px;margin-left:-8px"><img class="ph" src="assets/photos/loafers.jpg" style="width:30px;height:38px;margin-left:-8px"></div><span class="num" style="font-size:16px">#0987</span><span class="t ">3h 30m</span></div>
+<div><div style="font-size:13.5px">Olha Petrenko</div><div class="sub" style="font-size:12.5px">3 items · ₴12,480</div></div></div></div><div class="col"><div class="colh"><span class="dot" style="background:var(--wait)"></span>Waiting for client <b>3</b></div><div class="oc wt"><div class="row" style="gap:10px"><div class="thumbs"><img class="ph" src="assets/photos/sneakers.jpg" style="width:30px;height:38px"></div><span class="num" style="font-size:16px">#0995</span><span class="badge">1</span><span class="t org">6h</span></div>
+<div><div style="font-size:13.5px">Ihor Sokolenko</div><div class="sub" style="font-size:12.5px">1 item · ₴5,899</div></div><div class="note org">Asked about ₴290 extra</div></div><div class="oc prob"><div class="row" style="gap:10px"><div class="thumbs"><img class="ph" src="assets/photos/stripe.jpg" style="width:30px;height:38px"><img class="ph" src="assets/photos/sweatpants2.jpg" style="width:30px;height:38px;margin-left:-8px"></div><span class="num" style="font-size:16px">#0981</span><span class="t red">26h</span></div>
+<div><div style="font-size:13.5px">Pavlo Tykhonenko</div><div class="sub" style="font-size:12.5px">2 items · ₴4,480</div></div><div class="note red">Client silent for over a day</div></div><div class="oc wt"><div class="row" style="gap:10px"><div class="thumbs"><img class="ph" src="assets/photos/jeans-black.jpg" style="width:30px;height:38px"></div><span class="num" style="font-size:16px">#0976</span><span class="t org">2h</span></div>
+<div><div style="font-size:13.5px">Daria Vovk</div><div class="sub" style="font-size:12.5px">1 item · price ?</div></div><div class="note org">Asked: W29 or W30?</div></div></div><div class="col"><div class="colh"><span class="dot" style="background:var(--info)"></span>Purchased <b>4</b></div><div class="oc "><div class="row" style="gap:10px"><div class="thumbs"><img class="ph" src="assets/photos/loafers.jpg" style="width:30px;height:38px"></div><span class="num" style="font-size:16px">#0968</span><span class="t ">today</span></div>
+<div><div style="font-size:13.5px">Olena Smyrnova</div><div class="sub" style="font-size:12.5px">At warehouse · Nova Poshta</div></div></div><div class="oc prob"><div class="row" style="gap:10px"><div class="thumbs"><img class="ph" src="assets/photos/sneakers.jpg" style="width:30px;height:38px"></div><span class="num" style="font-size:16px">#0951</span><span class="t red">3 days</span></div>
+<div><div style="font-size:13.5px">Pavlo Tykhonenko</div><div class="sub" style="font-size:12.5px">Waiting for tracking · Nike</div></div><div class="note red">No tracking for 3 days</div></div><div class="oc prob"><div class="row" style="gap:10px"><div class="thumbs"><img class="ph" src="assets/photos/sweater-grey.jpg" style="width:30px;height:38px"><img class="ph" src="assets/photos/scarf.jpg" style="width:30px;height:38px;margin-left:-8px"></div><span class="num" style="font-size:16px">#0947</span><span class="t red">5 days</span></div>
+<div><div style="font-size:13.5px">Kseniia Orlyk</div><div class="sub" style="font-size:12.5px">In transit · Ukrposhta</div></div><div class="note red">No movement for 5 days</div></div><div class="oc "><div class="row" style="gap:10px"><div class="thumbs"><img class="ph" src="assets/photos/hoodie.jpg" style="width:30px;height:38px"></div><span class="num" style="font-size:16px">#0939</span><span class="t ">yesterday</span></div>
+<div><div style="font-size:13.5px">Artem Bilyk</div><div class="sub" style="font-size:12.5px">In transit · Meest</div></div></div></div><div class="col"><div class="colh"><span class="dot" style="background:var(--ok)"></span>Shipped <b>2</b></div><div class="oc "><div class="row" style="gap:10px"><div class="thumbs"><img class="ph" src="assets/photos/jeans.jpg" style="width:30px;height:38px"><img class="ph" src="assets/photos/stripe.jpg" style="width:30px;height:38px;margin-left:-8px"></div><span class="num" style="font-size:16px">#0932</span><span class="t ">yesterday</span></div>
+<div><div style="font-size:13.5px">Olha Petrenko</div><div class="sub" style="font-size:12.5px">Nova Poshta · due Nov 23</div></div></div><div class="oc "><div class="row" style="gap:10px"><div class="thumbs"><img class="ph" src="assets/photos/jacket-black.jpg" style="width:30px;height:38px"></div><span class="num" style="font-size:16px">#0918</span><span class="t ">today</span></div>
+<div><div style="font-size:13.5px">Maria Lebedenko</div><div class="sub" style="font-size:12.5px">Courier delivers today</div></div></div></div></div></main>
+  </div>
+</div></body></html>

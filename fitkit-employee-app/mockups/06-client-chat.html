@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Fitkit — client chat</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+.stage { width: 1440px; height: 900px; display: flex; gap: 80px; padding: 60px 110px; background: var(--bg); align-items: center; }
+.phone { width: 360px; height: 760px; background: #000; border: 1px solid #2a2f37; border-radius: 46px; padding: 12px; box-shadow: 0 0 60px -20px rgba(240,174,194,.25); flex: none; }
+.screen { background: var(--bg); height: 100%; border-radius: 36px; overflow: hidden; display: flex; flex-direction: column; }
+.ptop { padding: 40px 16px 12px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--line); background: var(--paper); }
+.ordr { margin: 10px 14px 0; border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; font-size: 12.5px; color: var(--muted); display: flex; justify-content: space-between; background: var(--panel); }
+.pm { flex: 1; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.b { max-width: 82%; padding: 9px 12px; border-radius: 16px; font-size: 13.5px; }
+.b small { display: block; font-size: 10.5px; color: var(--faint); margin-top: 3px; }
+.b.mgr { background: var(--panel); border: 1px solid var(--line); align-self: flex-start; border-bottom-left-radius: 5px; }
+.b.me { background: rgba(240,174,194,.16); border: 1px solid rgba(240,174,194,.25); align-self: flex-end; border-bottom-right-radius: 5px; }
+.prod { display: flex; gap: 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 6px; margin-top: 6px; font-size: 12px; }
+.pin { display: flex; gap: 8px; align-items: center; padding: 10px 12px 26px; border-top: 1px solid var(--line); background: var(--paper); }
+.pin .in { flex: 1; height: 40px; border: 1px solid var(--line-2); border-radius: 999px; display: flex; align-items: center; padding: 0 14px; color: var(--faint); font-size: 13px; background: var(--bg); }
+.round { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(180deg,#f6c4d3,var(--clay-deep)); color: #1c1013; box-shadow: 0 0 16px -2px var(--glow); }
+.expl { max-width: 520px; display: flex; flex-direction: column; gap: 14px; }
+.expl h1 { font-size: 30px; line-height: 1.2; }
+.expl p { color: var(--muted); font-size: 16px; }
+</style></head>
+<body><div class="app" style="display:block;min-height:900px"><div class="stage">
+  <div class="phone"><div class="screen">
+    <div class="ptop"><img src="assets/logo-mark.png" style="width:32px;height:32px;filter:invert(1)"><div class="grow"><b class="serif" style="font-size:18px;font-weight:600">Fitkit</b><div class="sub" style="font-size:12px">Contact your manager · Anna online</div></div></div>
+    <div class="ordr"><span>Order <b style="color:var(--text)">#001</b> · 3 items</span><span>In progress</span></div>
+    <div class="pm">
+      <div class="b me">Hi! I sent 3 items, please take a look 🙏<small>08:40</small></div>
+      <div class="b mgr">Hi Maria! I’m Anna, your buyer. Checking stock and sizes, I’ll be back shortly.<small>Anna · 09:05</small></div>
+      <div class="b mgr">The black jacket is out of stock in M. S is the same price — shall we take S?
+        <div class="prod"><img class="ph" src="assets/photos/jacket-black.jpg" style="width:38px;height:48px"><div><b>Black jacket</b><div class="sub" style="font-size:11.5px">Zara · S · ₴3,999</div></div></div><small>Anna · 09:30</small></div>
+      <div class="b me">Let’s go with S, thanks!<small>09:41 ✓✓</small></div>
+    </div>
+    <div class="pin"><div class="in">Message your manager…</div><div class="round"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg></div></div>
+  </div></div>
+  <div class="expl">
+    <span class="tag" style="align-self:flex-start">What the client sees</span>
+    <h1>A plain chat with their buyer</h1>
+    <p>No buttons, no automation. The client writes any time, sends photos and links, and sees the order number and status above the chat.</p>
+  </div>
+</div></div></body></html>

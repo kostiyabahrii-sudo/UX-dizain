@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Fitkit — Tracking</title>
+<link rel="stylesheet" href="styles.css"><style>
+.side { width: 208px; padding: 20px 12px; }
+.side .cap { display: none; }
+.nav a { padding: 9px 10px; }
+.main { padding: 28px 36px; gap: 20px; }
+.card { border-radius: 16px; }
+h1 { font-size: 24px; }
+h1 .cnt { color: var(--faint); font-weight: 500; }
+.num { font-family: "Fraunces Variable", Georgia, serif; font-variation-settings: "opsz" 48, "SOFT" 20, "WONK" 1; font-weight: 600; letter-spacing: -.01em; }
+.who { display: flex; gap: 10px; align-items: center; }
+.thumbs { display: flex; } .thumbs img { border: 2px solid var(--panel); }
+.tabs { display: flex; gap: 2px; }
+.tabs a { padding: 7px 14px; border-radius: 999px; color: var(--muted); font-weight: 500; display: flex; gap: 7px; align-items: center; }
+.tabs a.on { background: var(--clay-veil); color: var(--text); font-weight: 600; }
+.tabs a b { font-weight: 600; font-size: 12px; color: var(--faint); }
+.tabs a.red b { color: var(--bad); }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-size: 12px; font-weight: 500; color: var(--faint); padding: 12px 16px; border-bottom: 1px solid var(--line); }
+td { padding: 12px 16px; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: middle; }
+tr:last-child td { border-bottom: 0; }
+tr.late td:first-child { box-shadow: inset 3px 0 0 var(--bad); }
+tr.on td { background: var(--clay-veil); }
+.timer { font-weight: 600; font-size: 13px; color: var(--muted); }
+.timer.red { color: var(--bad); } .timer.org { color: var(--wait); }
+.badge { background: var(--clay); color: #1c1013; font-size: 11px; font-weight: 700; border-radius: 9px; padding: 0 6px; }
+.lbl { font-size: 11.5px; color: var(--faint); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+.ghost { color: var(--muted); font-size: 13px; display: inline-flex; gap: 6px; align-items: center; }
+.ghost svg { color: var(--faint); }
+.iconbtn { width: 34px; padding: 0; }
+
+.cols { display: flex; gap: 20px; align-items: flex-start; }
+.track { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; color: var(--muted); }
+.steps { display: flex; align-items: center; }
+.steps i { width: 9px; height: 9px; border-radius: 50%; background: rgba(238,241,245,.14); }
+.steps i.d { background: var(--clay); } .steps i.x { background: var(--bad); }
+.steps s { width: 14px; height: 2px; background: rgba(238,241,245,.14); } .steps s.d { background: var(--clay); }
+.panel { width: 330px; flex: none; }
+.tl { position: relative; padding-left: 22px; }
+.tl:before { content: ""; position: absolute; left: 5px; top: 6px; bottom: 6px; width: 2px; background: var(--line-2); }
+.ev { position: relative; padding-bottom: 14px; font-size: 13px; }
+.ev:before { content: ""; position: absolute; left: -21px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--panel); border: 2px solid var(--faint); }
+.ev.d:before { background: var(--clay); border-color: var(--clay); }
+.ev small { display: block; color: var(--faint); font-size: 11.5px; }
+.ev.f { color: var(--faint); }
+.red { color: var(--bad); }
+</style></head>
+<body><div class="app">
+  <aside class="side">
+    <div class="logo"><img src="assets/logo-mark.png" alt=""><b>Fitkit</b></div>
+    <nav class="nav"><a class=""><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Requests<span class="n red">12</span></a><a class=""><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Current orders<span class="n">14</span></a><a class=""><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Clients<span class="n red">3</span></a><a class="on"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></svg>Tracking<span class="n red">2</span></a></nav>
+    <div class="me"><div class="ava c2">AK</div><div>Anna Koval<small>Buyer</small></div></div>
+  </aside>
+  <div class="body">
+    <div class="top"><div class="search">Search request #, client, phone or tracking…<kbd>⌘K</kbd></div><div class="bell"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><i></i></div></div>
+    <main class="main">
+<h1>Tracking <span class="cnt">71</span></h1>
+<div class="tabs"><a class="on">All <b>71</b></a><a>To warehouse <b>38</b></a><a>At warehouse <b>12</b></a><a>To clients <b>21</b></a><a class="red">Problems <b>2</b></a></div>
+<div class="cols">
+  <div class="card grow" style="overflow:hidden"><table><tr><th>Order</th><th>Store · tracking</th><th>Stage</th><th>Last event</th></tr><tr class="on"><td><div class="row" style="gap:12px"><div style="width:58px"><div class="thumbs"><img class="ph" src="assets/photos/loafers.jpg" style="width:30px;height:38px"></div></div><span class="num" style="font-size:15px">#0968</span></div></td><td>Massimo Dutti · Nova Poshta<div class="track">2045 0088 1244 71</div></td><td><div class="steps"><i class="d"></i><s class="d"></s><i class="d"></i><s class="d"></s><i class="d"></i><s class=""></s><i class=""></i><s class=""></s><i class=""></i></div></td><td>Arrived at warehouse<div class="sub" style="font-size:12px">today, 10:12</div></td></tr><tr class="late"><td><div class="row" style="gap:12px"><div style="width:58px"><div class="thumbs"><img class="ph" src="assets/photos/sneakers.jpg" style="width:30px;height:38px"></div></div><span class="num" style="font-size:15px">#0951</span></div></td><td>Nike<div class="track">—</div></td><td><div class="steps"><i class="d"></i><s class="d"></s><i class="x"></i><s class=""></s><i class=""></i><s class=""></s><i class=""></i><s class=""></s><i class=""></i></div></td><td><span class="red">No tracking for 3 days</span><div class="sub" style="font-size:12px">Nov 18</div></td></tr><tr class="late"><td><div class="row" style="gap:12px"><div style="width:58px"><div class="thumbs"><img class="ph" src="assets/photos/sweater-grey.jpg" style="width:30px;height:38px"><img class="ph" src="assets/photos/scarf.jpg" style="width:30px;height:38px;margin-left:-8px"></div></div><span class="num" style="font-size:15px">#0947</span></div></td><td>COS · Ukrposhta<div class="track">0503 6448 1203 0</div></td><td><div class="steps"><i class="d"></i><s class="d"></s><i class="x"></i><s class=""></s><i class=""></i><s class=""></s><i class=""></i><s class=""></s><i class=""></i></div></td><td><span class="red">No movement for 5 days</span><div class="sub" style="font-size:12px">Nov 16</div></td></tr><tr class=""><td><div class="row" style="gap:12px"><div style="width:58px"><div class="thumbs"><img class="ph" src="assets/photos/hoodie.jpg" style="width:30px;height:38px"></div></div><span class="num" style="font-size:15px">#0939</span></div></td><td>Zara · Meest<div class="track">MEEST 8830 2215</div></td><td><div class="steps"><i class="d"></i><s class="d"></s><i class="d"></i><s class=""></s><i class=""></i><s class=""></s><i class=""></i><s class=""></s><i class=""></i></div></td><td>On the way to warehouse<div class="sub" style="font-size:12px">today, 08:40</div></td></tr><tr class=""><td><div class="row" style="gap:12px"><div style="width:58px"><div class="thumbs"><img class="ph" src="assets/photos/jeans.jpg" style="width:30px;height:38px"><img class="ph" src="assets/photos/stripe.jpg" style="width:30px;height:38px;margin-left:-8px"></div></div><span class="num" style="font-size:15px">#0932</span></div></td><td>Reserved · Nova Poshta<div class="track">2045 0099 8211 67</div></td><td><div class="steps"><i class="d"></i><s class="d"></s><i class="d"></i><s class="d"></s><i class="d"></i><s class="d"></s><i class="d"></i><s class=""></s><i class=""></i></div></td><td>Shipped to client<div class="sub" style="font-size:12px">yesterday</div></td></tr><tr class=""><td><div class="row" style="gap:12px"><div style="width:58px"><div class="thumbs"><img class="ph" src="assets/photos/jacket-black.jpg" style="width:30px;height:38px"></div></div><span class="num" style="font-size:15px">#0918</span></div></td><td>Zara · Nova Poshta<div class="track">2045 0055 3000 81</div></td><td><div class="steps"><i class="d"></i><s class="d"></s><i class="d"></i><s class="d"></s><i class="d"></i><s class="d"></s><i class="d"></i><s class=""></s><i class=""></i></div></td><td>Courier delivers today<div class="sub" style="font-size:12px">today, 09:55</div></td></tr></table></div>
+  <div class="card panel"><div class="bd">
+    <div class="row" style="gap:12px;margin-bottom:16px"><img class="ph" src="assets/photos/loafers.jpg" style="width:52px;height:66px"><div class="grow"><b class="num" style="font-size:17px">#0968</b><div style="font-size:13.5px">Leather loafers · 38</div><div class="sub">Olena Smyrnova</div></div></div>
+    <div class="row" style="margin-bottom:18px"><span class="track grow">Nova Poshta 2045 0088 1244 71</span><span class="btn link"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></span></div>
+    <div class="tl">
+      <div class="ev d"><b>Purchased</b><small>Nov 17, 12:40</small></div>
+      <div class="ev d"><b>Handed to Nova Poshta</b><small>Nov 18, 09:15</small></div>
+      <div class="ev d"><b>Arrived at warehouse</b><small>checked, 3 photos · today, 10:12</small></div>
+      <div class="ev f"><b>Ship to client</b><small>today</small></div>
+      <div class="ev f"><b>Delivered</b><small>expected Nov 23</small></div>
+    </div>
+    <button class="btn pri big" style="width:100%;margin-top:6px">Ship to client →</button>
+  </div></div>
+</div></main>
+  </div>
+</div></body></html>
