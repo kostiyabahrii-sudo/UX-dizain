@@ -202,6 +202,16 @@ func TestAuth(t *testing.T) {
 	e.want(e.do("GET", "/api/me", tok, nil), 401, "after logout")
 }
 
+func TestLoginThrottle(t *testing.T) {
+	e := setup(t)
+	for i := 0; i < 10; i++ {
+		e.want(e.do("POST", "/api/auth/login", "", map[string]string{"email": "taras@fitkit.space", "password": "nope"}), 401, "wrong password")
+	}
+	r := e.do("POST", "/api/auth/login", "", map[string]string{"email": "taras@fitkit.space", "password": seed.DemoPassword})
+	e.want(r, 429, "11th attempt, even with the right password")
+	e.login("anna@fitkit.space") // other accounts are not affected
+}
+
 func TestRequestCardFlow(t *testing.T) {
 	e := setup(t)
 	anna, taras := e.login("anna@fitkit.space"), e.login("taras@fitkit.space")

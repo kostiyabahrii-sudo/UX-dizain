@@ -1,0 +1,5 @@
+**/node_modules
+**/dist
+mockups
+**/.env
+**/*.log

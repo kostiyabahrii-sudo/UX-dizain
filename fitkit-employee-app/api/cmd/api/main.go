@@ -2,7 +2,7 @@
 //
 //	api serve                                   start the HTTP server (default)
 //	api migrate                                 apply database migrations
-//	api seed                                    wipe the database and load demo data
+//	api seed                                    wipe the database and load demo data (needs ALLOW_SEED=true)
 //	api create-employee -name … -email … -role buyer|lead|warehouse|support -password …
 package main
 
@@ -68,6 +68,9 @@ func run(ctx context.Context, cmd string, args []string, log *slog.Logger) error
 		log.Info("migrations applied")
 		return nil
 	case "seed":
+		if os.Getenv("ALLOW_SEED") != "true" {
+			return errors.New("seed WIPES the whole database and loads demo data; set ALLOW_SEED=true to confirm (never on production)")
+		}
 		if err := seed.Load(ctx, st); err != nil {
 			return err
 		}
@@ -105,7 +108,36 @@ func run(ctx context.Context, cmd string, args []string, log *slog.Logger) error
 	}
 }
 
+// bootstrapAdmin creates the first sign-in (a shift lead) from BOOTSTRAP_ADMIN_EMAIL / BOOTSTRAP_ADMIN_PASSWORD
+// when the database has no employees yet — so a fresh deployment needs no shell access.
+func bootstrapAdmin(ctx context.Context, st *store.Store, log *slog.Logger) error {
+	email, pass := os.Getenv("BOOTSTRAP_ADMIN_EMAIL"), os.Getenv("BOOTSTRAP_ADMIN_PASSWORD")
+	if email == "" || pass == "" {
+		return nil
+	}
+	n, err := st.Q().CountEmployees(ctx)
+	if err != nil || n > 0 {
+		return err
+	}
+	if len(pass) < 10 {
+		return errors.New("BOOTSTRAP_ADMIN_PASSWORD must be at least 10 characters")
+	}
+	hash, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	name := env("BOOTSTRAP_ADMIN_NAME", "Адміністратор")
+	e, err := st.Q().CreateEmployee(ctx, name, email, domain.RoleLead, string(hash))
+	if err == nil {
+		log.Info("first employee created from BOOTSTRAP_ADMIN_*", "email", e.Email, "role", e.Role)
+	}
+	return err
+}
+
 func serve(ctx context.Context, st *store.Store, log *slog.Logger) error {
+	if err := bootstrapAdmin(ctx, st, log); err != nil {
+		return err
+	}
 	_, ints := integrations.NewFakes(log)
 	if key := os.Getenv("NOVA_POSHTA_API_KEY"); key != "" {
 		log.Warn("NOVA_POSHTA_API_KEY is set, but the recipient lookup (city/branch → refs) is not wired yet — using the fake shipping integration")
@@ -125,8 +157,16 @@ func serve(ctx context.Context, st *store.Store, log *slog.Logger) error {
 		TrackerSecret:   os.Getenv("TRACKER_WEBHOOK_SECRET"),
 		AllowOrigin:     os.Getenv("ALLOW_ORIGIN"),
 		SecureCookie:    env("SECURE_COOKIE", "false") == "true",
+		WebDir:          os.Getenv("WEB_DIR"),
 	})
-	srv := &http.Server{Addr: env("ADDR", ":8080"), Handler: handler, ReadHeaderTimeout: 10 * time.Second}
+	if os.Getenv("CLIENT_APP_WEBHOOK_SECRET") == "" || os.Getenv("TRACKER_WEBHOOK_SECRET") == "" {
+		log.Warn("a webhook secret is not set: the matching /webhooks/* endpoints answer 503 until it is")
+	}
+	addr := env("ADDR", ":8080")
+	if p := os.Getenv("PORT"); p != "" && os.Getenv("ADDR") == "" { // hosting platforms pass the port in PORT
+		addr = ":" + p
+	}
+	srv := &http.Server{Addr: addr, Handler: handler, ReadHeaderTimeout: 10 * time.Second}
 	go func() {
 		<-ctx.Done()
 		sctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

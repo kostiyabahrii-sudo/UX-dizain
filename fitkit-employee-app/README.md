@@ -128,8 +128,8 @@ Spend the build effort on the request card, rules and tracking — that is what 
 
 ## Run the app
 
-1. Back-end (Go, [`api/`](api/README.md)): `cd api && docker compose up --build`, then `docker compose run --rm api seed` for demo data.
-2. Front-end (React, [`web/`](web/README.md)): `cd web && npm install && npm run dev`, open http://localhost:5173 and sign in as `anna@fitkit.space` / `fitkit-demo`.
+- Locally: `cd api && docker compose up --build`, then `docker compose run --rm api seed`; open http://localhost:8080 and sign in as `anna@fitkit.space` / `fitkit-demo`. For front-end development also run `cd web && npm install && npm run dev` (http://localhost:5173).
+- Online: see [`DEPLOY.md`](DEPLOY.md) — one Docker image + PostgreSQL on Render or Railway.
 
 ## Mockup files
 

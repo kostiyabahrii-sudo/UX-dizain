@@ -7,13 +7,13 @@ Back-end for the buyer workspace in [`../web`](../web). Go 1.24, standard librar
 Needs Go 1.24+ and PostgreSQL 14+ (or Docker).
 
 ```bash
-# with Docker: database + API on :8080
+# with Docker: database + the whole app (API and front-end) on http://localhost:8080
 docker compose up --build
-docker compose run --rm api seed          # demo data (same as the front-end mock)
+docker compose run --rm api seed          # demo data
 
 # or with your own PostgreSQL
 export DATABASE_URL="postgres://user:pass@localhost:5432/fitkit?sslmode=disable"
-go run ./cmd/api seed                     # migrate + load demo data
+ALLOW_SEED=true go run ./cmd/api seed     # migrate + WIPE + load demo data
 CLIENT_APP_WEBHOOK_SECRET=dev TRACKER_WEBHOOK_SECRET=dev go run ./cmd/api serve
 ```
 
@@ -21,7 +21,7 @@ Demo logins (password `fitkit-demo`): `anna@fitkit.space` (buyer), `taras@fitkit
 
 Real employees: `go run ./cmd/api create-employee -name "…" -email … -role buyer -password …`
 
-Configuration is read from the environment — see [`.env.example`](.env.example).
+Configuration is read from the environment — see [`.env.example`](.env.example). Production: one image with the API and the front-end, see [`../DEPLOY.md`](../DEPLOY.md).
 
 ## Tests
 
@@ -47,7 +47,7 @@ internal/seed/        demo data
 
 ## Auth
 
-`POST /api/auth/login {email, password}` → sets an HttpOnly cookie `fitkit_session` and returns `{token, me}`. Send the cookie (browser) or `Authorization: Bearer <token>`. Sessions last 30 days; only a SHA-256 of the token is stored. `POST /api/auth/logout` ends the session.
+`POST /api/auth/login {email, password}` → sets an HttpOnly cookie `fitkit_session` and returns `{token, me}`. Send the cookie (browser) or `Authorization: Bearer <token>`. Sessions last 30 days; only a SHA-256 of the token is stored. Sign-in is limited to 10 failed attempts per IP and e-mail per 15 minutes (429). `POST /api/auth/logout` ends the session.
 
 Permissions: an order is changed by its owner or a shift lead (`lead`); the warehouse (`warehouse`) can receive parcels and ship; anyone signed in can take a new request and answer support tickets.
 
@@ -103,4 +103,4 @@ Defined in `internal/integrations` with fakes that log and record calls (used no
 ## Not done yet
 
 - Real Nova Poshta, aggregator, payment and client-app clients (need accounts and keys).
-- Warehouse photos, admin back office (analytics, rules and thresholds), login rate limiting, multi-instance events (Postgres LISTEN/NOTIFY).
+- Warehouse photos, admin back office (analytics, rules, thresholds, employees), multi-instance events (Postgres LISTEN/NOTIFY).

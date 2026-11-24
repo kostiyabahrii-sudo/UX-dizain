@@ -1,0 +1,34 @@
+# Render Blueprint for the Fitkit employee workspace (https://render.com/docs/blueprint-spec).
+# New → Blueprint → pick this repository and branch. Render creates PostgreSQL and the web service.
+# Plans below are examples — check current Render pricing before applying.
+services:
+  - type: web
+    name: fitkit-workspace
+    runtime: docker
+    dockerfilePath: ./fitkit-employee-app/Dockerfile
+    dockerContext: ./fitkit-employee-app
+    plan: starter
+    healthCheckPath: /healthz
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: fitkit-db
+          property: connectionString
+      - key: SECURE_COOKIE
+        value: "true"
+      - key: CLIENT_APP_WEBHOOK_SECRET
+        generateValue: true
+      - key: TRACKER_WEBHOOK_SECRET
+        generateValue: true
+      # First sign-in (shift lead), created only while the database has no employees.
+      - key: BOOTSTRAP_ADMIN_EMAIL
+        sync: false
+      - key: BOOTSTRAP_ADMIN_PASSWORD
+        sync: false
+      - key: BOOTSTRAP_ADMIN_NAME
+        sync: false
+
+databases:
+  - name: fitkit-db
+    databaseName: fitkit
+    plan: basic-256mb

@@ -28,6 +28,12 @@ func (q *Q) EmployeeByEmail(ctx context.Context, email string) (EmployeeAuth, er
 	return e, notFound(err)
 }
 
+func (q *Q) CountEmployees(ctx context.Context) (int, error) {
+	var n int
+	err := q.db.QueryRow(ctx, `SELECT count(*) FROM employees`).Scan(&n)
+	return n, err
+}
+
 func (q *Q) Employees(ctx context.Context) ([]domain.Employee, error) {
 	rows, err := q.db.Query(ctx, `SELECT id, name, email, role FROM employees ORDER BY name`)
 	if err != nil {

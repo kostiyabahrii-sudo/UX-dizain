@@ -4,14 +4,9 @@ React 19 + TypeScript + Vite + React Router, UI on **shadcn/ui** (Radix + Tailwi
 
 ## Run
 
-Start the API first (see `../api/README.md`), e.g. with Docker:
+To just use the app: `cd ../api && docker compose up --build`, `docker compose run --rm api seed`, open http://localhost:8080 (the image contains the built front-end).
 
-```bash
-cd ../api && docker compose up --build        # API on :8080
-docker compose run --rm api seed              # demo data
-```
-
-Then the front-end:
+To work on the front-end, keep the API running and start Vite:
 
 ```bash
 npm install

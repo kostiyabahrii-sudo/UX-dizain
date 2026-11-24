@@ -36,12 +36,22 @@ type Config struct {
 	// Allowed browser origin for CORS (empty = same origin only, e.g. behind the Vite proxy).
 	AllowOrigin  string
 	SecureCookie bool
+	// WebDir is the built front-end (web/dist). When set, the server serves it and falls back to index.html for app routes.
+	WebDir string
 }
 
-type server struct{ Config }
+type server struct {
+	Config
+	throttle *throttle
+}
+
+// secure reports whether cookies must carry the Secure flag: forced by config, or the request came over HTTPS (directly or via a proxy).
+func (s *server) secure(r *http.Request) bool {
+	return s.SecureCookie || r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https"
+}
 
 func New(cfg Config) http.Handler {
-	s := &server{cfg}
+	s := &server{Config: cfg, throttle: newThrottle(10, 15*time.Minute)}
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) { writeJSON(w, 200, map[string]string{"status": "ok"}) })
 
@@ -82,7 +92,11 @@ func New(cfg Config) http.Handler {
 	mux.HandleFunc("POST /webhooks/client-app/messages", s.signed(s.ClientAppSecret, s.hookMessage))
 	mux.HandleFunc("POST /webhooks/tracking", s.signed(s.TrackerSecret, s.hookTracking))
 
-	return s.recoverer(s.logger(s.cors(mux)))
+	if cfg.WebDir != "" {
+		mux.Handle("GET /", spa(cfg.WebDir))
+	}
+
+	return s.recoverer(s.logger(securityHeaders(s.cors(mux))))
 }
 
 // ---------- middleware
@@ -240,7 +254,14 @@ func (s *server) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	ctx := r.Context()
-	e, err := s.Service.Store.Q().EmployeeByEmail(ctx, strings.TrimSpace(in.Email))
+	email := strings.ToLower(strings.TrimSpace(in.Email))
+	key := clientIP(r) + "|" + email
+	if !s.throttle.allow(key) {
+		w.Header().Set("Retry-After", "900")
+		writeErr(w, http.StatusTooManyRequests, "Забагато спроб входу — спробуйте за 15 хвилин")
+		return
+	}
+	e, err := s.Service.Store.Q().EmployeeByEmail(ctx, email)
 	if err != nil || bcrypt.CompareHashAndPassword([]byte(e.PasswordHash), []byte(in.Password)) != nil {
 		writeErr(w, http.StatusUnauthorized, "Невірна пошта або пароль")
 		return
@@ -253,7 +274,8 @@ func (s *server) login(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, err)
 		return
 	}
-	http.SetCookie(w, &http.Cookie{Name: sessionCookie, Value: tok, Path: "/", Expires: exp, HttpOnly: true, Secure: s.SecureCookie, SameSite: http.SameSiteLaxMode})
+	s.throttle.reset(key)
+	http.SetCookie(w, &http.Cookie{Name: sessionCookie, Value: tok, Path: "/", Expires: exp, HttpOnly: true, Secure: s.secure(r), SameSite: http.SameSiteLaxMode})
 	writeJSON(w, 200, map[string]any{"token": tok, "me": e.Employee})
 }
 
@@ -261,7 +283,7 @@ func (s *server) logout(w http.ResponseWriter, r *http.Request) {
 	if tok := tokenFrom(r); tok != "" {
 		_ = s.Service.Store.Q().DeleteSession(r.Context(), hashToken(tok))
 	}
-	http.SetCookie(w, &http.Cookie{Name: sessionCookie, Value: "", Path: "/", MaxAge: -1, HttpOnly: true, Secure: s.SecureCookie, SameSite: http.SameSiteLaxMode})
+	http.SetCookie(w, &http.Cookie{Name: sessionCookie, Value: "", Path: "/", MaxAge: -1, HttpOnly: true, Secure: s.secure(r), SameSite: http.SameSiteLaxMode})
 	w.WriteHeader(http.StatusNoContent)
 }
 

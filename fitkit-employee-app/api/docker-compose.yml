@@ -1,5 +1,5 @@
-# Local stack: PostgreSQL + API. `docker compose up --build`, then
-# `docker compose run --rm api seed` to load the demo data.
+# Local stack: PostgreSQL + the whole app (API and the built front-end) on http://localhost:8080.
+# `docker compose up --build`, then `docker compose run --rm api seed` to load the demo data.
 services:
   db:
     image: postgres:16-alpine
@@ -14,12 +14,15 @@ services:
       interval: 2s
       retries: 20
   api:
-    build: .
+    build:
+      context: ..
+      dockerfile: Dockerfile
     depends_on:
       db: { condition: service_healthy }
     env_file: .env.example
     environment:
       DATABASE_URL: postgres://fitkit:fitkit@db:5432/fitkit?sslmode=disable
+      ALLOW_SEED: "true" # local only: lets `seed` wipe this database
     ports: ["8080:8080"]
 volumes:
   pgdata:
