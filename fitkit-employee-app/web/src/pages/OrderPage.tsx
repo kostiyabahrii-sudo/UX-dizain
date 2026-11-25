@@ -98,8 +98,16 @@ export function OrderPage() {
         {/* Left — items and delivery (narrow) */}
         <div className="flex min-w-0 flex-col gap-6">
           <Card className="gap-3 p-3">
-            <div className="px-3 pt-2 text-lg font-semibold">
-              Товари <span className="tabular font-medium text-muted-foreground">{o.items.length}</span>
+            <div className="flex items-center gap-3 px-3 pt-2">
+              <div className="flex-1 text-lg font-semibold">
+                Товари <span className="tabular font-medium text-muted-foreground">{o.items.length}</span>
+              </div>
+              {o.photo && (
+                <a href={o.photo} target="_blank" rel="noreferrer" className="flex items-center gap-2 rounded-2xl px-2 py-1 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground">
+                  Образ клієнта
+                  <Photo src={o.photo} className="h-12 w-9 rounded-lg" />
+                </a>
+              )}
             </div>
             {o.items.map((it) => (
               <ItemRow key={it.id} order={o} item={it} editable={editable} onPrice={() => setPriceItem(it)} />
@@ -208,7 +216,7 @@ function ItemRow({ order, item, editable, onPrice }: { order: Order; item: Item;
   };
   const price =
     item.price == null ? (
-      <span className="text-muted-foreground">{item.storePrice ? `${uah(item.storePrice)} у магазині` : 'ціна невідома'}</span>
+      <span className="text-muted-foreground">{item.storePrice ? `${uah(item.storePrice)} у магазині` : item.listingPrice ? `${item.listingPrice} у магазині` : 'ціна невідома'}</span>
     ) : item.storePrice != null && item.storePrice !== item.price ? (
       <>
         <span className="text-muted-foreground line-through">{uah(item.price)}</span> {uah(item.storePrice)}
@@ -339,9 +347,9 @@ function DeliveryCard({ order, client }: { order: Order; client: Client }) {
           <div key={label} className="flex items-center gap-2 rounded-2xl bg-secondary px-4 py-3">
             <div className="min-w-0 flex-1">
               <div className="text-xs text-muted-foreground">{label}</div>
-              <div className="text-lg leading-snug font-semibold select-all">{value}</div>
+              {value ? <div className="text-lg leading-snug font-semibold select-all">{value}</div> : <div className="text-lg leading-snug text-muted-foreground">не вказано</div>}
             </div>
-            <CopyButton value={value} label={`Копіювати: ${label.toLowerCase()}`} />
+            {value && <CopyButton value={value} label={`Копіювати: ${label.toLowerCase()}`} />}
           </div>
         ))}
         <div className="flex items-start gap-2 rounded-2xl bg-secondary px-4 py-3">

@@ -1,5 +1,7 @@
 # Deploying the Fitkit workspace
 
+> **Outdated:** written for the standalone PostgreSQL server in `api/`, which is superseded by the Fitkit server in `ivngineer/fitkit-native` (SQLite, one server for the iOS app and this desktop app).
+
 The whole app is one Docker image (`Dockerfile` in this folder): the Go API serves the built React front-end, so one web service plus one PostgreSQL database is all you need. It listens on `$PORT` (set by the platform) or `:8080`.
 
 ## Environment variables

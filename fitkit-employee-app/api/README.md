@@ -1,5 +1,7 @@
 # Fitkit — Employee Workspace API (Go)
 
+> **Superseded.** The workspace API now runs inside the Fitkit server in [`ivngineer/fitkit-native`](https://github.com/ivngineer/fitkit-native) (`server/`, branch `claude/workspace-api-checkout`), next to the iOS app API, on SQLite. Same `/api` and `/webhooks` endpoints. This folder is kept for reference.
+
 Back-end for the buyer workspace in [`../web`](../web). Go 1.24, standard library HTTP router, PostgreSQL via pgx, Server-Sent Events for live updates. The business rules are the same as in the front-end (`web/src/domain/rules.ts` ↔ `internal/domain/rules.go`) and are re-checked on every request.
 
 ## Run locally

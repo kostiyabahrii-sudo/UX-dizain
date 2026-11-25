@@ -1,20 +1,23 @@
 # Fitkit — Employee Workspace (front-end)
 
-React 19 + TypeScript + Vite + React Router, UI on **shadcn/ui** (Radix + Tailwind CSS v4, components in `src/components/ui`), icons from lucide-react, toasts from sonner. Grey theme, dark by default with a light option. Interface in Ukrainian. Data comes from the Go API in [`../api`](../api/README.md).
+React 19 + TypeScript + Vite + React Router, UI on **shadcn/ui** (Radix + Tailwind CSS v4, components in `src/components/ui`), icons from lucide-react, toasts from sonner. Grey theme, dark by default with a light option. Interface in Ukrainian. Data comes from the Fitkit server (`server/` in `ivngineer/fitkit-native`), which also serves the iOS app; orders placed with “Купити” in the app arrive here as new requests.
 
 ## Run
 
-To just use the app: `cd ../api && docker compose up --build`, `docker compose run --rm api seed`, open http://localhost:8080 (the image contains the built front-end).
+Start the Fitkit server from `ivngineer/fitkit-native` (Go 1.26+):
 
-To work on the front-end, keep the API running and start Vite:
+```bash
+cd fitkit-native/server
+FITKIT_DEMO_ANALYSIS=1 FITKIT_BOOTSTRAP_ADMIN_EMAIL=you@fitkit.space FITKIT_BOOTSTRAP_ADMIN_PASSWORD=change-me-please go run ./cmd/fitkitd
+ALLOW_SEED=true go run ./cmd/fitkitd seed-workspace   # optional: demo orders (anna@fitkit.space / fitkit-demo)
+```
+
+Then either build this app and let the server serve it (`npm run build`, then start the server with `FITKIT_WEB_DIR=<path to web/dist>` and open http://localhost:8080), or run Vite for development:
 
 ```bash
 npm install
-npm run dev        # http://localhost:5173 — /api is proxied to :8080
-npm run build      # typecheck + production build into dist/
+npm run dev        # http://localhost:5173 — /api and /media are proxied to :8080
 ```
-
-Demo login: `anna@fitkit.space` / `fitkit-demo` (also `taras@…`, `iryna@…` — shift lead, `sklad@…` — warehouse).
 
 ## How it talks to the API
 

@@ -62,6 +62,7 @@ function order(o: ApiOrder): Order {
     fee: toUAH(o.fee) ?? 0,
     problem: o.problem,
     location: o.location,
+    photo: o.photo,
     notes: o.notes ?? [],
     history: o.history ?? [],
     items: o.items.map((i) => ({ ...i, price: toUAH(i.price), storePrice: toUAH(i.storePrice) })),

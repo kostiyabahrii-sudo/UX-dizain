@@ -49,6 +49,8 @@ export interface Item {
   /** Actual store price found by the buyer, ₴. */
   storePrice?: number;
   comment?: string;
+  /** Store price as listed (any currency), when there is no price in hryvnias. */
+  listingPrice?: string;
   status: ItemStatus;
 }
 
@@ -81,6 +83,8 @@ export interface Order {
   problem?: string;
   /** Short location line for purchased/shipped orders on the board. */
   location?: string;
+  /** The look the client bought from (pin image in the Fitkit app). */
+  photo?: string;
   notes: TeamNote[];
   history: HistoryEvent[];
 }

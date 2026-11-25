@@ -128,8 +128,7 @@ Spend the build effort on the request card, rules and tracking — that is what 
 
 ## Run the app
 
-- Locally: `cd api && docker compose up --build`, then `docker compose run --rm api seed`; open http://localhost:8080 and sign in as `anna@fitkit.space` / `fitkit-demo`. For front-end development also run `cd web && npm install && npm run dev` (http://localhost:5173).
-- Online: see [`DEPLOY.md`](DEPLOY.md) — one Docker image + PostgreSQL on Render or Railway.
+The back-end is the Fitkit server in [`ivngineer/fitkit-native`](https://github.com/ivngineer/fitkit-native) (`server/`): one Go server for the iOS app (`/v1`) and this desktop app (`/api`). Orders placed with “Купити” in the iOS app (`POST /v1/orders`) show up here as new requests. How to run both: [`web/README.md`](web/README.md). The earlier standalone server in [`api/`](api/README.md) is kept for reference.
 
 ## Mockup files
 
